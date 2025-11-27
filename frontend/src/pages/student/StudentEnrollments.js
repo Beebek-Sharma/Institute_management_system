@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { useState, useEffect } from 'react';
 import { enrollmentsAPI } from '../../api/enrollments';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -13,7 +14,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "../../components/ui/table";
 
 const StudentEnrollments = () => {
@@ -55,7 +56,7 @@ const StudentEnrollments = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Enrollments</h1>
           <p className="text-gray-600">Track your progress and manage your courses</p>
@@ -142,8 +143,8 @@ const StudentEnrollments = () => {
             )}
           </CardContent>
         </Card>
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
   );
 };
 

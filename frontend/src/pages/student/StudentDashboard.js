@@ -54,15 +54,15 @@ const StudentDashboard = () => {
   }, []);
 
   const StatCard = ({ title, value, icon: Icon, color }) => (
-    <Card>
+    <Card className="bg-white/95 backdrop-blur-sm border border-gray-200">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
+        <CardTitle className="text-sm font-medium text-gray-700">
           {title}
         </CardTitle>
         <Icon className={`h-4 w-4 text-${color}-500`} />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold text-gray-900">{value}</div>
       </CardContent>
     </Card>
   );
@@ -71,8 +71,8 @@ const StudentDashboard = () => {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.first_name}!</p>
+          <h1 className="text-3xl font-bold text-white">Student Dashboard</h1>
+          <p className="text-gray-300">Welcome back, {user?.first_name}!</p>
         </div>
 
         {/* Stats Grid */}
@@ -104,9 +104,9 @@ const StudentDashboard = () => {
         </div>
 
         {/* Recent Enrollments */}
-        <Card>
+        <Card className="bg-white/95 backdrop-blur-sm border border-gray-200">
           <CardHeader>
-            <CardTitle>My Courses</CardTitle>
+            <CardTitle className="text-gray-900">My Courses</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>

@@ -86,7 +86,7 @@ const StudentProfile = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 max-w-4xl">
+        <div className="space-y-8 max-w-4xl">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
@@ -331,8 +331,8 @@ const StudentProfile = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
   );
 };
 

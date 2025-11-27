@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { useState, useEffect } from 'react';
 import { paymentsAPI } from '../../api/payments';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -12,7 +13,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "../../components/ui/table";
 
 const StudentPayments = () => {
@@ -59,7 +60,7 @@ const StudentPayments = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Payments & Billing</h1>
           <p className="text-gray-600">Manage your course fees and payment history</p>
@@ -180,8 +181,8 @@ const StudentPayments = () => {
             )}
           </CardContent>
         </Card>
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
   );
 };
 

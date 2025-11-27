@@ -29,11 +29,16 @@ const StudentCourses = () => {
         enrollmentsAPI.getEnrollments()
       ]);
 
-      setCourses(coursesData);
-      setEnrolledCourseIds(new Set(enrollmentsData.map(e => e.course)));
+      // Ensure data is an array (handle potential pagination or unexpected format)
+      const safeCourses = Array.isArray(coursesData) ? coursesData : (coursesData?.results || []);
+      const safeEnrollments = Array.isArray(enrollmentsData) ? enrollmentsData : (enrollmentsData?.results || []);
+
+      setCourses(safeCourses);
+      setEnrolledCourseIds(new Set(safeEnrollments.map(e => e.course)));
     } catch (err) {
       console.error('Error fetching data:', err);
       setError('Failed to load courses. Please try again later.');
+      setCourses([]); // Fallback to empty array
     } finally {
       setLoading(false);
     }
@@ -58,13 +63,13 @@ const StudentCourses = () => {
   };
 
   const filteredCourses = courses.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Courses</h1>
           <p className="text-gray-600">Browse and enroll in courses to advance your skills</p>
@@ -115,7 +120,7 @@ const StudentCourses = () => {
                         {course.credits} Credits
                       </Badge>
                     </div>
-                    <CardTitle className="text-xl line-clamp-2">{course.title}</CardTitle>
+                    <CardTitle className="text-xl line-clamp-2">{course.name}</CardTitle>
                     <CardDescription className="line-clamp-3 mt-2">
                       {course.description}
                     </CardDescription>
@@ -156,8 +161,8 @@ const StudentCourses = () => {
             })}
           </div>
         )}
-      </div>
-    </DashboardLayout>
+        </div>
+      </DashboardLayout>
   );
 };
 

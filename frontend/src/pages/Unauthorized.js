@@ -2,11 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const Unauthorized = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-orange-50 p-4">
-      <div className="text-center max-w-md">
+    <div className="min-h-screen bg-transparent flex flex-col">
+      <Header />
+      <div className="flex-grow flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-orange-50 p-4">
+        <div className="text-center max-w-md">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
           <AlertCircle className="w-10 h-10 text-red-600" />
         </div>
@@ -20,7 +24,9 @@ const Unauthorized = () => {
             Back to Login
           </Button>
         </Link>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

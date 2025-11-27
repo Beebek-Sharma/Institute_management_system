@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react({
     include: /src\/.*\.[jt]sx?$/,
   })],
+  publicDir: 'public',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

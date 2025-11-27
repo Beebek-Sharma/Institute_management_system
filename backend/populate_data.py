@@ -8,74 +8,7 @@ from decimal import Decimal
 
 User = get_user_model()
 
-# Create sample users
-print("Creating users...")
-
-# Admin (already created via createsuperuser)
-try:
-    admin = User.objects.get(username='admin')
-    admin.set_password('admin123')
-    admin.role = 'admin'
-    admin.first_name = 'Admin'
-    admin.last_name = 'User'
-    admin.save()
-    print(f"✓ Admin user updated: {admin.username}")
-except User.DoesNotExist:
-    admin = User.objects.create_user(
-        username='admin',
-        email='admin@ims.com',
-        password='admin123',
-        role='admin',
-        first_name='Admin',
-        last_name='User'
-    )
-    print(f"✓ Admin user created: {admin.username}")
-
-# Instructors
-instructor1 = User.objects.create_user(
-    username='john_doe',
-    email='john@ims.com',
-    password='instructor123',
-    role='instructor',
-    first_name='John',
-    last_name='Doe',
-    phone='555-0101'
-)
-print(f"✓ Instructor created: {instructor1.username}")
-
-instructor2 = User.objects.create_user(
-    username='jane_smith',
-    email='jane@ims.com',
-    password='instructor123',
-    role='instructor',
-    first_name='Jane',
-    last_name='Smith',
-    phone='555-0102'
-)
-print(f"✓ Instructor created: {instructor2.username}")
-
-# Students
-student1 = User.objects.create_user(
-    username='alice_wonder',
-    email='alice@student.com',
-    password='student123',
-    role='student',
-    first_name='Alice',
-    last_name='Wonder',
-    phone='555-0201'
-)
-print(f"✓ Student created: {student1.username}")
-
-student2 = User.objects.create_user(
-    username='bob_builder',
-    email='bob@student.com',
-    password='student123',
-    role='student',
-    first_name='Bob',
-    last_name='Builder',
-    phone='555-0202'
-)
-print(f"✓ Student created: {student2.username}")
+# Create sample users (removed)
 
 # Create sample courses
 print("\nCreating courses...")
@@ -86,6 +19,8 @@ course1 = Course.objects.create(
     description='Learn the fundamentals of Python programming including data types, control structures, and functions.',
     instructor=instructor1,
     schedule='Mon/Wed 10:00-12:00',
+    duration_weeks=12,
+    credits=3,
     capacity=30,
     enrolled_count=0
 )
@@ -97,6 +32,8 @@ course2 = Course.objects.create(
     description='Build modern web applications using Django framework and REST APIs.',
     instructor=instructor1,
     schedule='Tue/Thu 14:00-16:00',
+    duration_weeks=16,
+    credits=4,
     capacity=25,
     enrolled_count=0
 )
@@ -108,6 +45,8 @@ course3 = Course.objects.create(
     description='Master essential data structures and algorithms for efficient programming.',
     instructor=instructor2,
     schedule='Mon/Wed 14:00-16:00',
+    duration_weeks=14,
+    credits=4,
     capacity=35,
     enrolled_count=0
 )
@@ -119,6 +58,8 @@ course4 = Course.objects.create(
     description='Learn database design, SQL, and database administration.',
     instructor=instructor2,
     schedule='Tue/Thu 10:00-12:00',
+    duration_weeks=12,
+    credits=3,
     capacity=30,
     enrolled_count=0
 )

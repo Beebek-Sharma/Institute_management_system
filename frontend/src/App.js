@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -6,9 +6,15 @@ import { Toaster } from "./components/ui/toaster";
 
 // Pages
 import HomePage from "./pages/HomePage";
+import CourseDetails from "./pages/CourseDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import FAQ from "./pages/FAQ";
+import NotFound from "./pages/NotFound";
+import Search from "./pages/Search";
 
 // Student Pages
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -33,16 +39,49 @@ import StaffEnrollments from "./pages/staff/StaffEnrollments";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const vantaRef = useRef(null);
+
+  useEffect(() => {
+    if (window.VANTA && window.VANTA.CELLS && vantaRef.current) {
+      const vantaEffect = window.VANTA.CELLS({
+        el: vantaRef.current,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        scale: 1.0,
+        color1: 0x00a878,
+        color2: 0x0d3b3b,
+        backgroundColor: 0x001a1a,
+        speed: 0.8,
+        size: 1.2,
+      });
+      return () => {
+        if (vantaEffect) vantaEffect.destroy();
+      };
+    }
+  }, []);
+
   return (
     <AuthProvider>
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
+      <div className="App relative">
+        <div 
+          ref={vantaRef}
+          className="fixed inset-0 z-0"
+          style={{ minHeight: '100vh' }}
+        ></div>
+        <div className="relative z-10">
+          <BrowserRouter>
+            <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/courses/:courseId" element={<CourseDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/search" element={<Search />} />
 
             {/* Student Routes */}
             <Route
@@ -140,11 +179,12 @@ function App() {
               }
             />
 
-            {/* Catch all - redirect to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* Catch all - 404 page */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-        <Toaster />
+          </BrowserRouter>
+          <Toaster />
+        </div>
       </div>
     </AuthProvider>
   );
