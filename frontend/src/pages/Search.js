@@ -4,6 +4,7 @@ import { Search as SearchIcon, X } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
+import { coursesAPI } from '../api/courses';
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -15,33 +16,35 @@ const Search = () => {
   const [noResults, setNoResults] = useState(false);
 
   useEffect(() => {
-    // Simulate searching through courses
-    // In a real app, this would call an API endpoint
-    const mockCourses = [
-      { id: 1, title: 'Web Development Fundamentals', category: 'Web Development', level: 'Beginner' },
-      { id: 2, title: 'Advanced React.js', category: 'Web Development', level: 'Advanced' },
-      { id: 3, title: 'Python for Data Science', category: 'Data Science', level: 'Intermediate' },
-      { id: 4, title: 'Machine Learning Basics', category: 'Data Science', level: 'Beginner' },
-      { id: 5, title: 'UI/UX Design Principles', category: 'Design', level: 'Beginner' },
-      { id: 6, title: 'Graphic Design Mastery', category: 'Design', level: 'Intermediate' },
-      { id: 7, title: 'Digital Marketing Strategy', category: 'Marketing', level: 'Intermediate' },
-      { id: 8, title: 'SEO Optimization Guide', category: 'Marketing', level: 'Beginner' },
-      { id: 9, title: 'Full Stack Development', category: 'Web Development', level: 'Advanced' },
-      { id: 10, title: 'Cloud Computing with AWS', category: 'Cloud', level: 'Advanced' },
-    ];
-
-    if (query.trim()) {
-      const results = mockCourses.filter(course =>
-        course.title.toLowerCase().includes(query.toLowerCase()) ||
-        course.category.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredCourses(results);
-      setNoResults(results.length === 0);
-    } else {
-      setFilteredCourses([]);
-      setNoResults(true);
-    }
-    setLoading(false);
+    const searchCourses = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch courses from API
+        const allCourses = await coursesAPI.getCourses();
+        
+        if (query.trim()) {
+          // Filter courses based on search query
+          const results = allCourses.filter(course =>
+            course.title.toLowerCase().includes(query.toLowerCase()) ||
+            course.description.toLowerCase().includes(query.toLowerCase()) ||
+            (course.category && course.category.toLowerCase().includes(query.toLowerCase()))
+          );
+          setFilteredCourses(results);
+          setNoResults(results.length === 0);
+        } else {
+          setFilteredCourses([]);
+          setNoResults(true);
+        }
+      } catch (error) {
+        console.error("Search error:", error);
+        setNoResults(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    searchCourses();
   }, [query]);
 
   return (

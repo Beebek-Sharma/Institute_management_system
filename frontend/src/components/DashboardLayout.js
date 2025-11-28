@@ -23,7 +23,10 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  Calendar,
+  Bell,
+  ClipboardCheck
 } from 'lucide-react';
 
 const DashboardLayout = ({ children }) => {
@@ -31,6 +34,19 @@ const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Initialize from localStorage or default to true (expanded)
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    const savedState = localStorage.getItem('sidebarExpanded');
+    return savedState !== null ? JSON.parse(savedState) : true;
+  });
+
+  // Toggle function that also saves to localStorage
+  const toggleSidebar = () => {
+    const newState = !sidebarExpanded;
+    setSidebarExpanded(newState);
+    localStorage.setItem('sidebarExpanded', JSON.stringify(newState));
+  };
 
   const handleLogout = () => {
     logout();
@@ -45,13 +61,26 @@ const DashboardLayout = ({ children }) => {
           { icon: BookOpen, label: 'Courses', path: '/student/courses' },
           { icon: Award, label: 'My Enrollments', path: '/student/enrollments' },
           { icon: CreditCard, label: 'Payments', path: '/student/payments' },
+          { icon: ClipboardCheck, label: 'Attendance', path: '/student/attendance' },
+          { icon: Calendar, label: 'Schedule', path: '/student/schedule' },
           { icon: User, label: 'Profile', path: '/student/profile' },
         ];
       case 'instructor':
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/instructor/dashboard' },
           { icon: BookOpen, label: 'My Courses', path: '/instructor/courses' },
-          { icon: Users, label: 'Enrollments', path: '/instructor/enrollments' },
+          { icon: Users, label: 'Students', path: '/instructor/students' },
+          { icon: ClipboardCheck, label: 'Attendance', path: '/instructor/attendance' },
+          { icon: Calendar, label: 'Schedule', path: '/instructor/schedule' },
+          { icon: Award, label: 'Enrollments', path: '/instructor/enrollments' },
+        ];
+      case 'staff':
+        return [
+          { icon: LayoutDashboard, label: 'Dashboard', path: '/staff/dashboard' },
+          { icon: BookOpen, label: 'Courses', path: '/staff/courses' },
+          { icon: Users, label: 'Enrollments', path: '/staff/enrollments' },
+          { icon: CreditCard, label: 'Payments', path: '/staff/payments' },
+          { icon: ClipboardCheck, label: 'Attendance', path: '/staff/attendance' },
         ];
       case 'admin':
         return [
@@ -61,6 +90,8 @@ const DashboardLayout = ({ children }) => {
           { icon: Users, label: 'Instructors', path: '/admin/instructors' },
           { icon: Award, label: 'Enrollments', path: '/admin/enrollments' },
           { icon: CreditCard, label: 'Fees', path: '/admin/fees' },
+          { icon: Calendar, label: 'Schedules', path: '/admin/schedules' },
+          { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
         ];
       default:
         return [];
@@ -81,13 +112,14 @@ const DashboardLayout = ({ children }) => {
             onClick={() => {
               setSidebarOpen(false);
             }}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
-                ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md'
-                : 'text-gray-200 hover:bg-slate-800/50'
+            className={`flex items-center ${sidebarExpanded ? 'gap-6 px-4' : 'justify-center px-0'} py-3 rounded-lg transition-all duration-200 ${isActive
+              ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md'
+              : 'text-gray-200 hover:bg-slate-800/50'
               }`}
+            title={!sidebarExpanded ? item.label : ''}
           >
-            <Icon className="w-5 h-5" />
-            <span className="font-medium">{item.label}</span>
+            <Icon className="w-6 h-6 flex-shrink-0" />
+            {sidebarExpanded && <span className="font-medium text-sm">{item.label}</span>}
           </Link>
         );
       })}
@@ -96,8 +128,8 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
-      <Header />
-      
+      <Header onMenuClick={toggleSidebar} />
+
       {/* Mobile Sidebar Toggle Button */}
       <Button
         variant="ghost"
@@ -107,26 +139,28 @@ const DashboardLayout = ({ children }) => {
       >
         {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </Button>
-      
+
       <div className="flex flex-1">
-        {/* Sidebar - Desktop */}
-        <aside className="hidden lg:block w-64 bg-slate-900/40 backdrop-blur-md border-r border-slate-700/30 min-h-[calc(100vh-64px)] sticky top-16 transition-all duration-300">
-          <div className="p-4">
+        {/* Sidebar - Desktop (YouTube Style) */}
+        <aside className={`hidden lg:flex flex-col bg-slate-900/40 backdrop-blur-md border-r border-slate-700/30 min-h-[calc(100vh-64px)] sticky top-16 transition-all duration-300 ${sidebarExpanded ? 'w-64' : 'w-20'
+          }`}>
+          {/* Navigation Links */}
+          <div className="flex-1 p-4 overflow-y-auto">
             <NavLinks />
           </div>
         </aside>
 
         {/* Sidebar - Mobile */}
         {sidebarOpen && (
-          <div 
-            className="lg:hidden fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity duration-300" 
+          <div
+            className="lg:hidden fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setSidebarOpen(false)}
             role="button"
             tabIndex="0"
             aria-label="Close sidebar"
           >
-            <aside 
-              className="w-64 bg-slate-900/95 backdrop-blur-md h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300" 
+            <aside
+              className="w-64 bg-slate-900/95 backdrop-blur-md h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
