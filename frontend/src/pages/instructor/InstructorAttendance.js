@@ -34,7 +34,7 @@ const InstructorAttendance = () => {
 
     const fetchMyCourses = async () => {
         try {
-            const response = await axios.get(`/api/instructors/${user.id}/courses/`);
+            const response = await axios.get('/api/courses/my_courses/');
             setCourses(response.data || []);
         } catch (err) {
             console.error('Failed to fetch courses', err);
@@ -44,7 +44,7 @@ const InstructorAttendance = () => {
     const fetchAttendanceRecords = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`/api/instructors/${user.id}/attendance/`);
+            const response = await axios.get('/api/attendance/?instructor=true');
             setAttendanceRecords(response.data || []);
         } catch (err) {
             setError('Failed to fetch attendance records');
@@ -56,11 +56,17 @@ const InstructorAttendance = () => {
 
     const fetchCourseStudents = async (courseId) => {
         try {
-            const response = await axios.get(`/api/courses/${courseId}/students/`);
-            setStudents(response.data || []);
+            // Get enrollments for this course
+            const response = await axios.get('/api/enrollments/my_students/');
+            const courseEnrollments = response.data.filter(e => e.batch__course === courseId || e.course === courseId);
+            const students = courseEnrollments.map(e => ({
+                id: e.student,
+                name: e.student_name
+            }));
+            setStudents(students || []);
             // Initialize attendance object
             const initialAttendance = {};
-            response.data.forEach(student => {
+            students.forEach(student => {
                 initialAttendance[student.id] = 'present';
             });
             setFormData(prev => ({ ...prev, attendance: initialAttendance }));

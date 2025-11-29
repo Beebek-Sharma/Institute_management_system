@@ -45,6 +45,7 @@ import AdminEnrollments from "./pages/admin/AdminEnrollments";
 import AdminFees from "./pages/admin/AdminFees";
 import AdminSchedules from "./pages/admin/AdminSchedules";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminUsers from "./pages/admin/AdminUsers";
 
 // Staff Pages
 import StaffDashboard from "./pages/staff/StaffDashboard";
@@ -55,6 +56,7 @@ import StaffAttendance from "./pages/staff/StaffAttendance";
 
 // Public Pages
 import HelpCenter from "./pages/HelpCenter";
+import Profile from "./pages/Profile";
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -142,7 +144,15 @@ function App() {
                 path="/student/profile"
                 element={
                   <ProtectedRoute allowedRoles={['student', 'instructor', 'staff', 'admin']}>
-                    <StudentProfile />
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={['student', 'instructor', 'staff', 'admin']}>
+                    <Profile />
                   </ProtectedRoute>
                 }
               />
@@ -299,6 +309,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminAnnouncements />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminUsers />
                   </ProtectedRoute>
                 }
               />

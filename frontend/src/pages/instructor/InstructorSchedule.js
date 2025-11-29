@@ -27,7 +27,8 @@ const InstructorSchedule = () => {
     const fetchMySchedule = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`/api/instructors/${user.id}/schedule/`);
+            // Fetch schedules for batches assigned to this instructor
+            const response = await axios.get('/api/schedules/?instructor=true');
             setSchedules(response.data || []);
         } catch (err) {
             setError('Failed to fetch your schedule');

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, Calendar, TrendingUp } from 'lucide-react';
+import { BookOpen, Users, Calendar, TrendingUp, Clock } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
+import { FlippingCard } from '../../components/ui/flipping-card';
 import axios from '../../api/axios';
 
 const InstructorCourses = () => {
@@ -11,6 +12,7 @@ const InstructorCourses = () => {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [viewMode, setViewMode] = useState('cards');
 
     useEffect(() => {
         if (!authLoading) {
@@ -25,8 +27,8 @@ const InstructorCourses = () => {
     const fetchMyCourses = async () => {
         setLoading(true);
         try {
-            // Fetch courses assigned to this instructor
-            const response = await axios.get(`/api/instructors/${user.id}/courses/`);
+            // Fetch courses assigned to this instructor using the new endpoint
+            const response = await axios.get('/api/courses/my_courses/');
             setCourses(response.data || []);
         } catch (err) {
             setError('Failed to fetch your courses');
@@ -83,9 +85,102 @@ const InstructorCourses = () => {
                     </div>
                 </div>
 
+                {/* View Mode Toggle */}
+                <div className="flex gap-2 mb-6">
+                    <button
+                        onClick={() => setViewMode('cards')}
+                        className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            viewMode === 'cards'
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/20'
+                        }`}
+                    >
+                        Flip Cards
+                    </button>
+                    <button
+                        onClick={() => setViewMode('grid')}
+                        className={`px-4 py-2 rounded-lg font-semibold transition ${
+                            viewMode === 'grid'
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/20'
+                        }`}
+                    >
+                        Grid View
+                    </button>
+                </div>
+
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading your courses...</div>
+                ) : viewMode === 'cards' ? (
+                    <div className="flex flex-wrap justify-center gap-6">
+                        {courses.map((course) => (
+                            <FlippingCard
+                                key={course.id}
+                                width={300}
+                                height={400}
+                                frontContent={
+                                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900">
+                                        <div className="relative h-32 overflow-hidden rounded-t-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center">
+                                            <div className="text-5xl">📚</div>
+                                            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur px-2 py-1 rounded text-xs font-bold text-white">
+                                                {course.category || 'Course'}
+                                            </div>
+                                        </div>
+                                        <div className="p-5 flex flex-col flex-1">
+                                            <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">
+                                                {course.title}
+                                            </h3>
+                                            <p className="text-xs text-gray-400 mb-4">{course.code}</p>
+                                            <p className="text-sm text-gray-300 mb-4 line-clamp-2">
+                                                {course.description || 'No description available'}
+                                            </p>
+                                            <div className="space-y-2 mt-auto">
+                                                <div className="flex items-center gap-2 text-xs text-gray-300">
+                                                    <Clock className="w-4 h-4 text-blue-400" />
+                                                    <span>{course.duration || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-gray-300">
+                                                    <Users className="w-4 h-4 text-blue-400" />
+                                                    <span>{course.enrolled_students || 0} enrolled</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                backContent={
+                                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900 p-6">
+                                        <div className="text-4xl mb-3 text-center">🎓</div>
+                                        <h3 className="text-lg font-bold text-white mb-3 text-center line-clamp-2">
+                                            {course.title}
+                                        </h3>
+                                        <div className="space-y-3 mb-6 flex-1">
+                                            <div className="border-b border-white/20 pb-2">
+                                                <p className="text-xs text-gray-400">Code</p>
+                                                <p className="text-white font-semibold">{course.code}</p>
+                                            </div>
+                                            <div className="border-b border-white/20 pb-2">
+                                                <p className="text-xs text-gray-400">Enrolled Students</p>
+                                                <p className="text-white font-semibold">{course.enrolled_students || 0}/{course.max_students || 'N/A'}</p>
+                                            </div>
+                                            {course.fee && (
+                                                <div className="border-b border-white/20 pb-2">
+                                                    <p className="text-xs text-gray-400">Fee</p>
+                                                    <p className="text-white font-semibold">NPR {course.fee}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => navigate(`/instructor/students?course=${course.id}`)}
+                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
+                                        >
+                                            View Students
+                                        </button>
+                                    </div>
+                                }
+                            />
+                        ))}
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {courses.map((course) => (

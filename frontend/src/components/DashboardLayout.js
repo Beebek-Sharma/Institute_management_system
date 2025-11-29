@@ -2,17 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Header from './Header';
 import Footer from './Footer';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
 import {
   LayoutDashboard,
   BookOpen,
@@ -20,8 +11,6 @@ import {
   CreditCard,
   Award,
   Users,
-  Settings,
-  LogOut,
   Menu,
   X,
   Calendar,
@@ -48,11 +37,6 @@ const DashboardLayout = ({ children }) => {
     localStorage.setItem('sidebarExpanded', JSON.stringify(newState));
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const getNavigationItems = () => {
     switch (user?.role) {
       case 'student':
@@ -63,7 +47,7 @@ const DashboardLayout = ({ children }) => {
           { icon: CreditCard, label: 'Payments', path: '/student/payments' },
           { icon: ClipboardCheck, label: 'Attendance', path: '/student/attendance' },
           { icon: Calendar, label: 'Schedule', path: '/student/schedule' },
-          { icon: User, label: 'Profile', path: '/student/profile' },
+          { icon: User, label: 'Profile', path: '/profile' },
         ];
       case 'instructor':
         return [
@@ -73,6 +57,7 @@ const DashboardLayout = ({ children }) => {
           { icon: ClipboardCheck, label: 'Attendance', path: '/instructor/attendance' },
           { icon: Calendar, label: 'Schedule', path: '/instructor/schedule' },
           { icon: Award, label: 'Enrollments', path: '/instructor/enrollments' },
+          { icon: User, label: 'Profile', path: '/profile' },
         ];
       case 'staff':
         return [
@@ -81,6 +66,7 @@ const DashboardLayout = ({ children }) => {
           { icon: Users, label: 'Enrollments', path: '/staff/enrollments' },
           { icon: CreditCard, label: 'Payments', path: '/staff/payments' },
           { icon: ClipboardCheck, label: 'Attendance', path: '/staff/attendance' },
+          { icon: User, label: 'Profile', path: '/profile' },
         ];
       case 'admin':
         return [
@@ -92,6 +78,8 @@ const DashboardLayout = ({ children }) => {
           { icon: CreditCard, label: 'Fees', path: '/admin/fees' },
           { icon: Calendar, label: 'Schedules', path: '/admin/schedules' },
           { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
+          { icon: Users, label: 'Users', path: '/admin/users' },
+          { icon: User, label: 'Profile', path: '/profile' },
         ];
       default:
         return [];

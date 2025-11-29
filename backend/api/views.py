@@ -595,6 +595,23 @@ class CourseViewSet(viewsets.ModelViewSet):
             
             return Response({'message': 'Course updated', 'course': serializer.data})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['get'])
+    def my_courses(self, request):
+        """Get courses assigned to the current instructor"""
+        if request.user.role != 'instructor':
+            return Response(
+                {'error': 'Only instructors can access this endpoint'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        courses = Course.objects.filter(
+            instructor=request.user,
+            is_active=True
+        ).prefetch_related('batches')
+        
+        serializer = self.get_serializer(courses, many=True)
+        return Response(serializer.data)
 
 
 # ===================== BATCH & SCHEDULE VIEWS =====================
@@ -630,6 +647,17 @@ class ScheduleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['batch__course__name', 'room_number']
+    
+    def get_queryset(self):
+        """Filter schedules - instructors see only their batch schedules"""
+        user = self.request.user
+        queryset = Schedule.objects.all()
+        
+        # If instructor parameter is passed, filter for instructor's schedules
+        if self.request.query_params.get('instructor') == 'true' and user.role == 'instructor':
+            queryset = queryset.filter(batch__instructor=user)
+        
+        return queryset
     
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -743,6 +771,23 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
             {'message': 'Student enrolled successfully', 'enrollment': EnrollmentDetailSerializer(enrollment).data},
             status=status.HTTP_201_CREATED
         )
+    
+    @action(detail=False, methods=['get'])
+    def my_students(self, request):
+        """Get all students enrolled in instructor's courses"""
+        if request.user.role != 'instructor':
+            return Response(
+                {'error': 'Only instructors can access this endpoint'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get all enrollments for batches where user is instructor
+        enrollments = Enrollment.objects.filter(
+            batch__instructor=request.user
+        ).select_related('student', 'batch').order_by('-enrollment_date')
+        
+        serializer = self.get_serializer(enrollments, many=True)
+        return Response(serializer.data)
 
 
 # ===================== PAYMENT VIEWS =====================
