@@ -17,6 +17,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True, max_length=500)
     citizenship_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
     is_active_staff = models.BooleanField(default=True)  # Whether staff/instructor is still active

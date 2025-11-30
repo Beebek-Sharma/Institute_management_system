@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name', 'role', 'role_display',
-            'phone', 'date_of_birth', 'address', 'profile_picture', 'enrollment_date', 'created_at'
+            'phone', 'date_of_birth', 'address', 'bio', 'profile_picture', 'enrollment_date', 'created_at'
         ]
         read_only_fields = ['id', 'enrollment_date', 'created_at']
 
@@ -31,10 +31,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name', 'role', 'role_display',
-            'phone', 'date_of_birth', 'address', 'citizenship_number', 'profile_picture',
+            'phone', 'date_of_birth', 'address', 'bio', 'citizenship_number', 'profile_picture',
             'is_active', 'is_active_staff', 'enrollment_date', 'last_login', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'enrollment_date', 'last_login', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'username', 'email', 'role', 'role_display', 'is_active', 'is_active_staff', 'enrollment_date', 'last_login', 'created_at', 'updated_at']
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
