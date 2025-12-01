@@ -13,6 +13,15 @@ const InstructorSchedule = () => {
     const [error, setError] = useState('');
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const dayMapping = {
+        'MON': 'Monday',
+        'TUE': 'Tuesday',
+        'WED': 'Wednesday',
+        'THU': 'Thursday',
+        'FRI': 'Friday',
+        'SAT': 'Saturday',
+        'SUN': 'Sunday'
+    };
 
     useEffect(() => {
         if (!authLoading) {
@@ -41,7 +50,9 @@ const InstructorSchedule = () => {
     const groupByDay = () => {
         const grouped = {};
         daysOfWeek.forEach(day => {
-            grouped[day] = schedules.filter(s => s.day_of_week === day);
+            // Convert day name to code for matching
+            const dayCode = Object.keys(dayMapping).find(key => dayMapping[key] === day);
+            grouped[day] = schedules.filter(s => s.day_of_week === dayCode);
         });
         return grouped;
     };

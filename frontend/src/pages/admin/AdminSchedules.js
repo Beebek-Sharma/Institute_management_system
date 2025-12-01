@@ -9,21 +9,39 @@ const AdminSchedules = () => {
     const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [schedules, setSchedules] = useState([]);
-    const [courses, setCourses] = useState([]);
-    const [instructors, setInstructors] = useState([]);
+    const [batches, setBatches] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [formData, setFormData] = useState({
-        course_id: '',
-        instructor_id: '',
+        batch: '',
         day_of_week: '',
         start_time: '',
         end_time: '',
-        room: '',
-        batch: ''
+        room_number: '',
+        building: ''
     });
+
+    const dayMapping = {
+        'Monday': 'MON',
+        'Tuesday': 'TUE',
+        'Wednesday': 'WED',
+        'Thursday': 'THU',
+        'Friday': 'FRI',
+        'Saturday': 'SAT',
+        'Sunday': 'SUN'
+    };
+
+    const reverseDayMapping = {
+        'MON': 'Monday',
+        'TUE': 'Tuesday',
+        'WED': 'Wednesday',
+        'THU': 'Thursday',
+        'FRI': 'Friday',
+        'SAT': 'Saturday',
+        'SUN': 'Sunday'
+    };
 
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -33,8 +51,7 @@ const AdminSchedules = () => {
                 navigate('/unauthorized');
             } else {
                 fetchSchedules();
-                fetchCourses();
-                fetchInstructors();
+                fetchBatches();
             }
         }
     }, [authLoading, user, navigate]);
@@ -52,22 +69,13 @@ const AdminSchedules = () => {
         }
     };
 
-    const fetchCourses = async () => {
+    const fetchBatches = async () => {
         try {
-            const response = await axios.get('/api/courses/');
-            setCourses(response.data || []);
+            const response = await axios.get('/api/batches/');
+            const batchList = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+            setBatches(batchList);
         } catch (err) {
-            console.error('Failed to fetch courses', err);
-        }
-    };
-
-    const fetchInstructors = async () => {
-        try {
-            const response = await axios.get('/api/admin/users/');
-            const instructorList = response.data.users?.filter(u => u.role === 'instructor') || [];
-            setInstructors(instructorList);
-        } catch (err) {
-            console.error('Failed to fetch instructors', err);
+            console.error('Failed to fetch batches', err);
         }
     };
 
@@ -76,17 +84,28 @@ const AdminSchedules = () => {
         setError('');
         setSuccess('');
 
+        if (!formData.batch || !formData.day_of_week || !formData.start_time || !formData.end_time) {
+            setError('Please fill in all required fields');
+            return;
+        }
+
         try {
-            await axios.post('/api/schedules/', formData);
+            await axios.post('/api/schedules/', {
+                batch: formData.batch,
+                day_of_week: dayMapping[formData.day_of_week],
+                start_time: formData.start_time,
+                end_time: formData.end_time,
+                room_number: formData.room_number,
+                building: formData.building
+            });
             setSuccess('Schedule created successfully!');
             setFormData({
-                course_id: '',
-                instructor_id: '',
+                batch: '',
                 day_of_week: '',
                 start_time: '',
                 end_time: '',
-                room: '',
-                batch: ''
+                room_number: '',
+                building: ''
             });
             setShowCreateModal(false);
             fetchSchedules();
@@ -112,7 +131,8 @@ const AdminSchedules = () => {
     const groupByDay = () => {
         const grouped = {};
         daysOfWeek.forEach(day => {
-            grouped[day] = schedules.filter(s => s.day_of_week === day);
+            const dayCode = dayMapping[day];
+            grouped[day] = schedules.filter(s => s.day_of_week === dayCode);
         });
         return grouped;
     };
@@ -168,8 +188,7 @@ const AdminSchedules = () => {
                                             <div key={schedule.id} className="bg-white/5 border border-white/10 rounded-lg p-4">
                                                 <div className="flex items-start justify-between mb-3">
                                                     <div className="flex-1">
-                                                        <h4 className="font-bold text-white mb-1">{schedule.course_title || 'Unknown Course'}</h4>
-                                                        <p className="text-sm text-gray-400">{schedule.batch || 'No batch'}</p>
+                                                        <h4 className="font-bold text-white mb-1">{schedule.batch_info || 'Unknown Batch'}</h4>
                                                     </div>
                                                     <div className="flex gap-1">
                                                         <button
@@ -187,11 +206,7 @@ const AdminSchedules = () => {
                                                     </div>
                                                     <div className="flex items-center gap-2 text-gray-300">
                                                         <MapPin className="w-4 h-4" />
-                                                        <span>{schedule.room || 'TBA'}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 text-gray-300">
-                                                        <User className="w-4 h-4" />
-                                                        <span>{schedule.instructor_name || 'No instructor'}</span>
+                                                        <span>{schedule.room_number || schedule.building || 'TBA'}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -213,37 +228,21 @@ const AdminSchedules = () => {
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Class Schedule</h2>
 
                         <form onSubmit={handleCreateSchedule} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Course *</label>
-                                    <select
-                                        value={formData.course_id}
-                                        onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
-                                        required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                                    >
-                                        <option value="">Select Course</option>
-                                        {courses.map(course => (
-                                            <option key={course.id} value={course.id}>{course.title}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Instructor *</label>
-                                    <select
-                                        value={formData.instructor_id}
-                                        onChange={(e) => setFormData({ ...formData, instructor_id: e.target.value })}
-                                        required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                                    >
-                                        <option value="">Select Instructor</option>
-                                        {instructors.map(instructor => (
-                                            <option key={instructor.id} value={instructor.id}>
-                                                {instructor.first_name} {instructor.last_name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Batch *</label>
+                                <select
+                                    value={formData.batch}
+                                    onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
+                                    required
+                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                >
+                                    <option value="">Select Batch</option>
+                                    {batches.map(batch => (
+                                        <option key={batch.id} value={batch.id}>
+                                            {batch.course_name} - Batch {batch.batch_number} ({batch.instructor_name})
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="grid grid-cols-3 gap-4">
@@ -285,22 +284,22 @@ const AdminSchedules = () => {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Room</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Room Number</label>
                                     <input
                                         type="text"
-                                        value={formData.room}
-                                        onChange={(e) => setFormData({ ...formData, room: e.target.value })}
+                                        value={formData.room_number}
+                                        onChange={(e) => setFormData({ ...formData, room_number: e.target.value })}
                                         placeholder="e.g., Room 101"
                                         className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Batch</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-2">Building</label>
                                     <input
                                         type="text"
-                                        value={formData.batch}
-                                        onChange={(e) => setFormData({ ...formData, batch: e.target.value })}
-                                        placeholder="e.g., Batch A"
+                                        value={formData.building}
+                                        onChange={(e) => setFormData({ ...formData, building: e.target.value })}
+                                        placeholder="e.g., Main Building"
                                         className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>

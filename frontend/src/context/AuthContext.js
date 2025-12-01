@@ -57,16 +57,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const updateProfile = async (updatedData) => {
-    try {
-      const data = await authAPI.updateProfile(updatedData);
-      setUser(data);
-      localStorage.setItem('user', JSON.stringify(data));
-      return { success: true, user: data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Profile update failed.';
-      return { success: false, error: errorMessage };
+  const updateProfile = (updatedUserData) => {
+    // If it's a direct user object (from Settings.js), just update it
+    if (updatedUserData && typeof updatedUserData === 'object') {
+      setUser(updatedUserData);
+      localStorage.setItem('user', JSON.stringify(updatedUserData));
+      return { success: true, user: updatedUserData };
     }
+    return { success: false, error: 'Invalid user data' };
   };
 
   return (

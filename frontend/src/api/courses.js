@@ -13,6 +13,12 @@ export const coursesAPI = {
         return response.data;
     },
 
+    // Get batches for a course
+    getBatches: async (courseId) => {
+        const response = await api.get(`/api/batches/?course=${courseId}`);
+        return response.data;
+    },
+
     // Create new course (admin/instructor only)
     createCourse: async (courseData) => {
         const response = await api.post('/api/courses/', courseData);

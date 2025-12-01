@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
+import axios from '../../api/axios';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import {
@@ -64,28 +65,18 @@ const AdminUsers = () => {
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem('token');
-            let url = 'http://127.0.0.1:8000/api/admin/users/?';
+            let url = '/api/admin/users/';
+            const params = new URLSearchParams();
 
-            if (searchQuery) url += `search=${searchQuery}&`;
-            if (roleFilter && roleFilter !== 'all') url += `role=${roleFilter}&`;
+            if (searchQuery) params.append('search', searchQuery);
+            if (roleFilter && roleFilter !== 'all') params.append('role', roleFilter);
 
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUsers(data.users || []);
-            } else {
-                toast({
-                    title: "Error",
-                    description: "Failed to fetch users",
-                    variant: "destructive",
-                });
+            if (params.toString()) {
+                url += '?' + params.toString();
             }
+
+            const response = await axios.get(url);
+            setUsers(response.data.users || []);
         } catch (error) {
             console.error('Error fetching users:', error);
             toast({
@@ -93,6 +84,7 @@ const AdminUsers = () => {
                 description: "An error occurred while fetching users",
                 variant: "destructive",
             });
+            setUsers([]);
         } finally {
             setLoading(false);
         }
@@ -123,47 +115,26 @@ const AdminUsers = () => {
     const handleAddUser = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
             // Determine endpoint based on role
             let endpoint = '/api/admin/create-student/';
             if (formData.role === 'staff') endpoint = '/api/admin/create-staff/';
             if (formData.role === 'instructor') endpoint = '/api/admin/create-instructor/';
-            if (formData.role === 'admin') endpoint = '/api/auth/create-admin/'; // Assuming this exists or similar
+            if (formData.role === 'admin') endpoint = '/api/auth/create-admin/';
 
-            // Fallback to generic create if specific endpoints fail or for admin
-            // Actually, let's use the specific endpoints as per views.py
+            const response = await axios.post(endpoint, formData);
 
-            const response = await fetch(`http://127.0.0.1:8000${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(formData),
+            toast({
+                title: "Success",
+                description: "User created successfully",
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                toast({
-                    title: "Success",
-                    description: "User created successfully",
-                });
-                setIsAddUserOpen(false);
-                resetForm();
-                fetchUsers();
-            } else {
-                toast({
-                    title: "Error",
-                    description: data.error || "Failed to create user",
-                    variant: "destructive",
-                });
-            }
+            setIsAddUserOpen(false);
+            resetForm();
+            fetchUsers();
         } catch (error) {
             console.error('Error creating user:', error);
             toast({
                 title: "Error",
-                description: "An error occurred",
+                description: error.response?.data?.error || "Failed to create user",
                 variant: "destructive",
             });
         }
@@ -188,44 +159,25 @@ const AdminUsers = () => {
         if (!selectedUser) return;
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://127.0.0.1:8000/api/admin/users/${selectedUser.id}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    first_name: formData.first_name,
-                    last_name: formData.last_name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    // Role usually shouldn't be changed easily, but if needed:
-                    // role: formData.role 
-                }),
+            const response = await axios.put(`/api/admin/users/${selectedUser.id}/`, {
+                first_name: formData.first_name,
+                last_name: formData.last_name,
+                email: formData.email,
+                phone: formData.phone,
             });
 
-            if (response.ok) {
-                toast({
-                    title: "Success",
-                    description: "User updated successfully",
-                });
-                setIsEditUserOpen(false);
-                resetForm();
-                fetchUsers();
-            } else {
-                const data = await response.json();
-                toast({
-                    title: "Error",
-                    description: data.error || "Failed to update user",
-                    variant: "destructive",
-                });
-            }
+            toast({
+                title: "Success",
+                description: "User updated successfully",
+            });
+            setIsEditUserOpen(false);
+            resetForm();
+            fetchUsers();
         } catch (error) {
             console.error('Error updating user:', error);
             toast({
                 title: "Error",
-                description: "An error occurred",
+                description: error.response?.data?.error || "Failed to update user",
                 variant: "destructive",
             });
         }
@@ -235,33 +187,18 @@ const AdminUsers = () => {
         if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://127.0.0.1:8000/api/admin/users/${userId}/delete/`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            await axios.delete(`/api/admin/users/${userId}/delete/`);
 
-            if (response.ok) {
-                toast({
-                    title: "Success",
-                    description: "User deleted successfully",
-                });
-                fetchUsers();
-            } else {
-                const data = await response.json();
-                toast({
-                    title: "Error",
-                    description: data.error || "Failed to delete user",
-                    variant: "destructive",
-                });
-            }
+            toast({
+                title: "Success",
+                description: "User deleted successfully",
+            });
+            fetchUsers();
         } catch (error) {
             console.error('Error deleting user:', error);
             toast({
                 title: "Error",
-                description: "An error occurred",
+                description: error.response?.data?.error || "Failed to delete user",
                 variant: "destructive",
             });
         }

@@ -13,13 +13,38 @@ export const enrollmentsAPI = {
         return response.data;
     },
 
-    // Enroll in a course
-    enrollInCourse: async (courseId) => {
-        const response = await api.post('/api/enrollments/', {
-            course: courseId,
-            status: 'pending'
-        });
+    // Get batches for a course
+    getBatchesForCourse: async (courseId) => {
+        const response = await api.get(`/api/batches/?course=${courseId}`);
         return response.data;
+    },
+
+    // Enroll in a course (creates enrollment in first available batch)
+    enrollInCourse: async (courseId, studentId) => {
+        // First, fetch batches for this course
+        try {
+            const batches = await this.getBatchesForCourse(courseId);
+            
+            // Find first available batch with space
+            const availableBatch = Array.isArray(batches) 
+                ? batches.find(b => b.available_seats > 0)
+                : batches.results?.find(b => b.available_seats > 0);
+            
+            if (!availableBatch) {
+                throw new Error('No available batches for this course');
+            }
+
+            // Enroll in the available batch
+            const response = await api.post('/api/enrollments/', {
+                batch: availableBatch.id,
+                student: studentId,
+                status: 'active'
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Enrollment error:', error);
+            throw error;
+        }
     },
 
     // Update enrollment status

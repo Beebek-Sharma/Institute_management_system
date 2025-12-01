@@ -21,7 +21,13 @@ export const authAPI = {
 
     // Update user profile
     updateProfile: async (userData) => {
-        const response = await api.put('/api/auth/profile/update/', userData);
+        // Check if userData is FormData (for file uploads)
+        if (userData instanceof FormData) {
+            const response = await api.patch('/api/auth/profile/update/', userData);
+            return response.data;
+        }
+        // Regular JSON data
+        const response = await api.patch('/api/auth/profile/update/', userData);
         return response.data;
     },
 

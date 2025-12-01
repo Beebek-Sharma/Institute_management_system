@@ -126,11 +126,15 @@ class CourseSerializer(serializers.ModelSerializer):
 class ScheduleSerializer(serializers.ModelSerializer):
     """Class schedule serializer"""
     day_display = serializers.CharField(source='get_day_of_week_display', read_only=True)
+    batch_info = serializers.CharField(source='batch.__str__', read_only=True)
+    course_name = serializers.CharField(source='batch.course.name', read_only=True)
+    instructor_name = serializers.CharField(source='batch.instructor.get_full_name', read_only=True)
     
     class Meta:
         model = Schedule
         fields = [
-            'id', 'batch', 'day_of_week', 'day_display', 'start_time', 'end_time',
+            'id', 'batch', 'batch_info', 'course_name', 'instructor_name', 
+            'day_of_week', 'day_display', 'start_time', 'end_time',
             'room_number', 'building', 'created_at'
         ]
         read_only_fields = ['id', 'created_at']

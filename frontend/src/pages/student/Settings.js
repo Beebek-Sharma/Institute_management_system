@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import { Settings as SettingsIcon, User, Bell, Lock, Mail, Upload } from 'lucide-react';
-import axios from '../../api/axios';
+import { authAPI } from '../../api/auth';
 
 const Settings = () => {
   const { user, loading, updateProfile } = useAuth();
@@ -55,28 +55,63 @@ const Settings = () => {
     setSaving(true);
     setMessage('');
     try {
-      const dataToUpdate = { ...formData };
-      
-      // Handle photo upload if selected
+      const data = new FormData();
+      data.append('first_name', formData.first_name);
+      data.append('last_name', formData.last_name);
+      data.append('phone', formData.phone);
+      data.append('bio', formData.bio);
+
       if (profilePhoto) {
-        const formDataWithPhoto = new FormData();
-        Object.keys(dataToUpdate).forEach(key => {
-          formDataWithPhoto.append(key, dataToUpdate[key]);
-        });
-        formDataWithPhoto.append('profile_picture', profilePhoto);
-        
-        // Would need a specific endpoint for file upload
-        // For now, just send the text data
+        data.append('profile_picture', profilePhoto);
       }
 
-      await updateProfile(dataToUpdate);
-      setMessage('Profile updated successfully!');
-      setIsEditing(false);
-      setProfilePhoto(null);
-      setTimeout(() => setMessage(''), 3000);
+      console.log('Sending profile update with FormData');
+      const response = await authAPI.updateProfile(data);
+      console.log('Profile update response:', response);
+
+      if (response && response.user) {
+        // Update the user in context
+        updateProfile(response.user);
+        setMessage('Profile updated successfully!');
+        setIsEditing(false);
+        setProfilePhoto(null);
+        
+        // Update form data with new values
+        setFormData({
+          first_name: response.user.first_name || '',
+          last_name: response.user.last_name || '',
+          username: response.user.username || '',
+          email: response.user.email || '',
+          phone: response.user.phone || '',
+          bio: response.user.bio || '',
+        });
+      }
     } catch (error) {
-      setMessage('Failed to update profile. Please try again.');
-      console.error(error);
+      console.error('Error updating profile:', error);
+      console.error('Error response:', error.response?.data);
+      
+      let errorMsg = 'Failed to update profile. Please try again.';
+      
+      if (error.response?.data) {
+        // Handle field-level errors from backend
+        const errorData = error.response.data;
+        if (typeof errorData === 'object') {
+          // Get first error message from any field
+          const firstErrorKey = Object.keys(errorData)[0];
+          const firstError = errorData[firstErrorKey];
+          if (Array.isArray(firstError)) {
+            errorMsg = firstError[0];
+          } else if (typeof firstError === 'string') {
+            errorMsg = firstError;
+          }
+        } else if (typeof errorData === 'string') {
+          errorMsg = errorData;
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      
+      setMessage(errorMsg);
     } finally {
       setSaving(false);
     }
@@ -109,31 +144,28 @@ const Settings = () => {
         <div className="flex gap-4 mb-6 border-b border-white/20">
           <button
             onClick={() => setActiveTab('profile')}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === 'profile'
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'profile'
                 ? 'text-blue-400 border-b-2 border-blue-400'
                 : 'text-gray-300 hover:text-gray-100'
-            }`}
+              }`}
           >
             Profile Settings
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === 'security'
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'security'
                 ? 'text-blue-400 border-b-2 border-blue-400'
                 : 'text-gray-300 hover:text-gray-100'
-            }`}
+              }`}
           >
             Security
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === 'notifications'
+            className={`px-6 py-3 font-semibold transition-all ${activeTab === 'notifications'
                 ? 'text-blue-400 border-b-2 border-blue-400'
                 : 'text-gray-300 hover:text-gray-100'
-            }`}
+              }`}
           >
             Notifications
           </button>
@@ -141,11 +173,10 @@ const Settings = () => {
 
         {/* Message */}
         {message && (
-          <div className={`mb-6 p-4 rounded-lg border ${
-            message.includes('successfully')
+          <div className={`mb-6 p-4 rounded-lg border ${message.includes('successfully')
               ? 'bg-green-500/20 border-green-500/50 text-green-200'
               : 'bg-red-500/20 border-red-500/50 text-red-200'
-          }`}>
+            }`}>
             {message}
           </div>
         )}

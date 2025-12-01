@@ -14,6 +14,7 @@ import {
     DialogFooter,
 } from '../components/ui/dialog';
 import { useToast } from '../hooks/use-toast';
+import { authAPI } from '../api/auth';
 
 const Profile = () => {
     const { user, loading, login } = useAuth(); // We might need to update user context after edit
@@ -24,8 +25,10 @@ const Profile = () => {
         first_name: '',
         last_name: '',
         phone: '',
-        email: '', // Usually read-only or requires verification, but let's allow edit if backend allows
+        email: '',
+        profile_picture: null,
     });
+    const [previewImage, setPreviewImage] = useState(null);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -36,7 +39,9 @@ const Profile = () => {
                 last_name: user.last_name || '',
                 phone: user.phone || '',
                 email: user.email || '',
+                profile_picture: null
             });
+            setPreviewImage(user.profile_picture);
         }
     }, [loading, user, navigate]);
 
@@ -76,45 +81,66 @@ const Profile = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFormData(prev => ({ ...prev, profile_picture: file }));
+            setPreviewImage(URL.createObjectURL(file));
+        }
+    };
+
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://127.0.0.1:8000/api/auth/profile/update/', {
-                method: 'PATCH', // or PUT
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(formData),
-            });
+            const data = new FormData();
+            data.append('first_name', formData.first_name);
+            data.append('last_name', formData.last_name);
+            data.append('phone', formData.phone);
+            if (formData.profile_picture) {
+                data.append('profile_picture', formData.profile_picture);
+            }
 
-            const data = await response.json();
+            console.log('Sending profile update with FormData');
+            const response = await authAPI.updateProfile(data);
+            console.log('Profile update response:', response);
 
-            if (response.ok) {
+            if (response) {
                 toast({
                     title: "Success",
                     description: "Profile updated successfully",
                 });
                 setIsEditOpen(false);
-                // Ideally we should update the user context here. 
-                // Since useAuth might not expose a direct 'updateUser' method, 
-                // we might need to reload the page or fetch profile again.
-                // For now, let's just reload to be safe and simple, or if we had a fetchProfile in context.
-                // A simple window reload is a bit harsh but effective for now.
+                // Reload to refresh the page with new data
                 window.location.reload();
-            } else {
-                toast({
-                    title: "Error",
-                    description: data.error || "Failed to update profile",
-                    variant: "destructive",
-                });
             }
         } catch (error) {
             console.error('Error updating profile:', error);
+            console.error('Error response:', error.response?.data);
+            
+            let errorMsg = 'Failed to update profile';
+            
+            if (error.response?.data) {
+                // Handle field-level errors from backend
+                const errorData = error.response.data;
+                if (typeof errorData === 'object') {
+                    // Get first error message from any field
+                    const firstErrorKey = Object.keys(errorData)[0];
+                    const firstError = errorData[firstErrorKey];
+                    if (Array.isArray(firstError)) {
+                        errorMsg = firstError[0];
+                    } else if (typeof firstError === 'string') {
+                        errorMsg = firstError;
+                    }
+                } else if (typeof errorData === 'string') {
+                    errorMsg = errorData;
+                }
+            } else if (error.message) {
+                errorMsg = error.message;
+            }
+            
             toast({
                 title: "Error",
-                description: "An error occurred",
+                description: errorMsg,
                 variant: "destructive",
             });
         }
@@ -142,6 +168,28 @@ const Profile = () => {
                                 <DialogTitle>Edit Profile</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleUpdateProfile} className="space-y-4">
+                                <div className="flex justify-center mb-4">
+                                    <div className="relative">
+                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-700 flex items-center justify-center border-2 border-teal-500">
+                                            {previewImage ? (
+                                                <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-2xl font-bold text-white">
+                                                    {formData.first_name?.[0]}{formData.last_name?.[0]}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <label className="absolute bottom-0 right-0 bg-teal-600 p-1.5 rounded-full cursor-pointer hover:bg-teal-700 transition">
+                                            <Edit className="w-4 h-4 text-white" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleFileChange}
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-gray-300">First Name</label>
@@ -202,8 +250,12 @@ const Profile = () => {
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-8 max-w-2xl mx-auto md:mx-0">
                     {/* Profile Header with Avatar */}
                     <div className="flex flex-col items-center mb-8 pb-8 border-b border-white/20">
-                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg`}>
-                            {user?.first_name?.[0]}{user?.last_name?.[0]}
+                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg overflow-hidden`}>
+                            {user?.profile_picture ? (
+                                <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                <span>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
+                            )}
                         </div>
                         <h2 className="text-3xl font-bold text-white mb-2">{user?.first_name} {user?.last_name}</h2>
                         <div className="flex items-center gap-2 text-gray-300 text-lg bg-white/5 px-4 py-1 rounded-full">
@@ -256,6 +308,16 @@ const Profile = () => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-white/20 flex justify-end">
+                        <Button
+                            variant="outline"
+                            className="text-gray-300 border-gray-600 hover:bg-white/10"
+                            onClick={() => navigate('/student/settings')}
+                        >
+                            Advanced Settings
+                        </Button>
                     </div>
                 </div>
             </div>

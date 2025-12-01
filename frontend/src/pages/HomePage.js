@@ -32,17 +32,7 @@ const HomePage = () => {
     }
   };
 
-  const banners = [
-    {
-      id: 1,
-      title: 'Build any skill with Black Friday savings',
-      subtitle: 'Join today and tap into 10,000+ programs from Google, Adobe, IBM, Microsoft, and more.',
-      cta: 'Save on Coursera Plus',
-      discount: 'Save 40%',
-      bgColor: 'bg-gradient-to-br from-gray-900 to-gray-800',
-      textColor: 'text-white',
-    },
-  ];
+  const banners = [];
   const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
   const nextSlide = () => setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
 
@@ -66,55 +56,46 @@ const HomePage = () => {
     <div className="min-h-screen bg-transparent flex flex-col">
       {!user && <Header />}
 
-      {/* Banner Carousel */}
-      <section className="relative py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-sm border border-slate-700/50">
-            {banners.map((banner, index) => (
-              <div
-                key={banner.id}
-                className={`bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 md:p-12 transition-all duration-500 rounded-2xl ${index === currentSlide ? 'block' : 'hidden'
-                  }`}
-              >
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                  <div className="flex-1">
-                    <h2 className="text-2xl md:text-4xl font-bold mb-4">{banner.title}</h2>
-                    {banner.subtitle && <p className="text-base md:text-lg mb-6 text-gray-200">{banner.subtitle}</p>}
-                    <Button className="bg-white text-slate-900 hover:bg-gray-100 font-bold px-6">
-                      {banner.cta} →
-                    </Button>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-5xl md:text-7xl font-bold text-white">{banner.discount}</div>
-                  </div>
+      {/* Institute Management Banner */}
+      <section className="relative py-12 px-4 bg-gradient-to-r from-teal-900/40 to-cyan-900/40 border-b border-teal-700/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Manage Your Institute with Ease
+              </h1>
+              <p className="text-lg text-gray-200 mb-6">
+                Streamline student enrollment, course scheduling, and academic management in one unified platform. Designed for modern educational institutions.
+              </p>
+              <div className="flex gap-4">
+                <Button 
+                  onClick={() => navigate('/login')}
+                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2"
+                >
+                  Get Started
+                </Button>
+                <Button 
+                  onClick={() => navigate('/about')}
+                  className="bg-transparent border-2 border-teal-400 text-teal-300 hover:bg-teal-900/20 font-semibold px-6 py-2"
+                >
+                  Learn More
+                </Button>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <div className="text-6xl text-center text-teal-400/30">
+                📚
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-center mt-8">
+                <div className="bg-slate-800/50 rounded-lg p-4">
+                  <div className="text-2xl font-bold text-teal-400">100%</div>
+                  <p className="text-sm text-gray-300">Digital Management</p>
+                </div>
+                <div className="bg-slate-800/50 rounded-lg p-4">
+                  <div className="text-2xl font-bold text-cyan-400">24/7</div>
+                  <p className="text-sm text-gray-300">Access Anytime</p>
                 </div>
               </div>
-            ))}
-
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg z-20"
-            >
-              <ChevronLeft className="w-6 h-6 text-gray-800" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg z-20"
-            >
-              <ChevronRight className="w-6 h-6 text-gray-800" />
-            </button>
-
-            {/* Dots */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-              {banners.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
-                    }`}
-                />
-              ))}
             </div>
           </div>
         </div>

@@ -143,7 +143,7 @@ export default function Header({ onMenuClick }) {
                 }}
                 className="text-base font-medium text-gray-200 hover:text-[#00a878]"
               >
-                Dashboard
+                
               </Button>
               {/* Profile Menu */}
               <div

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { coursesAPI } from '../../api/courses';
 import { enrollmentsAPI } from '../../api/enrollments';
 import DashboardLayout from '../../components/DashboardLayout';
+import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -11,6 +12,7 @@ import { Alert, AlertDescription } from '../../components/ui/alert';
 import { FlippingCard } from '../../components/ui/flipping-card';
 
 const StudentCourses = () => {
+  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [enrolledCourseIds, setEnrolledCourseIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -48,8 +50,13 @@ const StudentCourses = () => {
 
   const handleEnroll = async (courseId) => {
     try {
+      if (!user || !user.id) {
+        alert('User not authenticated. Please log in.');
+        return;
+      }
+      
       setEnrollmentLoading(courseId);
-      await enrollmentsAPI.enrollInCourse(courseId);
+      await enrollmentsAPI.enrollInCourse(courseId, user.id);
 
       // Update local state
       setEnrolledCourseIds(prev => new Set(prev).add(courseId));

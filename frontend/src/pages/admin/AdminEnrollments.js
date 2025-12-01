@@ -18,9 +18,12 @@ const AdminEnrollments = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showEnrollModal, setShowEnrollModal] = useState(false);
+    const [batches, setBatches] = useState([]);
+    const [loadingBatches, setLoadingBatches] = useState(false);
     const [formData, setFormData] = useState({
         student_id: '',
         course_id: '',
+        batch_id: '',
         status: 'active'
     });
 
@@ -72,6 +75,21 @@ const AdminEnrollments = () => {
         }
     };
 
+    const fetchBatches = async (courseId) => {
+        try {
+            setLoadingBatches(true);
+            const response = await axios.get(`/api/batches/?course=${courseId}`);
+            const batchList = Array.isArray(response.data) ? response.data : (response.data?.results || []);
+            setBatches(batchList);
+            setFormData(prev => ({ ...prev, batch_id: '' }));
+        } catch (err) {
+            console.error('Failed to fetch batches', err);
+            setBatches([]);
+        } finally {
+            setLoadingBatches(false);
+        }
+    };
+
     const filterEnrollments = () => {
         let filtered = enrollments;
 
@@ -94,12 +112,22 @@ const AdminEnrollments = () => {
         setError('');
         setSuccess('');
 
+        if (!formData.student_id || !formData.batch_id) {
+            setError('Please select both a student and a batch');
+            return;
+        }
+
         try {
-            await axios.post('/api/enrollments/', formData);
+            await axios.post('/api/enrollments/', {
+                student: formData.student_id,
+                batch: formData.batch_id,
+                status: formData.status
+            });
             setSuccess('Student enrolled successfully!');
             setFormData({
                 student_id: '',
                 course_id: '',
+                batch_id: '',
                 status: 'active'
             });
             setShowEnrollModal(false);
@@ -345,14 +373,39 @@ const AdminEnrollments = () => {
                                 <label className="block text-sm font-semibold text-gray-800 mb-2">Select Course *</label>
                                 <select
                                     value={formData.course_id}
-                                    onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
+                                    onChange={(e) => {
+                                        setFormData({ ...formData, course_id: e.target.value });
+                                        if (e.target.value) {
+                                            fetchBatches(e.target.value);
+                                        } else {
+                                            setBatches([]);
+                                        }
+                                    }}
                                     required
                                     className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 >
                                     <option value="">Choose a course</option>
                                     {courses.map(course => (
                                         <option key={course.id} value={course.id}>
-                                            {course.title} ({course.code})
+                                            {course.name || course.title} ({course.code})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Select Batch *</label>
+                                <select
+                                    value={formData.batch_id}
+                                    onChange={(e) => setFormData({ ...formData, batch_id: e.target.value })}
+                                    required
+                                    disabled={!formData.course_id || loadingBatches}
+                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:opacity-50"
+                                >
+                                    <option value="">{loadingBatches ? 'Loading batches...' : 'Choose a batch'}</option>
+                                    {batches.map(batch => (
+                                        <option key={batch.id} value={batch.id}>
+                                            {batch.batch_number} - {batch.instructor_name} ({batch.available_seats}/{batch.capacity} seats)
                                         </option>
                                     ))}
                                 </select>
