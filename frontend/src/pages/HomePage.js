@@ -32,7 +32,29 @@ const HomePage = () => {
     }
   };
 
-  const banners = [];
+  const banners = [
+    {
+      id: 1,
+      title: 'Welcome to Institute Management System',
+      subtitle: 'Streamline your educational institution with our comprehensive course and enrollment management platform.',
+      cta: 'Explore Courses',
+      discount: '📚',
+    },
+    {
+      id: 2,
+      title: 'Enroll Today',
+      subtitle: 'Join thousands of students advancing their careers through quality education and professional courses.',
+      cta: 'Browse Courses',
+      discount: '🎓',
+    },
+    {
+      id: 3,
+      title: 'Expert Instructors',
+      subtitle: 'Learn from experienced professionals and industry experts in your field of interest.',
+      cta: 'View Instructors',
+      discount: '👨‍🏫',
+    },
+  ];
   const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
   const nextSlide = () => setCurrentSlide((prev) => (prev === banners.length - 1 ? 0 : prev + 1));
 
@@ -56,47 +78,67 @@ const HomePage = () => {
     <div className="min-h-screen bg-transparent flex flex-col">
       {!user && <Header />}
 
-      {/* Institute Management Banner */}
-      <section className="relative py-12 px-4 bg-gradient-to-r from-teal-900/40 to-cyan-900/40 border-b border-teal-700/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                Manage Your Institute with Ease
-              </h1>
-              <p className="text-lg text-gray-200 mb-6">
-                Streamline student enrollment, course scheduling, and academic management in one unified platform. Designed for modern educational institutions.
-              </p>
-              <div className="flex gap-4">
-                <Button 
-                  onClick={() => navigate('/login')}
-                  className="bg-teal-500 hover:bg-teal-600 text-white font-semibold px-6 py-2"
-                >
-                  Get Started
-                </Button>
-                <Button 
-                  onClick={() => navigate('/about')}
-                  className="bg-transparent border-2 border-teal-400 text-teal-300 hover:bg-teal-900/20 font-semibold px-6 py-2"
-                >
-                  Learn More
-                </Button>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="text-6xl text-center text-teal-400/30">
-                📚
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-center mt-8">
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-teal-400">100%</div>
-                  <p className="text-sm text-gray-300">Digital Management</p>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-4">
-                  <div className="text-2xl font-bold text-cyan-400">24/7</div>
-                  <p className="text-sm text-gray-300">Access Anytime</p>
+      {/* Banner Carousel */}
+      <section className="relative py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-900/95 to-teal-800/95 backdrop-blur-sm border border-teal-700/50 shadow-2xl">
+            {banners.map((banner, index) => (
+              <div
+                key={banner.id}
+                className={`bg-gradient-to-br from-teal-900 to-teal-800 text-white p-8 md:p-16 transition-all duration-700 rounded-2xl ${
+                  index === currentSlide ? 'block animate-fadeIn' : 'hidden'
+                }`}
+              >
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex-1">
+                    <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">{banner.title}</h2>
+                    {banner.subtitle && (
+                      <p className="text-base md:text-lg mb-6 text-teal-100">{banner.subtitle}</p>
+                    )}
+                    <Button 
+                      onClick={() => navigate('/courses')}
+                      className="bg-white text-teal-900 hover:bg-teal-50 font-bold px-8 py-2 rounded-lg transition-colors"
+                    >
+                      {banner.cta} →
+                    </Button>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-6xl md:text-8xl mb-4">{banner.discount}</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
+
+            {/* Navigation Arrows */}
+            {banners.length > 1 && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg z-20 transition-all"
+                >
+                  <ChevronLeft className="w-6 h-6 text-teal-900" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg z-20 transition-all"
+                >
+                  <ChevronRight className="w-6 h-6 text-teal-900" />
+                </button>
+
+                {/* Dots */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  {banners.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
