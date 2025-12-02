@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model, authenticate
 from django.db.models import Q, Prefetch
 from django.utils import timezone
@@ -621,7 +622,8 @@ class BatchViewSet(viewsets.ModelViewSet):
     queryset = Batch.objects.filter(is_active=True).prefetch_related('schedules', 'enrollments')
     serializer_class = BatchSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['course']
     search_fields = ['course__name', 'batch_number']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
@@ -699,7 +701,9 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         return EnrollmentListSerializer
     
     def get_permissions(self):
-        if self.action in ['create', 'destroy']:
+        if self.action in ['create']:
+            return [IsAuthenticated()]  # Allow students to create their own enrollments
+        elif self.action in ['destroy']:
             return [IsAuthenticated(), IsAdminOrStaff()]
         elif self.action in ['update', 'partial_update']:
             return [IsAuthenticated(), IsAdminOrStaff()]
@@ -707,14 +711,21 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         """Enroll a student in a batch"""
-        if request.user.role not in ['admin', 'staff']:
-            return Response(
-                {'error': 'Only admin or staff can create enrollments'},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
         batch_id = request.data.get('batch')
         student_id = request.data.get('student')
+        
+        # Allow students to enroll themselves, admin/staff can enroll others
+        if request.user.role == 'student':
+            if int(student_id) != request.user.id:
+                return Response(
+                    {'error': 'Students can only enroll themselves'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        elif request.user.role not in ['admin', 'staff']:
+            return Response(
+                {'error': 'Only admin, staff, or students can create enrollments'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         batch = get_object_or_404(Batch, id=batch_id)
         student = get_object_or_404(User, id=student_id, role='student')

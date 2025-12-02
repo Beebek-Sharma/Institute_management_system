@@ -96,7 +96,13 @@ const HomePage = () => {
                       <p className="text-base md:text-lg mb-6 text-teal-100">{banner.subtitle}</p>
                     )}
                     <Button 
-                      onClick={() => navigate('/courses')}
+                      onClick={() => {
+                        if (user && user.id) {
+                          navigate('/student/courses');
+                        } else {
+                          navigate('/login');
+                        }
+                      }}
                       className="bg-white text-teal-900 hover:bg-teal-50 font-bold px-8 py-2 rounded-lg transition-colors"
                     >
                       {banner.cta} →
@@ -252,7 +258,13 @@ const HomePage = () => {
           {courses.length > 0 && (
             <div className="mt-8 text-center">
               <Button
-                onClick={() => navigate('/courses')}
+                onClick={() => {
+                  if (user && user.id) {
+                    navigate('/student/courses');
+                  } else {
+                    navigate('/login');
+                  }
+                }}
                 variant="outline"
                 className="text-[#00a878] border-[#00a878] font-bold hover:bg-teal-900/20"
               >

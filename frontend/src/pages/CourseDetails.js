@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { enrollmentsAPI } from '../api/enrollments';
+import { coursesAPI } from '../api/courses';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import Header from '../components/Header';
@@ -19,63 +20,85 @@ const CourseDetails = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [enrolling, setEnrolling] = useState(false);
+    const [course, setCourse] = useState(null);
+    const [error, setError] = useState('');
+    const [isEnrolled, setIsEnrolled] = useState(false);
 
-    // Mock Data (In a real app, fetch this based on courseId)
-    const course = {
-        id: courseId,
-        title: 'Google Data Analytics',
-        subtitle: 'Professional Certificate',
-        description: 'Get on the fast track to a career in Data Analytics. In this program, you’ll learn in-demand skills that will have you job-ready in less than 6 months. No degree or experience required.',
-        partner: 'Google',
-        partnerLogo: 'https://logo.clearbit.com/google.com',
-        rating: 4.8,
-        reviews: '136k',
-        level: 'Beginner Level',
-        duration: '6 months at 10 hours a week',
-        schedule: 'Flexible schedule',
-        language: 'English',
-        skills: ['Data Analysis', 'R Programming', 'SQL', 'Tableau', 'Data Visualization', 'Spreadsheet', 'Data Cleansing', 'Data Collection'],
-        outcomes: [
-            'Gain an immersive understanding of the practices and processes used by a junior or associate data analyst in their day-to-day job',
-            'Learn key analytical skills (data cleaning, analysis, & visualization) and tools (spreadsheets, SQL, R programming, Tableau)',
-            'Understand how to clean and organize data for analysis, and complete analysis and calculations using spreadsheets, SQL and R programming',
-            'Learn how to visualize and present data findings in dashboards, presentations and commonly used visualization platforms'
-        ],
-        syllabus: [
-            {
-                title: 'Foundations: Data, Data, Everywhere',
-                duration: '21 hours',
-                description: 'This course will introduce you to the world of data analytics. You’ll learn about the data ecosystem, the process of data analysis, and the tools used by data analysts.'
-            },
-            {
-                title: 'Ask Questions to Make Data-Driven Decisions',
-                duration: '19 hours',
-                description: 'This course will help you learn how to ask effective questions to make data-driven decisions and how to use data to solve problems.'
-            },
-            {
-                title: 'Prepare Data for Exploration',
-                duration: '23 hours',
-                description: 'This course will show you how to prepare data for exploration and how to use spreadsheets and SQL to extract and filter data.'
-            },
-            {
-                title: 'Process Data from Dirty to Clean',
-                duration: '22 hours',
-                description: 'This course will teach you how to check for data integrity and how to clean data using spreadsheets and SQL.'
+    useEffect(() => {
+        fetchCourseDetails();
+    }, [courseId]);
+
+    const fetchCourseDetails = async () => {
+        try {
+            setLoading(true);
+            const courses = await coursesAPI.getCourses();
+            const coursesArray = Array.isArray(courses) ? courses : (courses?.results || []);
+            const foundCourse = coursesArray.find(c => c.id === parseInt(courseId));
+            if (foundCourse) {
+                // Merge course data with default mock data for display purposes
+                const enrichedCourse = {
+                    outcomes: [
+                        'Gain an immersive understanding of the practices and processes used by a junior or associate data analyst in their day-to-day job',
+                        'Learn key analytical skills (data cleaning, analysis, & visualization) and tools (spreadsheets, SQL, R programming, Tableau)',
+                        'Understand how to clean and organize data for analysis, and complete analysis and calculations using spreadsheets, SQL and R programming',
+                        'Learn how to visualize and present data findings in dashboards, presentations and commonly used visualization platforms'
+                    ],
+                    skills: ['Data Analysis', 'R Programming', 'SQL', 'Tableau', 'Data Visualization', 'Spreadsheet', 'Data Cleansing', 'Data Collection'],
+                    syllabus: [
+                        {
+                            title: 'Foundations: Data, Data, Everywhere',
+                            duration: '21 hours',
+                            description: 'This course will introduce you to the world of data analytics. You\'ll learn about the data ecosystem, the process of data analysis, and the tools used by data analysts.'
+                        },
+                        {
+                            title: 'Ask Questions to Make Data-Driven Decisions',
+                            duration: '19 hours',
+                            description: 'This course will help you learn how to ask effective questions to make data-driven decisions and how to use data to solve problems.'
+                        },
+                        {
+                            title: 'Prepare Data for Exploration',
+                            duration: '23 hours',
+                            description: 'This course will show you how to prepare data for exploration and how to use spreadsheets and SQL to extract and filter data.'
+                        },
+                        {
+                            title: 'Process Data from Dirty to Clean',
+                            duration: '22 hours',
+                            description: 'This course will teach you how to check for data integrity and how to clean data using spreadsheets and SQL.'
+                        }
+                    ],
+                    instructors: [
+                        {
+                            name: 'Google Career Certificates',
+                            title: 'Top Instructor',
+                            image: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-instructor-photos.s3.amazonaws.com/2a/396e67690e4475a3e39045d4292a3c/Google-Logo.png?auto=format%2Ccompress&dpr=1&w=200&h=200',
+                            rating: '4.8',
+                            students: '3,000,000+'
+                        }
+                    ],
+                    ...foundCourse
+                };
+                setCourse(enrichedCourse);
+                // Check if user is enrolled
+                if (user && user.id) {
+                    const enrollments = await enrollmentsAPI.getEnrollments();
+                    const safeEnrollments = Array.isArray(enrollments) ? enrollments : (enrollments?.results || []);
+                    setIsEnrolled(safeEnrollments.some(e => e.course === foundCourse.id || e.batch?.course === foundCourse.id));
+                }
+            } else {
+                setError('Course not found');
             }
-        ],
-        instructors: [
-            {
-                name: 'Google Career Certificates',
-                title: 'Top Instructor',
-                image: 'https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-instructor-photos.s3.amazonaws.com/2a/396e67690e4475a3e39045d4292a3c/Google-Logo.png?auto=format%2Ccompress&dpr=1&w=200&h=200',
-                rating: '4.8',
-                students: '3,000,000+'
-            }
-        ]
+        } catch (err) {
+            console.error('Error fetching course:', err);
+            setError('Failed to load course details');
+        } finally {
+            setLoading(false);
+        }
     };
 
+    // Mock course data merged into fetched course in fetchCourseDetails function
+    
     const handleEnroll = async () => {
         if (!user) {
             navigate('/login');
@@ -84,15 +107,31 @@ const CourseDetails = () => {
 
         try {
             setEnrolling(true);
-            // Simulate API call or use real one if course exists in backend
-            // await enrollmentsAPI.enrollInCourse(courseId);
-
-            // For demo purposes, just redirect to dashboard
+            setError('');
+            
+            // Convert courseId to integer for API call
+            const courseIdInt = parseInt(courseId);
+            
+            console.log(`[CourseDetails] Enrolling in course ${courseIdInt} for user ${user.id}`);
+            
+            // Use batch-based enrollment like StudentCourses
+            const result = await enrollmentsAPI.enrollInCourse(courseIdInt, user.id);
+            
+            console.log(`[CourseDetails] Enrollment successful:`, result);
+            
+            setIsEnrolled(true);
+            alert('Successfully enrolled in course!');
+            
+            // Redirect to student courses after a short delay
             setTimeout(() => {
-                navigate('/student/dashboard');
+                navigate('/student/courses');
             }, 1000);
         } catch (error) {
-            console.error('Enrollment failed:', error);
+            console.error('[CourseDetails] Enrollment failed:', error);
+            const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message || 'Unknown error';
+            console.error('[CourseDetails] Error details:', errorMsg);
+            setError(`Failed to enroll: ${errorMsg}`);
+            alert(`Failed to enroll: ${errorMsg}`);
         } finally {
             setEnrolling(false);
         }
@@ -100,7 +139,24 @@ const CourseDetails = () => {
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
-      <Header />            <main className="flex-grow">
+      <Header />
+      <main className="flex-grow">
+        {loading ? (
+          <div className="flex justify-center items-center py-24">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
+              <p className="text-gray-300">Loading course details...</p>
+            </div>
+          </div>
+        ) : error || !course ? (
+          <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">{error || 'Course not found'}</h2>
+            <Button onClick={() => navigate('/')} className="bg-teal-600 hover:bg-teal-700">
+              Back to Home
+            </Button>
+          </div>
+        ) : (
+            <>
             {/* Hero Section */}
             <div className="bg-[#f5f7f8] border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -110,44 +166,29 @@ const CourseDetails = () => {
                             <nav className="flex items-center text-sm text-gray-600 mb-6">
                                 <Link to="/" className="hover:underline">Browse</Link>
                                 <span className="mx-2">›</span>
-                                <span className="hover:underline">Data Science</span>
+                                <span className="hover:underline">Courses</span>
                                 <span className="mx-2">›</span>
-                                <span className="font-semibold text-gray-900">Data Analytics</span>
+                                <span className="font-semibold text-gray-900">{course.name}</span>
                             </nav>
-
-                            {/* Partner Logo */}
-                            <div className="flex items-center gap-2 mb-6">
-                                <img src={course.partnerLogo} alt={course.partner} className="h-8 w-auto" />
-                                <span className="font-bold text-gray-900">{course.partner}</span>
-                            </div>
 
                             {/* Title */}
                             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                                {course.title}
+                                {course.name}
                             </h1>
                             <p className="text-xl text-gray-700 mb-6 max-w-3xl">
-                                {course.description}
+                                {course.description || 'Professional course to advance your skills'}
                             </p>
 
                             {/* Ratings & Stats */}
                             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-700 mb-8">
                                 <div className="flex items-center gap-1">
-                                    <div className="flex text-yellow-500">
-                                        <Star className="w-4 h-4 fill-current" />
-                                        <Star className="w-4 h-4 fill-current" />
-                                        <Star className="w-4 h-4 fill-current" />
-                                        <Star className="w-4 h-4 fill-current" />
-                                        <Star className="w-4 h-4 fill-current" />
-                                    </div>
-                                    <span className="font-bold text-gray-900">{course.rating}</span>
-                                    <span className="text-gray-500">({course.reviews} reviews)</span>
+                                    <span className="font-bold text-gray-900">Code: {course.code}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <span className="font-bold text-gray-900">{course.level}</span>
+                                    <span className="font-bold text-gray-900">{course.duration_weeks} weeks</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Clock className="w-4 h-4" />
-                                    <span>{course.schedule}</span>
+                                    <span className="font-bold text-gray-900">{course.credits} Credits</span>
                                 </div>
                             </div>
 
@@ -155,13 +196,14 @@ const CourseDetails = () => {
                             <div className="hidden lg:flex items-center gap-4">
                                 <Button
                                     onClick={handleEnroll}
-                                    className="bg-[#0056D2] hover:bg-[#00419e] text-white font-bold text-lg px-8 py-6 h-auto"
-                                    disabled={enrolling}
+                                    className={`${isEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-[#0056D2] hover:bg-[#00419e]'} text-white font-bold text-lg px-8 py-6 h-auto`}
+                                    disabled={enrolling || isEnrolled}
                                 >
-                                    {enrolling ? 'Enrolling...' : 'Enroll for Free'}
+                                    {enrolling ? 'Enrolling...' : isEnrolled ? '✓ Enrolled' : 'Enroll for Free'}
                                 </Button>
-                                <p className="text-sm text-gray-600">Starts Nov 26</p>
+                                <p className="text-sm text-gray-600">{isEnrolled ? 'You are enrolled' : 'Start learning now'}</p>
                             </div>
+                            {error && <p className="text-red-600 mt-2">{error}</p>}
                             <p className="hidden lg:block text-sm text-gray-600 mt-2">
                                 Financial aid available
                             </p>
@@ -179,10 +221,10 @@ const CourseDetails = () => {
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
                 <Button
                     onClick={handleEnroll}
-                    className="w-full bg-[#0056D2] hover:bg-[#00419e] text-white font-bold text-lg py-6 h-auto"
-                    disabled={enrolling}
+                    className={`w-full ${isEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-[#0056D2] hover:bg-[#00419e]'} text-white font-bold text-lg py-6 h-auto`}
+                    disabled={enrolling || isEnrolled}
                 >
-                    {enrolling ? 'Enrolling...' : 'Enroll for Free'}
+                    {enrolling ? 'Enrolling...' : isEnrolled ? '✓ Enrolled' : 'Enroll for Free'}
                 </Button>
             </div>
 
@@ -212,7 +254,7 @@ const CourseDetails = () => {
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">What you'll learn</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {course.outcomes.map((outcome, index) => (
+                                {course.outcomes && course.outcomes.map((outcome, index) => (
                                     <div key={index} className="flex gap-3">
                                         <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                                         <p className="text-sm text-gray-700">{outcome}</p>
@@ -225,7 +267,7 @@ const CourseDetails = () => {
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">Skills you'll gain</h2>
                             <div className="flex flex-wrap gap-2">
-                                {course.skills.map((skill, index) => (
+                                {course.skills && course.skills.map((skill, index) => (
                                     <Badge key={index} variant="secondary" className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-3 py-1 text-sm font-medium">
                                         {skill}
                                     </Badge>
@@ -237,7 +279,7 @@ const CourseDetails = () => {
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">There are 4 courses in this Professional Certificate</h2>
                             <Accordion type="single" collapsible className="w-full">
-                                {course.syllabus.map((item, index) => (
+                                {course.syllabus && course.syllabus.map((item, index) => (
                                     <AccordionItem key={index} value={`item-${index}`}>
                                         <AccordionTrigger className="hover:no-underline py-6">
                                             <div className="flex flex-col items-start text-left">
@@ -268,7 +310,7 @@ const CourseDetails = () => {
                         {/* Instructors */}
                         <section>
                             <h2 className="text-2xl font-bold text-gray-900 mb-6">Instructors</h2>
-                            {course.instructors.map((instructor, index) => (
+                            {course.instructors && course.instructors.map((instructor, index) => (
                                 <div key={index} className="flex items-start gap-4">
                                     <Avatar className="h-16 w-16">
                                         <AvatarImage src={instructor.image} alt={instructor.name} />
@@ -329,6 +371,8 @@ const CourseDetails = () => {
                     </div>
                 </div>
             </div>
+            </>
+        )}
             </main>
 
             <Footer />

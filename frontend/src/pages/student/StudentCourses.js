@@ -56,7 +56,10 @@ const StudentCourses = () => {
       }
       
       setEnrollmentLoading(courseId);
-      await enrollmentsAPI.enrollInCourse(courseId, user.id);
+      console.log(`[StudentCourses] Enrolling in course ${courseId} for user ${user.id}`);
+      
+      const result = await enrollmentsAPI.enrollInCourse(courseId, user.id);
+      console.log(`[StudentCourses] Enrollment successful:`, result);
 
       // Update local state
       setEnrolledCourseIds(prev => new Set(prev).add(courseId));
@@ -64,8 +67,10 @@ const StudentCourses = () => {
       // Show success message or toast (optional)
       alert('Successfully enrolled in course!');
     } catch (err) {
-      console.error('Enrollment error:', err);
-      alert('Failed to enroll. Please try again.');
+      console.error('[StudentCourses] Enrollment error:', err);
+      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
+      console.error('[StudentCourses] Error details:', errorMsg);
+      alert(`Failed to enroll: ${errorMsg}`);
     } finally {
       setEnrollmentLoading(null);
     }

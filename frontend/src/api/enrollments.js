@@ -23,23 +23,37 @@ export const enrollmentsAPI = {
     enrollInCourse: async (courseId, studentId) => {
         // First, fetch batches for this course
         try {
-            const batches = await this.getBatchesForCourse(courseId);
+            console.log(`[Enrollment] Fetching batches for course ${courseId}`);
+            const batches = await enrollmentsAPI.getBatchesForCourse(courseId);
+            
+            console.log(`[Enrollment] Batches response:`, batches);
             
             // Find first available batch with space
-            const availableBatch = Array.isArray(batches) 
-                ? batches.find(b => b.available_seats > 0)
-                : batches.results?.find(b => b.available_seats > 0);
+            const batchList = Array.isArray(batches) 
+                ? batches
+                : (batches?.results || []);
+            
+            console.log(`[Enrollment] Batch list:`, batchList);
+            
+            const availableBatch = batchList.find(b => {
+                console.log(`[Enrollment] Checking batch ${b.id}: available_seats=${b.available_seats}`);
+                return b.available_seats > 0;
+            });
             
             if (!availableBatch) {
                 throw new Error('No available batches for this course');
             }
 
+            console.log(`[Enrollment] Creating enrollment for batch ${availableBatch.id}, student ${studentId}`);
+            
             // Enroll in the available batch
             const response = await api.post('/api/enrollments/', {
                 batch: availableBatch.id,
                 student: studentId,
                 status: 'active'
             });
+            
+            console.log(`[Enrollment] Success:`, response.data);
             return response.data;
         } catch (error) {
             console.error('Enrollment error:', error);
