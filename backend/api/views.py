@@ -563,13 +563,13 @@ class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet for courses"""
     queryset = Course.objects.filter(is_active=True).prefetch_related('batches')
     serializer_class = CourseSerializer
-    permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'code', 'description']
     ordering_fields = ['created_at', 'fee']
     ordering = ['-created_at']
     
     def get_permissions(self):
+        """Allow anyone to read courses, but only admin can write"""
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsAdmin()]
         return [AllowAny()]

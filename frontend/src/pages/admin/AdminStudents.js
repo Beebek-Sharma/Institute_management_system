@@ -135,9 +135,9 @@ const AdminStudents = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Student Management</h1>
-                    <p className="text-gray-200">View and manage all students</p>
+                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-3 sm:p-6 mb-8 rounded-lg">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Student Management</h1>
+                    <p className="text-sm sm:text-base text-gray-200">View and manage all students</p>
                 </div>
 
                 {/* Alert */}
@@ -153,43 +153,44 @@ const AdminStudents = () => {
                 )}
 
                 {/* Search & Actions */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-6 mb-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder="Search students..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <button
                             onClick={() => navigate('/admin/dashboard')}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition"
+                            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition whitespace-nowrap"
                         >
-                            <UserPlus className="w-5 h-5" />
-                            Add Student
+                            <UserPlus className="w-4 sm:w-5 h-4 sm:h-5" />
+                            <span className="hidden sm:inline">Add Student</span>
+                            <span className="sm:hidden">Add</span>
                         </button>
                     </div>
 
                     {/* Bulk Actions */}
                     {selectedStudents.length > 0 && (
-                        <div className="flex items-center gap-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                            <span className="text-blue-300 font-semibold">{selectedStudents.length} selected</span>
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                            <span className="text-xs sm:text-sm text-blue-300 font-semibold">{selectedStudents.length} selected</span>
                             <button
                                 onClick={handleExport}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm"
+                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
                             >
-                                <Download className="w-4 h-4" />
+                                <Download className="w-3 sm:w-4 h-3 sm:h-4" />
                                 Export
                             </button>
                             <button
                                 onClick={handleBulkDelete}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm"
+                                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 sm:w-4 h-3 sm:h-4" />
                                 Delete
                             </button>
                         </div>
@@ -200,120 +201,169 @@ const AdminStudents = () => {
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading students...</div>
                 ) : (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b border-white/20 bg-white/5">
-                                        <th className="px-6 py-4 text-left">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
-                                                onChange={handleSelectAll}
-                                                className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
-                                            />
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Username</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Name</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Email</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Enrollments</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredStudents.map((student) => (
-                                        <tr key={student.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                                            <td className="px-6 py-4">
+                    <>
+                        {/* Desktop View */}
+                        <div className="hidden md:block bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-white/20 bg-white/5">
+                                            <th className="px-6 py-4 text-left">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedStudents.includes(student.id)}
-                                                    onChange={() => handleSelectStudent(student.id)}
+                                                    checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
+                                                    onChange={handleSelectAll}
                                                     className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
                                                 />
-                                            </td>
-                                            <td className="px-6 py-4 text-white font-medium">{student.username}</td>
-                                            <td className="px-6 py-4 text-gray-300">
-                                                {student.first_name} {student.last_name}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-300">{student.email}</td>
-                                            <td className="px-6 py-4 text-gray-300">
-                                                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Username</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Name</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Email</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Enrollments</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredStudents.map((student) => (
+                                            <tr key={student.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                                                <td className="px-6 py-4">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedStudents.includes(student.id)}
+                                                        onChange={() => handleSelectStudent(student.id)}
+                                                        className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
+                                                    />
+                                                </td>
+                                                <td className="px-6 py-4 text-white font-medium">{student.username}</td>
+                                                <td className="px-6 py-4 text-gray-300">
+                                                    {student.first_name} {student.last_name}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-300">{student.email}</td>
+                                                <td className="px-6 py-4 text-gray-300">
+                                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                                                        {student.enrollment_count || 0} courses
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <button
+                                                        onClick={() => viewStudentDetails(student)}
+                                                        className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {filteredStudents.length === 0 && !loading && (
+                                <div className="text-center py-12 text-gray-300">
+                                    No students found
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mobile View - Cards */}
+                        <div className="md:hidden space-y-4">
+                            {filteredStudents.length === 0 ? (
+                                <div className="text-center py-12 text-gray-300 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">
+                                    No students found
+                                </div>
+                            ) : (
+                                filteredStudents.map((student) => (
+                                    <div key={student.id} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedStudents.includes(student.id)}
+                                                        onChange={() => handleSelectStudent(student.id)}
+                                                        className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
+                                                    />
+                                                    <p className="text-white font-semibold">{student.username}</p>
+                                                </div>
+                                                <p className="text-sm text-gray-300">{student.first_name} {student.last_name}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => viewStudentDetails(student)}
+                                                className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition flex-shrink-0"
+                                                title="View Details"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <div className="space-y-2 border-t border-white/10 pt-3">
+                                            <p className="text-xs text-gray-400">
+                                                <span className="text-gray-300">Email:</span> {student.email}
+                                            </p>
+                                            <p className="text-xs text-gray-400">
+                                                <span className="text-gray-300">Enrollments:</span>{' '}
+                                                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded text-xs">
                                                     {student.enrollment_count || 0} courses
                                                 </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <button
-                                                    onClick={() => viewStudentDetails(student)}
-                                                    className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
-                                                    title="View Details"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
-                        {filteredStudents.length === 0 && !loading && (
-                            <div className="text-center py-12 text-gray-300">
-                                No students found
-                            </div>
-                        )}
-                    </div>
+                    </>
                 )}
 
                 {/* Stats */}
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Total Students</div>
-                        <div className="text-4xl font-bold text-white">{students.length}</div>
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Students</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-white">{students.length}</div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Active Enrollments</div>
-                        <div className="text-4xl font-bold text-green-400">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Active Enrollments</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-green-400">
                             {students.reduce((sum, s) => sum + (s.enrollment_count || 0), 0)}
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Selected</div>
-                        <div className="text-4xl font-bold text-blue-400">{selectedStudents.length}</div>
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Selected</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-blue-400">{selectedStudents.length}</div>
                     </div>
                 </div>
             </div>
 
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Details</h2>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-6 sm:p-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Student Details</h2>
 
                         <div className="space-y-6">
                             {/* Basic Info */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Username</label>
-                                    <p className="text-gray-900 font-medium">{selectedStudent.username}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Username</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedStudent.username}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Email</label>
-                                    <p className="text-gray-900 font-medium">{selectedStudent.email}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Email</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedStudent.email}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">First Name</label>
-                                    <p className="text-gray-900 font-medium">{selectedStudent.first_name || 'N/A'}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">First Name</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedStudent.first_name || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Last Name</label>
-                                    <p className="text-gray-900 font-medium">{selectedStudent.last_name || 'N/A'}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Last Name</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedStudent.last_name || 'N/A'}</p>
                                 </div>
                             </div>
 
                             {/* Enrollment History */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Enrollment History</h3>
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-gray-600 text-sm">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Enrollment History</h3>
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
+                                    <p className="text-xs sm:text-sm text-gray-600">
                                         Total Enrollments: <span className="font-semibold text-gray-900">{selectedStudent.enrollment_count || 0}</span>
                                     </p>
                                     <p className="text-gray-500 text-xs mt-2">
@@ -324,9 +374,9 @@ const AdminStudents = () => {
 
                             {/* Payment History */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Payment History</h3>
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-gray-500 text-sm">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Payment History</h3>
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
+                                    <p className="text-xs sm:text-sm text-gray-500">
                                         Payment records will be displayed here.
                                     </p>
                                 </div>
@@ -334,9 +384,9 @@ const AdminStudents = () => {
 
                             {/* Attendance Records */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Attendance Records</h3>
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-gray-500 text-sm">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Attendance Records</h3>
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
+                                    <p className="text-xs sm:text-sm text-gray-500">
                                         Attendance data will be shown here once the attendance system is implemented.
                                     </p>
                                 </div>
@@ -349,7 +399,7 @@ const AdminStudents = () => {
                                     setShowDetailsModal(false);
                                     setSelectedStudent(null);
                                 }}
-                                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
                             >
                                 Close
                             </button>

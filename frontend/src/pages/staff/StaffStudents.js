@@ -165,67 +165,111 @@ const StaffStudents = () => {
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading students...</div>
                 ) : (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead>
-                                    <tr className="border-b border-white/20 bg-white/5">
-                                        <th className="px-6 py-4 text-left">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
-                                                onChange={handleSelectAll}
-                                                className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
-                                            />
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Username</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Name</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Email</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Enrollments</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredStudents.map((student) => (
-                                        <tr key={student.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                                            <td className="px-6 py-4">
+                    <>
+                        {/* Desktop View - Table */}
+                        <div className="hidden md:block bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead>
+                                        <tr className="border-b border-white/20 bg-white/5">
+                                            <th className="px-6 py-4 text-left">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedStudents.includes(student.id)}
-                                                    onChange={() => handleSelectStudent(student.id)}
+                                                    checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
+                                                    onChange={handleSelectAll}
                                                     className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
                                                 />
-                                            </td>
-                                            <td className="px-6 py-4 text-white font-medium">{student.username}</td>
-                                            <td className="px-6 py-4 text-gray-300">
-                                                {student.first_name} {student.last_name}
-                                            </td>
-                                            <td className="px-6 py-4 text-gray-300">{student.email}</td>
-                                            <td className="px-6 py-4 text-gray-300">
-                                                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
-                                                    {student.enrollment_count || 0} courses
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <button
-                                                    onClick={() => viewStudentDetails(student)}
-                                                    className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
-                                                    title="View Details"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
-                                            </td>
+                                            </th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Username</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Name</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Email</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Enrollments</th>
+                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {filteredStudents.length === 0 && !loading && (
-                            <div className="text-center py-12 text-gray-300">
-                                No students found
+                                    </thead>
+                                    <tbody>
+                                        {filteredStudents.map((student) => (
+                                            <tr key={student.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                                                <td className="px-6 py-4">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedStudents.includes(student.id)}
+                                                        onChange={() => handleSelectStudent(student.id)}
+                                                        className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
+                                                    />
+                                                </td>
+                                                <td className="px-6 py-4 text-white font-medium">{student.username}</td>
+                                                <td className="px-6 py-4 text-gray-300">
+                                                    {student.first_name} {student.last_name}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-300">{student.email}</td>
+                                                <td className="px-6 py-4 text-gray-300">
+                                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                                                        {student.enrollment_count || 0} courses
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <button
+                                                        onClick={() => viewStudentDetails(student)}
+                                                        className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
-                        )}
-                    </div>
+                            {filteredStudents.length === 0 && !loading && (
+                                <div className="text-center py-12 text-gray-300">
+                                    No students found
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mobile View - Cards */}
+                        <div className="md:hidden space-y-4">
+                            {filteredStudents.length === 0 ? (
+                                <div className="text-center py-12 text-gray-300 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">
+                                    No students found
+                                </div>
+                            ) : (
+                                filteredStudents.map((student) => (
+                                    <div key={student.id} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex-1">
+                                                <p className="text-white font-semibold">{student.username}</p>
+                                                <p className="text-sm text-gray-300">{student.first_name} {student.last_name}</p>
+                                            </div>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedStudents.includes(student.id)}
+                                                onChange={() => handleSelectStudent(student.id)}
+                                                className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
+                                            />
+                                        </div>
+                                        <div className="space-y-2 mb-4 border-t border-white/10 pt-3">
+                                            <p className="text-xs text-gray-400">
+                                                <span className="text-gray-300">Email:</span> {student.email}
+                                            </p>
+                                            <p className="text-xs text-gray-400">
+                                                <span className="text-gray-300">Enrollments:</span> {student.enrollment_count || 0} courses
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => viewStudentDetails(student)}
+                                            className="w-full px-3 py-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition text-sm font-medium flex items-center justify-center gap-2"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                            View Details
+                                        </button>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </>
                 )}
 
                 {/* Stats */}
@@ -243,13 +287,13 @@ const StaffStudents = () => {
 
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Student Details</h2>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-4 sm:p-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Student Details</h2>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {/* Basic Info */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-600 mb-1">Username</label>
                                     <p className="text-gray-900 font-medium">{selectedStudent.username}</p>

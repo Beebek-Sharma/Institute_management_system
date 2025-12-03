@@ -24,10 +24,10 @@ const DashboardLayout = ({ children }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Initialize from localStorage or default to true (expanded)
+  // Initialize from localStorage or default to collapsed on first load
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
     const savedState = localStorage.getItem('sidebarExpanded');
-    return savedState !== null ? JSON.parse(savedState) : true;
+    return savedState !== null ? JSON.parse(savedState) : false;
   });
 
   // Toggle function that also saves to localStorage
@@ -118,17 +118,7 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
-      <Header onMenuClick={toggleSidebar} />
-
-      {/* Mobile Sidebar Toggle Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden fixed bottom-6 right-6 z-40 rounded-full shadow-lg bg-teal-600 hover:bg-teal-700 text-white"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-      </Button>
+      <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex flex-1">
         {/* Sidebar - Desktop (YouTube Style) */}
@@ -137,6 +127,19 @@ const DashboardLayout = ({ children }) => {
           {/* Navigation Links */}
           <div className="flex-1 p-4 overflow-y-auto">
             <NavLinks />
+          </div>
+          
+          {/* Collapse/Expand Button */}
+          <div className="border-t border-slate-700/30 p-4">
+            <button
+              onClick={toggleSidebar}
+              className="w-full flex items-center justify-center p-2 hover:bg-slate-800/50 rounded-lg transition-colors"
+              title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+            >
+              <span className="text-gray-300">
+                {sidebarExpanded ? '◀' : '▶'}
+              </span>
+            </button>
           </div>
         </aside>
 

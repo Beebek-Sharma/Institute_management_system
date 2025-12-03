@@ -226,11 +226,11 @@ const AdminUsers = () => {
 
     return (
         <DashboardLayout>
-            <div className="space-y-6">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="space-y-4 sm:space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-white">User Management</h1>
-                        <p className="text-gray-400">Manage all users in the system</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white">User Management</h1>
+                        <p className="text-xs sm:text-sm text-gray-400">Manage all users in the system</p>
                     </div>
                     <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
                         <DialogTrigger asChild>
@@ -343,18 +343,18 @@ const AdminUsers = () => {
                 </div>
 
                 {/* Filters */}
-                <div className="flex flex-col md:flex-row gap-4 bg-slate-900/50 p-4 rounded-lg border border-slate-800">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 bg-slate-900/50 p-3 sm:p-4 rounded-lg border border-slate-800">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
                             placeholder="Search users..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 bg-slate-800 border-slate-700 text-white"
+                            className="pl-10 bg-slate-800 border-slate-700 text-white text-sm"
                         />
                     </div>
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="w-[180px] bg-slate-800 border-slate-700 text-white">
+                        <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-white text-sm">
                             <SelectValue placeholder="Filter by Role" />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-800 border-slate-700 text-white">
@@ -369,77 +369,145 @@ const AdminUsers = () => {
 
                 {/* Users Table */}
                 <div className="bg-slate-900/50 rounded-lg border border-slate-800 overflow-hidden">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                                <TableHead className="text-gray-300">User</TableHead>
-                                <TableHead className="text-gray-300">Role</TableHead>
-                                <TableHead className="text-gray-300">Email</TableHead>
-                                <TableHead className="text-gray-300">Joined Date</TableHead>
-                                <TableHead className="text-gray-300 text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-8 text-gray-400">
-                                        Loading users...
-                                    </TableCell>
+                    {/* Desktop View */}
+                    <div className="hidden md:block">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="border-slate-800 hover:bg-slate-800/50">
+                                    <TableHead className="text-gray-300">User</TableHead>
+                                    <TableHead className="text-gray-300">Role</TableHead>
+                                    <TableHead className="text-gray-300">Email</TableHead>
+                                    <TableHead className="text-gray-300">Joined Date</TableHead>
+                                    <TableHead className="text-gray-300 text-right">Actions</TableHead>
                                 </TableRow>
-                            ) : users.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="text-center py-8 text-gray-400">
-                                        No users found
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                users.map((user) => (
-                                    <TableRow key={user.id} className="border-slate-800 hover:bg-slate-800/50">
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium">
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-400">
+                                            Loading users...
+                                        </TableCell>
+                                    </TableRow>
+                                ) : users.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-400">
+                                            No users found
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    users.map((user) => (
+                                        <TableRow key={user.id} className="border-slate-800 hover:bg-slate-800/50">
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium">
+                                                        {user.first_name?.[0] || user.username[0].toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-medium text-white">{user.first_name} {user.last_name}</p>
+                                                        <p className="text-xs text-gray-400">@{user.username}</p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
+                                                    {getRoleIcon(user.role)}
+                                                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-gray-300">{user.email}</TableCell>
+                                            <TableCell className="text-gray-300">
+                                                {new Date(user.date_joined || user.created_at).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-slate-800">
+                                                            <MoreVertical className="w-4 h-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700 text-white">
+                                                        <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-slate-700 cursor-pointer">
+                                                            <Edit className="w-4 h-4 mr-2" />
+                                                            Edit Details
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer">
+                                                            <Trash2 className="w-4 h-4 mr-2" />
+                                                            Delete User
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+
+                    {/* Mobile View - Cards */}
+                    <div className="md:hidden">
+                        {loading ? (
+                            <div className="text-center py-8 text-gray-400">Loading users...</div>
+                        ) : users.length === 0 ? (
+                            <div className="text-center py-8 text-gray-400">No users found</div>
+                        ) : (
+                            <div className="space-y-4 p-4">
+                                {users.map((user) => (
+                                    <div key={user.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 space-y-3">
+                                        {/* Header with avatar and name */}
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3 flex-1">
+                                                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium flex-shrink-0">
                                                     {user.first_name?.[0] || user.username[0].toUpperCase()}
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium text-white">{user.first_name} {user.last_name}</p>
-                                                    <p className="text-xs text-gray-400">@{user.username}</p>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
+                                                    <p className="text-xs text-gray-400 truncate">@{user.username}</p>
                                                 </div>
                                             </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
-                                                {getRoleIcon(user.role)}
-                                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell className="text-gray-300">{user.email}</TableCell>
-                                        <TableCell className="text-gray-300">
-                                            {new Date(user.date_joined || user.created_at).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-slate-800">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-slate-800 flex-shrink-0">
                                                         <MoreVertical className="w-4 h-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700 text-white">
                                                     <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-slate-700 cursor-pointer">
                                                         <Edit className="w-4 h-4 mr-2" />
-                                                        Edit Details
+                                                        Edit
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer">
                                                         <Trash2 className="w-4 h-4 mr-2" />
-                                                        Delete User
+                                                        Delete
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                                        </div>
+
+                                        {/* Role Badge */}
+                                        <div>
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
+                                                {getRoleIcon(user.role)}
+                                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                            </span>
+                                        </div>
+
+                                        {/* Details */}
+                                        <div className="space-y-2 text-sm border-t border-slate-700 pt-3">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Email:</span>
+                                                <span className="text-gray-300 break-all text-right">{user.email}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-400">Joined:</span>
+                                                <span className="text-gray-300">{new Date(user.date_joined || user.created_at).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

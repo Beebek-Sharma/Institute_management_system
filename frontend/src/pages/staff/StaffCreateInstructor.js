@@ -94,37 +94,37 @@ const StaffCreateInstructor = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <button
                         onClick={() => navigate('/staff/dashboard')}
                         className="p-2 hover:bg-white/10 rounded-lg transition"
                         title="Go back"
                     >
-                        <ArrowLeft className="w-6 h-6 text-white" />
+                        <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </button>
                     <div>
-                        <h1 className="text-4xl font-bold text-white">Create Instructor</h1>
-                        <p className="text-gray-300">Add a new instructor to the system</p>
+                        <h1 className="text-2xl sm:text-4xl font-bold text-white">Create Instructor</h1>
+                        <p className="text-sm sm:text-base text-gray-300">Add a new instructor to the system</p>
                     </div>
                 </div>
 
                 {/* Alert Messages */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-sm sm:text-base text-green-200">
                         ✓ {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-sm sm:text-base text-red-200">
                         ✗ {error}
                     </div>
                 )}
 
                 {/* Form */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-8 max-w-2xl">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-8 max-w-2xl">
+                    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                         {/* Row 1 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-300 mb-2">
                                     Username <span className="text-red-400">*</span>
@@ -156,9 +156,9 @@ const StaffCreateInstructor = () => {
                         </div>
 
                         {/* Row 2 */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">
                                     Password <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -167,7 +167,7 @@ const StaffCreateInstructor = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-sm"
                                     disabled={loading}
                                 />
                                 <p className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
@@ -221,11 +221,11 @@ const StaffCreateInstructor = () => {
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex gap-4 pt-4">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-lg transition"
+                                className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-lg transition text-sm sm:text-base"
                             >
                                 {loading ? 'Creating...' : 'Create Instructor'}
                             </button>
@@ -233,7 +233,7 @@ const StaffCreateInstructor = () => {
                                 type="button"
                                 onClick={() => navigate('/staff/dashboard')}
                                 disabled={loading}
-                                className="px-6 py-3 bg-white/10 hover:bg-white/20 disabled:bg-white/5 text-white font-semibold rounded-lg transition border border-white/20"
+                                className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white/10 hover:bg-white/20 disabled:bg-white/5 text-white font-semibold rounded-lg transition border border-white/20 text-sm sm:text-base"
                             >
                                 Cancel
                             </button>
@@ -242,9 +242,9 @@ const StaffCreateInstructor = () => {
                 </div>
 
                 {/* Info Box */}
-                <div className="mt-8 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 max-w-2xl">
-                    <h3 className="text-blue-300 font-semibold mb-2">ℹ️ Important Information</h3>
-                    <ul className="text-blue-200 text-sm space-y-1">
+                <div className="mt-6 sm:mt-8 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 sm:p-4 max-w-2xl">
+                    <h3 className="text-blue-300 font-semibold mb-2 text-sm sm:text-base">ℹ️ Important Information</h3>
+                    <ul className="text-blue-200 text-xs sm:text-sm space-y-1">
                         <li>• Username must be unique across the system</li>
                         <li>• Email must be a valid email address</li>
                         <li>• Password must be at least 8 characters long</li>

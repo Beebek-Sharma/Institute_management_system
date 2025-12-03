@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-)8yw1x&oyce3=c@tt0-eaacd#cw3v@+60qce2s)g*2*x4mqevc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Custom User Model
 AUTH_USER_MODEL = 'api.User'
@@ -164,7 +164,11 @@ SIMPLE_JWT = {
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
     'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

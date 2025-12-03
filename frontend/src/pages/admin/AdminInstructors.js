@@ -105,9 +105,9 @@ const AdminInstructors = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Instructor Management</h1>
-                    <p className="text-gray-200">Manage instructors and course assignments</p>
+                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-3 sm:p-6 mb-8 rounded-lg">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Instructor Management</h1>
+                    <p className="text-sm sm:text-base text-gray-200">Manage instructors and course assignments</p>
                 </div>
 
                 {/* Alert */}
@@ -123,24 +123,25 @@ const AdminInstructors = () => {
                 )}
 
                 {/* Search & Actions */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row gap-4">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-6 mb-6">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder="Search instructors..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <button
                             onClick={() => navigate('/admin/dashboard')}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition"
+                            className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg transition whitespace-nowrap"
                         >
-                            <UserPlus className="w-5 h-5" />
-                            Add Instructor
+                            <UserPlus className="w-4 sm:w-5 h-4 sm:h-5" />
+                            <span className="hidden sm:inline">Add Instructor</span>
+                            <span className="sm:hidden">Add</span>
                         </button>
                     </div>
                 </div>
@@ -212,20 +213,20 @@ const AdminInstructors = () => {
                 )}
 
                 {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Total Instructors</div>
-                        <div className="text-4xl font-bold text-white">{instructors.length}</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Instructors</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-white">{instructors.length}</div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Total Courses Assigned</div>
-                        <div className="text-4xl font-bold text-purple-400">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Courses Assigned</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-purple-400">
                             {instructors.reduce((sum, i) => sum + (i.course_count || 0), 0)}
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Total Students Taught</div>
-                        <div className="text-4xl font-bold text-blue-400">
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Students Taught</div>
+                        <div className="text-2xl sm:text-4xl font-bold text-blue-400">
                             {instructors.reduce((sum, i) => sum + (i.student_count || 0), 0)}
                         </div>
                     </div>
@@ -234,21 +235,21 @@ const AdminInstructors = () => {
 
             {/* Assign Course Modal */}
             {showAssignModal && selectedInstructor && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full border border-white/40 p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Assign Course</h2>
-                        <p className="text-gray-700 mb-6">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-md w-full border border-white/40 p-6 sm:p-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Assign Course</h2>
+                        <p className="text-sm sm:text-base text-gray-700 mb-6">
                             Instructor: <span className="font-semibold">{selectedInstructor.first_name} {selectedInstructor.last_name}</span>
                         </p>
 
                         <form onSubmit={handleAssignCourse} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-800 mb-2">Select Course *</label>
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-800 mb-2">Select Course *</label>
                                 <select
                                     value={selectedCourseId}
                                     onChange={(e) => setSelectedCourseId(e.target.value)}
                                     required
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 >
                                     <option value="">Choose a course</option>
                                     {courses.map(course => (
@@ -259,10 +260,10 @@ const AdminInstructors = () => {
                                 </select>
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex flex-col sm:flex-row gap-3 pt-4">
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
                                 >
                                     Assign Course
                                 </button>
@@ -273,7 +274,7 @@ const AdminInstructors = () => {
                                         setSelectedInstructor(null);
                                         setSelectedCourseId('');
                                     }}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
@@ -285,36 +286,36 @@ const AdminInstructors = () => {
 
             {/* Instructor Details Modal */}
             {showDetailsModal && selectedInstructor && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Instructor Details</h2>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-6 sm:p-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Instructor Details</h2>
 
                         <div className="space-y-6">
                             {/* Basic Info */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Username</label>
-                                    <p className="text-gray-900 font-medium">{selectedInstructor.username}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Username</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedInstructor.username}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Email</label>
-                                    <p className="text-gray-900 font-medium">{selectedInstructor.email}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Email</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedInstructor.email}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">First Name</label>
-                                    <p className="text-gray-900 font-medium">{selectedInstructor.first_name || 'N/A'}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">First Name</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedInstructor.first_name || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-600 mb-1">Last Name</label>
-                                    <p className="text-gray-900 font-medium">{selectedInstructor.last_name || 'N/A'}</p>
+                                    <label className="block text-xs sm:text-sm font-semibold text-gray-600 mb-1">Last Name</label>
+                                    <p className="text-sm sm:text-base text-gray-900 font-medium">{selectedInstructor.last_name || 'N/A'}</p>
                                 </div>
                             </div>
 
                             {/* Assigned Courses */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Assigned Courses</h3>
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-gray-600 text-sm">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Assigned Courses</h3>
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
+                                    <p className="text-xs sm:text-sm text-gray-600">
                                         Total Courses: <span className="font-semibold text-gray-900">{selectedInstructor.course_count || 0}</span>
                                     </p>
                                     <p className="text-gray-500 text-xs mt-2">
@@ -325,18 +326,18 @@ const AdminInstructors = () => {
 
                             {/* Performance Metrics */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Performance Metrics</h3>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="bg-blue-50 rounded-lg p-4 text-center">
-                                        <div className="text-2xl font-bold text-blue-600">{selectedInstructor.student_count || 0}</div>
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Performance Metrics</h3>
+                                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                                    <div className="bg-blue-50 rounded-lg p-2 sm:p-4 text-center">
+                                        <div className="text-xl sm:text-2xl font-bold text-blue-600">{selectedInstructor.student_count || 0}</div>
                                         <div className="text-xs text-gray-600 mt-1">Total Students</div>
                                     </div>
-                                    <div className="bg-green-50 rounded-lg p-4 text-center">
-                                        <div className="text-2xl font-bold text-green-600">{selectedInstructor.course_count || 0}</div>
+                                    <div className="bg-green-50 rounded-lg p-2 sm:p-4 text-center">
+                                        <div className="text-xl sm:text-2xl font-bold text-green-600">{selectedInstructor.course_count || 0}</div>
                                         <div className="text-xs text-gray-600 mt-1">Active Courses</div>
                                     </div>
-                                    <div className="bg-purple-50 rounded-lg p-4 text-center">
-                                        <div className="text-2xl font-bold text-purple-600">N/A</div>
+                                    <div className="bg-purple-50 rounded-lg p-2 sm:p-4 text-center">
+                                        <div className="text-xl sm:text-2xl font-bold text-purple-600">N/A</div>
                                         <div className="text-xs text-gray-600 mt-1">Avg. Rating</div>
                                     </div>
                                 </div>
@@ -344,9 +345,9 @@ const AdminInstructors = () => {
 
                             {/* Schedule */}
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">Class Schedule</h3>
-                                <div className="bg-gray-100 rounded-lg p-4">
-                                    <p className="text-gray-500 text-sm">
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Class Schedule</h3>
+                                <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
+                                    <p className="text-xs sm:text-sm text-gray-500">
                                         Class schedule will be displayed here once the schedule system is implemented.
                                     </p>
                                 </div>
@@ -359,7 +360,7 @@ const AdminInstructors = () => {
                                     setShowDetailsModal(false);
                                     setSelectedInstructor(null);
                                 }}
-                                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
                             >
                                 Close
                             </button>
