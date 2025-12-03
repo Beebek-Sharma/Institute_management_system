@@ -66,6 +66,8 @@ const DashboardLayout = ({ children }) => {
           { icon: Users, label: 'Enrollments', path: '/staff/enrollments' },
           { icon: CreditCard, label: 'Payments', path: '/staff/payments' },
           { icon: ClipboardCheck, label: 'Attendance', path: '/staff/attendance' },
+          { icon: Users, label: 'Students', path: '/staff/students' },
+          { icon: Users, label: 'Instructors', path: '/staff/instructors' },
           { icon: User, label: 'Profile', path: '/profile' },
         ];
       case 'admin':

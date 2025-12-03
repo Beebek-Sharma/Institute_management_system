@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { BookOpen, Users } from 'lucide-react';
+import { BookOpen, Users, UserPlus } from 'lucide-react';
 
 const StaffDashboard = () => {
     const { user } = useAuth();
@@ -22,12 +22,26 @@ const StaffDashboard = () => {
             icon: Users,
             link: "/staff/enrollments",
             color: "text-green-600"
+        },
+        {
+            title: "Students",
+            value: "View All Students",
+            icon: Users,
+            link: "/staff/students",
+            color: "text-orange-600"
+        },
+        {
+            title: "Instructors",
+            value: "View All Instructors",
+            icon: Users,
+            link: "/staff/instructors",
+            color: "text-purple-600"
         }
     ];
 
     return (
         <DashboardLayout title="Staff Dashboard" user={user}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, index) => (
                     <Link to={stat.link} key={index}>
                         <Card className="hover:shadow-lg transition-shadow cursor-pointer">

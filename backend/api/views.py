@@ -291,9 +291,16 @@ def create_staff(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAdmin])
+@permission_classes([IsAdminOrStaff])
 def create_instructor(request):
-    """Admin: Create an instructor account"""
+    """Admin/Staff: Create an instructor account"""
+    # Check if user has permission to create instructor
+    if not can_create_user(request.user, 'instructor'):
+        return Response(
+            {'error': 'You do not have permission to create instructors'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
@@ -315,7 +322,7 @@ def create_instructor(request):
         )
         ActivityLog.objects.create(
             user=request.user, action='instructor_created',
-            description=f'Admin {request.user.username} created instructor {username}',
+            description=f'{request.user.role} {request.user.username} created instructor {username}',
             target_user=instructor_user, ip_address=get_client_ip(request)
         )
         return Response({'message': 'Instructor created', 'user': UserSerializer(instructor_user).data}, status=status.HTTP_201_CREATED)
@@ -324,9 +331,16 @@ def create_instructor(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAdmin])
+@permission_classes([IsAdminOrStaff])
 def create_student(request):
-    """Admin: Create a student account"""
+    """Admin/Staff: Create a student account"""
+    # Check if user has permission to create student
+    if not can_create_user(request.user, 'student'):
+        return Response(
+            {'error': 'You do not have permission to create students'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
@@ -347,7 +361,7 @@ def create_student(request):
         )
         ActivityLog.objects.create(
             user=request.user, action='student_created',
-            description=f'Admin {request.user.username} created student {username}',
+            description=f'{request.user.role} {request.user.username} created student {username}',
             target_user=student_user, ip_address=get_client_ip(request)
         )
         return Response({'message': 'Student created', 'user': UserSerializer(student_user).data}, status=status.HTTP_201_CREATED)
@@ -405,9 +419,9 @@ def delete_user_admin(request, user_id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAdmin])
+@permission_classes([IsAdminOrStaff])
 def get_all_users(request):
-    """Admin: View all users with filters"""
+    """Admin/Staff: View all users with filters"""
     role = request.query_params.get('role')
     search = request.query_params.get('search')
     

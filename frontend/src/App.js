@@ -53,6 +53,10 @@ import StaffCourses from "./pages/staff/StaffCourses";
 import StaffEnrollments from "./pages/staff/StaffEnrollments";
 import StaffPayments from "./pages/staff/StaffPayments";
 import StaffAttendance from "./pages/staff/StaffAttendance";
+import StaffCreateInstructor from "./pages/staff/StaffCreateInstructor";
+import StaffCreateStudent from "./pages/staff/StaffCreateStudent";
+import StaffStudents from "./pages/staff/StaffStudents";
+import StaffInstructors from "./pages/staff/StaffInstructors";
 
 // Public Pages
 import HelpCenter from "./pages/HelpCenter";
@@ -359,6 +363,38 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['staff']}>
                     <StaffAttendance />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/create-instructor"
+                element={
+                  <ProtectedRoute allowedRoles={['staff']}>
+                    <StaffCreateInstructor />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/create-student"
+                element={
+                  <ProtectedRoute allowedRoles={['staff']}>
+                    <StaffCreateStudent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/students"
+                element={
+                  <ProtectedRoute allowedRoles={['staff']}>
+                    <StaffStudents />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/staff/instructors"
+                element={
+                  <ProtectedRoute allowedRoles={['staff']}>
+                    <StaffInstructors />
                   </ProtectedRoute>
                 }
               />
