@@ -36,12 +36,23 @@ const InstructorSchedule = () => {
     const fetchMySchedule = async () => {
         setLoading(true);
         try {
+            console.log('Fetching schedules...');
+            console.log('Access token:', localStorage.getItem('access_token')?.substring(0, 20) + '...');
+            
             // Fetch schedules for batches assigned to this instructor
             const response = await axios.get('/api/schedules/?instructor=true');
+            console.log('Schedule response:', response.data);
             setSchedules(response.data || []);
+            setError(''); // Clear any previous errors
         } catch (err) {
-            setError('Failed to fetch your schedule');
-            console.error(err);
+            console.error('Error fetching schedules:', err);
+            console.error('Response data:', err.response?.data);
+            console.error('Response status:', err.response?.status);
+            console.error('Error message:', err.message);
+            
+            const errorMessage = err.response?.data?.detail || err.message || 'Unknown error';
+            setError(`Failed to fetch your schedule: ${errorMessage}`);
+            setSchedules([]);
         } finally {
             setLoading(false);
         }
