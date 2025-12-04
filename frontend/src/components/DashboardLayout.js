@@ -24,10 +24,10 @@ const DashboardLayout = ({ children }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Initialize from localStorage or default to collapsed on first load
+  // Initialize from localStorage or default to expanded on first load
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
     const savedState = localStorage.getItem('sidebarExpanded');
-    return savedState !== null ? JSON.parse(savedState) : false;
+    return savedState !== null ? JSON.parse(savedState) : true;
   });
 
   // Toggle function that also saves to localStorage
@@ -118,11 +118,19 @@ const DashboardLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col">
-      <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+      <Header onMenuClick={() => {
+        // On desktop: toggle sidebar expansion
+        // On mobile: toggle mobile sidebar
+        if (window.innerWidth >= 1024) {
+          toggleSidebar();
+        } else {
+          setSidebarOpen(!sidebarOpen);
+        }
+      }} />
 
       <div className="flex flex-1">
         {/* Sidebar - Desktop (YouTube Style) */}
-        <aside className={`hidden lg:flex flex-col bg-slate-900/40 backdrop-blur-md border-r border-slate-700/30 min-h-[calc(100vh-64px)] sticky top-16 transition-all duration-300 ${sidebarExpanded ? 'w-64' : 'w-20'
+        <aside className={`hidden lg:flex flex-col bg-slate-900/40 backdrop-blur-md border-r border-slate-700/30 min-h-[calc(100vh-64px)] sticky top-16 transition-all duration-300 overflow-hidden ${sidebarExpanded ? 'w-64' : 'w-20'
           }`}>
           {/* Navigation Links */}
           <div className="flex-1 p-4 overflow-y-auto">
@@ -130,13 +138,14 @@ const DashboardLayout = ({ children }) => {
           </div>
           
           {/* Collapse/Expand Button */}
-          <div className="border-t border-slate-700/30 p-4">
+          <div className="border-t border-slate-700/30 p-4 flex-shrink-0">
             <button
               onClick={toggleSidebar}
-              className="w-full flex items-center justify-center p-2 hover:bg-slate-800/50 rounded-lg transition-colors"
+              className="w-full flex items-center justify-center p-3 hover:bg-slate-800/50 rounded-lg transition-all duration-200 cursor-pointer active:bg-slate-700/50"
               title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+              type="button"
             >
-              <span className="text-gray-300">
+              <span className="text-gray-300 text-lg font-bold">
                 {sidebarExpanded ? '◀' : '▶'}
               </span>
             </button>

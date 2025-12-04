@@ -99,7 +99,7 @@ const InstructorSchedule = () => {
                             <Users className="w-5 h-5 text-purple-400" />
                         </div>
                         <div className="text-3xl font-bold text-white">
-                            {new Set(schedules.map(s => s.course_id)).size}
+                            {new Set(schedules.map(s => s.course_name)).size}
                         </div>
                     </div>
                 </div>
@@ -125,8 +125,8 @@ const InstructorSchedule = () => {
                                         {scheduledByDay[day].map(schedule => (
                                             <div key={schedule.id} className="bg-white/5 border border-white/10 rounded-lg p-4">
                                                 <div className="mb-3">
-                                                    <h4 className="font-bold text-white mb-1">{schedule.course_title || 'Unknown Course'}</h4>
-                                                    <p className="text-sm text-gray-400">{schedule.batch || 'No batch specified'}</p>
+                                                    <h4 className="font-bold text-white mb-1">{schedule.course_name || 'Unknown Course'}</h4>
+                                                    <p className="text-sm text-gray-400">{schedule.batch_info || 'No batch specified'}</p>
                                                 </div>
                                                 <div className="space-y-2 text-sm">
                                                     <div className="flex items-center gap-2 text-gray-300">
@@ -135,14 +135,8 @@ const InstructorSchedule = () => {
                                                     </div>
                                                     <div className="flex items-center gap-2 text-gray-300">
                                                         <MapPin className="w-4 h-4" />
-                                                        <span>{schedule.room || 'Room TBA'}</span>
+                                                        <span>{schedule.room_number || schedule.building || 'Room TBA'}</span>
                                                     </div>
-                                                    {schedule.enrolled_students && (
-                                                        <div className="flex items-center gap-2 text-gray-300">
-                                                            <Users className="w-4 h-4" />
-                                                            <span>{schedule.enrolled_students} students</span>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         ))}
