@@ -670,8 +670,13 @@ class ScheduleViewSet(viewsets.ModelViewSet):
         queryset = Schedule.objects.all()
         
         # If instructor parameter is passed, filter for instructor's schedules
-        if self.request.query_params.get('instructor') == 'true' and user.role == 'instructor':
+        instructor_param = self.request.query_params.get('instructor')
+        if instructor_param == 'true' and user.role == 'instructor':
+            print(f"DEBUG: Filtering schedules for instructor {user.username} (ID: {user.id})")
             queryset = queryset.filter(batch__instructor=user)
+            print(f"DEBUG: Found {queryset.count()} schedules")
+        elif instructor_param == 'true':
+            print(f"DEBUG: User {user.username} requested instructor schedules but has role {user.role}")
         
         return queryset
     
