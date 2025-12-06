@@ -736,6 +736,15 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         batch_id = request.data.get('batch')
         student_id = request.data.get('student')
         
+        # If no student specified, use the authenticated user (students can only enroll themselves)
+        if not student_id:
+            if request.user.role != 'student':
+                return Response(
+                    {'error': 'Must specify student ID'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            student_id = request.user.id
+        
         # Allow students to enroll themselves, admin/staff can enroll others
         if request.user.role == 'student':
             if int(student_id) != request.user.id:

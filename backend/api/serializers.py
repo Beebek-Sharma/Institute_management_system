@@ -169,12 +169,13 @@ class EnrollmentListSerializer(serializers.ModelSerializer):
     batch_info = serializers.CharField(source='batch.__str__', read_only=True)
     course_name = serializers.CharField(source='batch.course.name', read_only=True)
     course_code = serializers.CharField(source='batch.course.code', read_only=True)
+    course = serializers.IntegerField(source='batch.course.id', read_only=True)
     
     class Meta:
         model = Enrollment
         fields = [
             'id', 'student', 'student_name', 'batch', 'batch_info',
-            'course_name', 'course_code', 'status', 'enrollment_date', 'grade'
+            'course', 'course_name', 'course_code', 'status', 'enrollment_date', 'grade'
         ]
         read_only_fields = ['id', 'enrollment_date']
 
