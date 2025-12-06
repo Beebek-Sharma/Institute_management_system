@@ -105,6 +105,12 @@ const CourseDetails = () => {
             return;
         }
 
+        if (isEnrolled) {
+            alert('You are already enrolled in this course!');
+            navigate('/student/courses');
+            return;
+        }
+
         try {
             setEnrolling(true);
             setError('');
@@ -130,8 +136,15 @@ const CourseDetails = () => {
             console.error('[CourseDetails] Enrollment failed:', error);
             const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message || 'Unknown error';
             console.error('[CourseDetails] Error details:', errorMsg);
-            setError(`Failed to enroll: ${errorMsg}`);
-            alert(`Failed to enroll: ${errorMsg}`);
+            
+            // Check if it's a duplicate enrollment error
+            if (errorMsg.includes('already enrolled')) {
+                setIsEnrolled(true);
+                alert('You are already enrolled in this course!');
+            } else {
+                setError(`Failed to enroll: ${errorMsg}`);
+                alert(`Failed to enroll: ${errorMsg}`);
+            }
         } finally {
             setEnrolling(false);
         }
