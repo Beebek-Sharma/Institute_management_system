@@ -36,11 +36,30 @@ const StudentSchedule = () => {
     const fetchMySchedule = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`/api/students/${user.id}/schedule/`);
-            setSchedules(response.data || []);
+            console.log('Fetching student schedule...');
+            // Get student's enrollments to find their batches
+            const enrollmentRes = await axios.get('/api/enrollments/');
+            console.log('Enrollments:', enrollmentRes.data);
+            
+            // Get all schedules (backend will filter if needed)
+            const scheduleRes = await axios.get('/api/schedules/');
+            console.log('All schedules count:', scheduleRes.data.length);
+            
+            // Get batch IDs from enrollments
+            const batchIds = new Set(enrollmentRes.data.map(e => e.batch));
+            console.log('Student batch IDs:', Array.from(batchIds));
+            
+            // Filter schedules to only those in the student's batches
+            const studentSchedules = scheduleRes.data.filter(s => batchIds.has(s.batch));
+            console.log('Filtered schedules for student:', studentSchedules.length);
+            
+            setSchedules(studentSchedules || []);
+            setError('');
         } catch (err) {
+            console.error('Error fetching schedule:', err);
+            console.error('Response:', err.response?.data);
             setError('Failed to fetch your schedule');
-            console.error(err);
+            setSchedules([]);
         } finally {
             setLoading(false);
         }
