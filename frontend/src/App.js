@@ -19,6 +19,7 @@ import Search from "./pages/Search";
 // Student Pages
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentCourses from "./pages/student/StudentCourses";
+import StudentCourseLearning from "./pages/student/StudentCourseLearning";
 import StudentEnrollments from "./pages/student/StudentEnrollments";
 import StudentPayments from "./pages/student/StudentPayments";
 import StudentProfile from "./pages/student/StudentProfile";
@@ -125,6 +126,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['student']}>
                     <StudentCourses />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/courses/:courseId"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentCourseLearning />
                   </ProtectedRoute>
                 }
               />

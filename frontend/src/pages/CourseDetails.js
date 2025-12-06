@@ -107,7 +107,6 @@ const CourseDetails = () => {
 
         if (isEnrolled) {
             alert('You are already enrolled in this course!');
-            navigate('/student/courses');
             return;
         }
 
@@ -120,7 +119,7 @@ const CourseDetails = () => {
             
             console.log(`[CourseDetails] Enrolling in course ${courseIdInt} for user ${user.id}`);
             
-            // Use batch-based enrollment like StudentCourses
+            // Use batch-based enrollment
             const result = await enrollmentsAPI.enrollInCourse(courseIdInt, user.id);
             
             console.log(`[CourseDetails] Enrollment successful:`, result);
@@ -128,9 +127,9 @@ const CourseDetails = () => {
             setIsEnrolled(true);
             alert('Successfully enrolled in course!');
             
-            // Redirect to student courses after a short delay
+            // Redirect to the course learning page
             setTimeout(() => {
-                navigate('/student/courses');
+                navigate(`/student/courses/${courseIdInt}`);
             }, 1000);
         } catch (error) {
             console.error('[CourseDetails] Enrollment failed:', error);
