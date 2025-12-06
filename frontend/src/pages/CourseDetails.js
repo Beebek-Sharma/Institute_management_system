@@ -125,12 +125,14 @@ const CourseDetails = () => {
             console.log(`[CourseDetails] Enrollment successful:`, result);
             
             setIsEnrolled(true);
-            alert('Successfully enrolled in course!');
             
-            // Redirect to the course learning page
-            setTimeout(() => {
-                navigate(`/student/courses/${courseIdInt}`);
-            }, 1000);
+            // Show success and immediately navigate
+            alert('Successfully enrolled in course! Redirecting to your course...');
+            console.log(`[CourseDetails] Navigating to /student/courses/${courseIdInt}`);
+            
+            // Navigate immediately without timeout
+            navigate(`/student/courses/${courseIdInt}`);
+            
         } catch (error) {
             console.error('[CourseDetails] Enrollment failed:', error);
             const errorMsg = error.response?.data?.error || error.response?.data?.message || error.message || 'Unknown error';

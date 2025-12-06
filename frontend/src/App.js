@@ -122,18 +122,18 @@ function App() {
                 }
               />
               <Route
-                path="/student/courses"
-                element={
-                  <ProtectedRoute allowedRoles={['student']}>
-                    <StudentCourses />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/student/courses/:courseId"
                 element={
                   <ProtectedRoute allowedRoles={['student']}>
                     <StudentCourseLearning />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/courses"
+                element={
+                  <ProtectedRoute allowedRoles={['student']}>
+                    <StudentCourses />
                   </ProtectedRoute>
                 }
               />
