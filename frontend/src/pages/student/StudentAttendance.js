@@ -40,11 +40,16 @@ const StudentAttendance = () => {
     const fetchMyAttendance = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`/api/students/${user.id}/attendance/`);
+            // Backend filters attendance by logged-in student automatically
+            const response = await axios.get('/api/attendance/');
+            console.log('Attendance response:', response.data);
             setAttendanceRecords(response.data || []);
+            setError('');
         } catch (err) {
+            console.error('Error fetching attendance:', err);
+            console.error('Response:', err.response?.data);
             setError('Failed to fetch attendance records');
-            console.error(err);
+            setAttendanceRecords([]);
         } finally {
             setLoading(false);
         }
@@ -52,10 +57,23 @@ const StudentAttendance = () => {
 
     const fetchMyCourses = async () => {
         try {
-            const response = await axios.get(`/api/students/${user.id}/courses/`);
-            setCourses(response.data || []);
+            // Get all courses by fetching enrollments
+            const response = await axios.get('/api/enrollments/');
+            const uniqueCourses = new Map();
+            
+            (response.data || []).forEach(enrollment => {
+                if (!uniqueCourses.has(enrollment.course)) {
+                    uniqueCourses.set(enrollment.course, {
+                        id: enrollment.course,
+                        title: enrollment.course_name
+                    });
+                }
+            });
+            
+            setCourses(Array.from(uniqueCourses.values()));
         } catch (err) {
             console.error('Failed to fetch courses', err);
+            setCourses([]);
         }
     };
 
@@ -197,16 +215,16 @@ const StudentAttendance = () => {
                                                 {record.date ? new Date(record.date).toLocaleDateString() : 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 text-white font-medium">
-                                                {record.course_title || 'Unknown'}
+                                                {record.course_name || 'Unknown'}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(record.status)}`}>
                                                     {getStatusIcon(record.status)}
-                                                    {record.status || 'N/A'}
+                                                    {record.status_display || 'N/A'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-gray-300">
-                                                {record.marked_by_name || 'Instructor'}
+                                                {record.instructor_name || 'Instructor'}
                                             </td>
                                         </tr>
                                     ))}

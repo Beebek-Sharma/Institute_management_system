@@ -253,14 +253,18 @@ class AttendanceSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='enrollment.student.get_full_name', read_only=True)
     instructor_name = serializers.CharField(source='marked_by.get_full_name', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    course_name = serializers.CharField(source='enrollment.batch.course.name', read_only=True)
+    course_id = serializers.IntegerField(source='enrollment.batch.course.id', read_only=True)
+    date = serializers.DateTimeField(source='marked_date', read_only=True)
     
     class Meta:
         model = Attendance
         fields = [
             'id', 'enrollment', 'student_name', 'schedule', 'status', 'status_display',
-            'marked_date', 'marked_by', 'instructor_name', 'notes'
+            'marked_date', 'date', 'marked_by', 'instructor_name', 'notes',
+            'course_name', 'course_id'
         ]
-        read_only_fields = ['id', 'marked_date']
+        read_only_fields = ['id', 'marked_date', 'date']
 
 
 # ===================== NOTIFICATION SERIALIZERS =====================
