@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { enrollmentsAPI } from '../api/enrollments';
 import { coursesAPI } from '../api/courses';
+import { useToast } from '../hooks/use-toast';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import Header from '../components/Header';
@@ -20,6 +21,7 @@ const CourseDetails = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(true);
     const [enrolling, setEnrolling] = useState(false);
     const [course, setCourse] = useState(null);
@@ -106,7 +108,11 @@ const CourseDetails = () => {
         }
 
         if (isEnrolled) {
-            alert('You are already enrolled in this course!');
+            toast({
+                title: "Already Enrolled",
+                description: "You are already enrolled in this course!",
+                variant: "default",
+            });
             return;
         }
 
@@ -126,12 +132,12 @@ const CourseDetails = () => {
             
             setIsEnrolled(true);
             
-            // Show success and immediately navigate
-            alert('Successfully enrolled in course! Redirecting to your course...');
             console.log(`[CourseDetails] Navigating to /student/courses/${courseIdInt}`);
             
-            // Navigate immediately without timeout
-            navigate(`/student/courses/${courseIdInt}`);
+            // Navigate immediately - use setTimeout to ensure state updates are processed
+            setTimeout(() => {
+                navigate(`/student/courses/${courseIdInt}`);
+            }, 100);
             
         } catch (error) {
             console.error('[CourseDetails] Enrollment failed:', error);
@@ -141,10 +147,18 @@ const CourseDetails = () => {
             // Check if it's a duplicate enrollment error
             if (errorMsg.includes('already enrolled')) {
                 setIsEnrolled(true);
-                alert('You are already enrolled in this course!');
+                toast({
+                    title: "Already Enrolled",
+                    description: "You are already enrolled in this course!",
+                    variant: "default",
+                });
             } else {
                 setError(`Failed to enroll: ${errorMsg}`);
-                alert(`Failed to enroll: ${errorMsg}`);
+                toast({
+                    title: "Enrollment Failed",
+                    description: `Failed to enroll: ${errorMsg}`,
+                    variant: "destructive",
+                });
             }
         } finally {
             setEnrolling(false);
