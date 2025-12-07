@@ -15,6 +15,7 @@ router.register(r'payments', views.PaymentViewSet, basename='payment')
 router.register(r'attendance', views.AttendanceViewSet, basename='attendance')
 router.register(r'notifications', views.NotificationViewSet, basename='notification')
 router.register(r'activity-logs', views.ActivityLogViewSet, basename='activity_log')
+router.register(r'announcements', views.AnnouncementViewSet, basename='announcement')
 
 urlpatterns = [
     # Authentication endpoints

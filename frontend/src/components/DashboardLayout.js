@@ -18,7 +18,7 @@ import {
   ClipboardCheck
 } from 'lucide-react';
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children, disablePadding = false }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -136,20 +136,7 @@ const DashboardLayout = ({ children }) => {
           <div className="flex-1 p-4 overflow-y-auto">
             <NavLinks />
           </div>
-          
-          {/* Collapse/Expand Button */}
-          <div className="border-t border-slate-700/30 p-4 flex-shrink-0">
-            <button
-              onClick={toggleSidebar}
-              className="w-full flex items-center justify-center p-3 hover:bg-slate-800/50 rounded-lg transition-all duration-200 cursor-pointer active:bg-slate-700/50"
-              title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
-              type="button"
-            >
-              <span className="text-gray-300 text-lg font-bold">
-                {sidebarExpanded ? '◀' : '▶'}
-              </span>
-            </button>
-          </div>
+
         </aside>
 
         {/* Sidebar - Mobile */}
@@ -183,8 +170,11 @@ const DashboardLayout = ({ children }) => {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 bg-transparent">
-          {children}
+        <main className={`flex-1 ${disablePadding ? '' : 'p-4 md:p-6 lg:p-8'} bg-transparent`}>
+          <div className="w-full">
+            {/* Main content area */}
+            {children}
+          </div>
         </main>
       </div>
 

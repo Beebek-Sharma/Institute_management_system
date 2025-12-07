@@ -389,3 +389,40 @@ class ActivityLog(models.Model):
     
     def __str__(self):
         return f"{self.user} - {self.get_action_display()}"
+
+
+class Announcement(models.Model):
+    """Admin announcements for all users"""
+    PRIORITY_CHOICES = [
+        ('high', 'High'),
+        ('normal', 'Normal'),
+        ('low', 'Low'),
+    ]
+    
+    TARGET_AUDIENCE_CHOICES = [
+        ('all', 'All Users'),
+        ('students', 'Students Only'),
+        ('instructors', 'Instructors Only'),
+        ('staff', 'Staff Only'),
+    ]
+    
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='announcements_created')
+    
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='normal')
+    target_audience = models.CharField(max_length=20, choices=TARGET_AUDIENCE_CHOICES, default='all')
+    
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'announcements'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['is_published', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return self.title

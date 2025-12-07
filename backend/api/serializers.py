@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog
+    Attendance, Notification, ActivityLog, Announcement
 )
 
 User = get_user_model()
@@ -299,3 +299,20 @@ class ActivityLogSerializer(serializers.ModelSerializer):
             'target_user', 'target_user_name', 'ip_address', 'device_info', 'created_at'
         ]
         read_only_fields = ['id', 'created_at']
+
+
+# ===================== ANNOUNCEMENT SERIALIZERS =====================
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    """Announcement serializer - for admin to create/manage announcements"""
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    priority_display = serializers.CharField(source='get_priority_display', read_only=True)
+    target_audience_display = serializers.CharField(source='get_target_audience_display', read_only=True)
+    
+    class Meta:
+        model = Announcement
+        fields = [
+            'id', 'title', 'message', 'created_by', 'created_by_name', 'priority', 'priority_display',
+            'target_audience', 'target_audience_display', 'is_published', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']

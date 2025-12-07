@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog, User as CustomUser
+    Attendance, Notification, ActivityLog, User as CustomUser, Announcement
 )
 from .serializers import (
     UserSerializer, UserDetailSerializer, UserRegistrationSerializer, UserCreateByStaffSerializer,
@@ -25,7 +25,8 @@ from .serializers import (
     PaymentSerializer, PaymentVerifySerializer,
     AttendanceSerializer,
     NotificationSerializer,
-    ActivityLogSerializer
+    ActivityLogSerializer,
+    AnnouncementSerializer
 )
 from .permissions import (
     IsAdmin, IsStaff, IsInstructor, IsStudent, IsAdminOrStaff,
@@ -995,6 +996,49 @@ class ActivityLogViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['user__username', 'action']
     ordering_fields = ['created_at', 'action']
     ordering = ['-created_at']
+
+
+# ===================== ANNOUNCEMENT VIEWS =====================
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    """ViewSet for announcements (admin can create/edit, all can view)"""
+    queryset = Announcement.objects.filter(is_published=True)
+    serializer_class = AnnouncementSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'message']
+    ordering_fields = ['created_at', 'priority']
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        """Filter based on user role and target audience"""
+        queryset = Announcement.objects.filter(is_published=True)
+        
+        # Admins can see all announcements
+        if self.request.user.role == 'admin':
+            return Announcement.objects.all()
+        
+        # Filter by target audience
+        user_role = self.request.user.role
+        queryset = queryset.filter(
+            Q(target_audience='all') |
+            Q(target_audience='students', user__role='student') |
+            Q(target_audience='instructors', user__role='instructor') |
+            Q(target_audience='staff', user__role='staff')
+        )
+        return queryset
+    
+    def get_permissions(self):
+        """Different permissions for different actions"""
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsAdmin]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+    
+    def perform_create(self, serializer):
+        """Set the created_by field to the current user"""
+        serializer.save(created_by=self.request.user)
 
 
 # ===================== HELPER FUNCTIONS =====================
