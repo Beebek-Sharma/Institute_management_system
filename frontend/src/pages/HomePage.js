@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { ChevronLeft, ChevronRight, GraduationCap, Lightbulb, Award } from 'lucide-react';
-import { FlippingCard } from '../components/ui/flipping-card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DashboardLayout from '../components/DashboardLayout';
@@ -85,9 +85,8 @@ const HomePage = () => {
             {banners.map((banner, index) => (
               <div
                 key={banner.id}
-                className={`bg-gradient-to-br from-teal-900 to-teal-800 text-white p-8 md:p-16 transition-all duration-700 rounded-2xl ${
-                  index === currentSlide ? 'block animate-fadeIn' : 'hidden'
-                }`}
+                className={`bg-gradient-to-br from-teal-900 to-teal-800 text-white p-8 md:p-16 transition-all duration-700 rounded-2xl ${index === currentSlide ? 'block animate-fadeIn' : 'hidden'
+                  }`}
               >
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                   <div className="flex-1">
@@ -95,7 +94,7 @@ const HomePage = () => {
                     {banner.subtitle && (
                       <p className="text-base md:text-lg mb-6 text-teal-100">{banner.subtitle}</p>
                     )}
-                    <Button 
+                    <Button
                       onClick={() => {
                         if (user && user.id) {
                           navigate('/student/courses');
@@ -137,9 +136,8 @@ const HomePage = () => {
                     <button
                       key={index}
                       onClick={() => setCurrentSlide(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
-                      }`}
+                      className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
+                        }`}
                     />
                   ))}
                 </div>
@@ -163,91 +161,60 @@ const HomePage = () => {
               </div>
             ) : courses.length > 0 ? (
               courses.map((course) => (
-                <FlippingCard
-                  key={course.id}
-                  width={300}
-                  height={380}
-                  frontContent={
-                    <div className="flex flex-col h-full w-full">
-                      <div className="relative h-40 overflow-hidden rounded-t-lg bg-gradient-to-br from-slate-700 to-slate-800">
-                        {course.image_url ? (
-                          <img
-                            src={course.image_url}
-                            alt={course.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.style.backgroundColor = '#1e293b';
-                              e.target.alt = 'Course image unavailable';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-4xl">📚</div>
-                        )}
-                        <div className="absolute top-2 left-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm">
-                          Featured
-                        </div>
-                        {course.credits && (
-                          <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm flex items-center gap-1">
-                            <span>⭐</span> {course.credits} Credits
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4 flex flex-col flex-1 bg-slate-900">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg">🎓</span>
-                          <span className="text-xs text-gray-300 font-medium">{course.category || 'Course'}</span>
-                        </div>
-                        <h3 className="text-base font-bold mb-2 text-white line-clamp-2">
-                          {course.title}
-                        </h3>
-                        <p className="text-xs text-gray-300 mb-3 line-clamp-2">
-                          {course.description || 'Enroll now to learn more about this course'}
-                        </p>
-                        <div className="mt-auto">
-                          <div className="flex items-center gap-2 text-[#00a878] text-xs font-semibold mb-2">
-                            <span className="border border-teal-600 bg-teal-900/30 px-2 py-0.5 rounded">
-                              {course.duration_weeks ? `${course.duration_weeks} weeks` : 'Self-paced'}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-400">
-                            {course.level || 'All Levels'} • Instructor Led
-                          </p>
-                        </div>
-                      </div>
+                <Card key={course.id} className="w-[300px] flex flex-col h-full bg-slate-900 border-slate-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-700 to-slate-800">
+                    {course.image_url ? (
+                      <img
+                        src={course.image_url}
+                        alt={course.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.backgroundColor = '#1e293b';
+                          e.target.alt = 'Course image unavailable';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">📚</div>
+                    )}
+                    <div className="absolute top-2 left-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm text-slate-900">
+                      Featured
                     </div>
-                  }
-                  backContent={
-                    <div className="flex flex-col items-center justify-center h-full w-full p-6 text-center bg-slate-900">
-                      <div className="text-4xl mb-4">🎓</div>
-                      <h3 className="text-lg font-bold mb-3 text-white">{course.title}</h3>
-                      <p className="text-sm text-gray-300 mb-4">
-                        {course.description || 'Expand your skills with this comprehensive course'}
-                      </p>
-                      <div className="space-y-2 mb-6 w-full">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-gray-400">Category:</span>
-                          <span className="font-semibold text-white">{course.category || 'General'}</span>
-                        </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-gray-400">Level:</span>
-                          <span className="font-semibold text-white">{course.level || 'All Levels'}</span>
-                        </div>
-                        {course.duration_weeks && (
-                          <div className="flex justify-between text-xs">
-                            <span className="text-gray-400">Duration:</span>
-                            <span className="font-semibold text-white">{course.duration_weeks} weeks</span>
-                          </div>
-                        )}
+                    {course.credits && (
+                      <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm flex items-center gap-1 text-slate-900">
+                        <span>⭐</span> {course.credits} Credits
                       </div>
-                      <button
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                        className="bg-[#00a878] hover:bg-[#008c65] text-white px-6 py-2 rounded-md text-sm font-semibold transition-colors"
-                      >
-                        Enroll Now
-                      </button>
+                    )}
+                  </div>
+
+                  <CardHeader className="p-4 pb-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg">🎓</span>
+                      <span className="text-xs text-gray-400 font-medium">{course.category || 'Course'}</span>
                     </div>
-                  }
-                />
+                    <CardTitle className="text-base font-bold text-white line-clamp-2">
+                      {course.title}
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="p-4 py-2 flex-grow">
+                    <p className="text-xs text-gray-300 mb-3 line-clamp-3">
+                      {course.description || 'Enroll now to learn more about this course'}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-400 mt-2">
+                      <span>{course.level || 'All Levels'}</span>
+                      <span>{course.duration_weeks ? `${course.duration_weeks} weeks` : 'Self-paced'}</span>
+                    </div>
+                  </CardContent>
+
+                  <CardFooter className="p-4 pt-2">
+                    <Button
+                      onClick={() => navigate(`/courses/${course.id}`)}
+                      className="w-full bg-[#00a878] hover:bg-[#008c65] text-white font-semibold h-9"
+                    >
+                      Enroll Now
+                    </Button>
+                  </CardFooter>
+                </Card>
               ))
             ) : (
               <div className="w-full text-center py-12">
