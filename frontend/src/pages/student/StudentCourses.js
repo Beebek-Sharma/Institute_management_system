@@ -3,8 +3,8 @@ import { coursesAPI } from '../../api/courses';
 import { enrollmentsAPI } from '../../api/enrollments';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
+import CourseCard from '../../components/CourseCard';
 import { Badge } from '../../components/ui/badge';
 import { Search, BookOpen, User, Calendar, Clock, AlertCircle } from 'lucide-react';
 import { Input } from '../../components/ui/input';
@@ -127,42 +127,17 @@ const StudentCourses = () => {
               const isEnrolled = enrolledCourseIds.has(course.id);
 
               return (
-                <Card key={course.id} className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                        {course.code}
-                      </Badge>
-                      <Badge className="bg-teal-100 text-teal-800 hover:bg-teal-100 border-0">
-                        {course.credits} Credits
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl line-clamp-2">{course.name}</CardTitle>
-                    <CardDescription className="line-clamp-3 mt-2">
-                      {course.description}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent className="flex-grow space-y-3">
-                    <div className="flex items-center text-sm text-gray-600 gap-2">
-                      <User className="h-4 w-4" />
-                      <span>Instructor: {course.instructor_name || 'TBA'}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>Schedule: {course.schedule || 'TBA'}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-600 gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>Duration: {course.duration_weeks} weeks</span>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="pt-4 border-t bg-gray-50">
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  actionSlot={
                     <Button
-                      className={`w-full ${isEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700'}`}
+                      className={`w-full font-bold ${isEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                       disabled={isEnrolled || enrollmentLoading === course.id}
-                      onClick={() => handleEnroll(course.id)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click navigation
+                        handleEnroll(course.id);
+                      }}
                     >
                       {enrollmentLoading === course.id ? (
                         'Enrolling...'
@@ -172,8 +147,8 @@ const StudentCourses = () => {
                         'Enroll Now'
                       )}
                     </Button>
-                  </CardFooter>
-                </Card>
+                  }
+                />
               );
             })}
           </div>

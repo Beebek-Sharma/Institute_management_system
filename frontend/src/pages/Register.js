@@ -29,17 +29,49 @@ const Register = () => {
     });
   };
 
+  const validateForm = () => {
+    const validationErrors = [];
+
+    if (!formData.first_name.trim()) {
+      validationErrors.push('First name is required');
+    }
+
+    if (!formData.last_name.trim()) {
+      validationErrors.push('Last name is required');
+    }
+
+    if (!formData.email.trim()) {
+      validationErrors.push('Email is required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      validationErrors.push('Please enter a valid email address');
+    }
+
+    if (!formData.username.trim()) {
+      validationErrors.push('Username is required');
+    } else if (formData.username.length < 3) {
+      validationErrors.push('Username must be at least 3 characters');
+    }
+
+    if (!formData.password) {
+      validationErrors.push('Password is required');
+    } else if (formData.password.length < 6) {
+      validationErrors.push('Password must be at least 6 characters');
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      validationErrors.push('Passwords do not match');
+    }
+
+    return validationErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setError(validationErrors[0]);
       return;
     }
 
@@ -50,9 +82,16 @@ const Register = () => {
 
       if (result.success) {
         navigate('/student/dashboard');
+      } else {
+        setError(result.error || 'Registration failed. Please try again.');
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      const errorMsg = err.response?.data?.error 
+        || err.response?.data?.username?.[0]
+        || err.response?.data?.email?.[0]
+        || err.response?.data?.password?.[0]
+        || 'Registration failed. Please try again.';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }

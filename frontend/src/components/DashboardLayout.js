@@ -24,9 +24,31 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // Helper to safely access localStorage
+  const safeGetLocalStorage = (key) => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return localStorage.getItem(key);
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  const safeSetLocalStorage = (key, value) => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, value);
+      }
+    } catch {
+      // Silently fail
+    }
+  };
+
   // Initialize from localStorage or default to expanded on first load
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
-    const savedState = localStorage.getItem('sidebarExpanded');
+    const savedState = safeGetLocalStorage('sidebarExpanded');
     return savedState !== null ? JSON.parse(savedState) : true;
   });
 
@@ -34,7 +56,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
   const toggleSidebar = () => {
     const newState = !sidebarExpanded;
     setSidebarExpanded(newState);
-    localStorage.setItem('sidebarExpanded', JSON.stringify(newState));
+    safeSetLocalStorage('sidebarExpanded', JSON.stringify(newState));
   };
 
   const getNavigationItems = () => {

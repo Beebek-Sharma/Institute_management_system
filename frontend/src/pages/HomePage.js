@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { ChevronLeft, ChevronRight, GraduationCap, Lightbulb, Award } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import CourseCard from '../components/CourseCard';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DashboardLayout from '../components/DashboardLayout';
@@ -161,60 +162,7 @@ const HomePage = () => {
               </div>
             ) : courses.length > 0 ? (
               courses.map((course) => (
-                <Card key={course.id} className="w-[300px] flex flex-col h-full bg-slate-900 border-slate-700 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-slate-700 to-slate-800">
-                    {course.image_url ? (
-                      <img
-                        src={course.image_url}
-                        alt={course.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.style.backgroundColor = '#1e293b';
-                          e.target.alt = 'Course image unavailable';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">📚</div>
-                    )}
-                    <div className="absolute top-2 left-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm text-slate-900">
-                      Featured
-                    </div>
-                    {course.credits && (
-                      <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-xs font-bold shadow-sm flex items-center gap-1 text-slate-900">
-                        <span>⭐</span> {course.credits} Credits
-                      </div>
-                    )}
-                  </div>
-
-                  <CardHeader className="p-4 pb-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">🎓</span>
-                      <span className="text-xs text-gray-400 font-medium">{course.category || 'Course'}</span>
-                    </div>
-                    <CardTitle className="text-base font-bold text-white line-clamp-2">
-                      {course.title}
-                    </CardTitle>
-                  </CardHeader>
-
-                  <CardContent className="p-4 py-2 flex-grow">
-                    <p className="text-xs text-gray-300 mb-3 line-clamp-3">
-                      {course.description || 'Enroll now to learn more about this course'}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-gray-400 mt-2">
-                      <span>{course.level || 'All Levels'}</span>
-                      <span>{course.duration_weeks ? `${course.duration_weeks} weeks` : 'Self-paced'}</span>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="p-4 pt-2">
-                    <Button
-                      onClick={() => navigate(`/courses/${course.id}`)}
-                      className="w-full bg-[#00a878] hover:bg-[#008c65] text-white font-semibold h-9"
-                    >
-                      Enroll Now
-                    </Button>
-                  </CardFooter>
-                </Card>
+                <CourseCard key={course.id} course={course} />
               ))
             ) : (
               <div className="w-full text-center py-12">
