@@ -20,6 +20,12 @@ const CourseCard = ({ course, actionSlot }) => {
     // Handle inconsistent API fields (HomePage vs StudentCourses)
     const title = course.title || course.name;
 
+    // Construct full image URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+    const imageUrl = course.image
+        ? (course.image.startsWith('http') ? course.image : `${backendUrl}${course.image}`)
+        : null;
+
     return (
         <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild>
@@ -29,10 +35,10 @@ const CourseCard = ({ course, actionSlot }) => {
                 >
                     {/* Image Section */}
                     <div className="relative h-40 w-full overflow-hidden bg-white">
-                        {course.image_url ? (
+                        {imageUrl ? (
                             <img
-                                src={course.image_url}
-                                alt={course.title}
+                                src={imageUrl}
+                                alt={title}
                                 className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                             />
                         ) : (

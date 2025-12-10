@@ -148,6 +148,105 @@ def login(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
+def unified_login(request):
+    """Unified authentication endpoint - handles both login and auto-registration"""
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    first_name = request.data.get('first_name', '')
+    last_name = request.data.get('last_name', '')
+    
+    # Validation
+    if not password:
+        return Response(
+            {'error': 'Password is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if not username and not email:
+        return Response(
+            {'error': 'Username or email is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Use email as username if username not provided
+    if not username:
+        username = email.split('@')[0]
+    
+    # Use username as email if email not provided (with temp domain)
+    if not email:
+        email = f"{username}@temp.local"
+    
+    # Try to find existing user by username or email
+    user = User.objects.filter(Q(username=username) | Q(email=email)).first()
+    
+    if user:
+        # User exists - attempt login
+        if not user.check_password(password):
+            return Response(
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if not user.is_active:
+            return Response(
+                {'error': 'Account is disabled'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        action = 'login'
+    else:
+        # User doesn't exist - auto-register
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role='student'  # Default role for auto-registered users
+            )
+            action = 'registered'
+            
+            # Log registration activity
+            ActivityLog.objects.create(
+                user=user,
+                action='user_create',
+                description=f'User {user.username} auto-registered via unified auth',
+                ip_address=get_client_ip(request),
+                device_info=request.META.get('HTTP_USER_AGENT', '')
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'Registration failed: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    # Generate tokens
+    refresh = RefreshToken.for_user(user)
+    
+    # Log login activity
+    ActivityLog.objects.create(
+        user=user,
+        action='login',
+        description=f'User {user.username} logged in via unified auth',
+        ip_address=get_client_ip(request),
+        device_info=request.META.get('HTTP_USER_AGENT', '')
+    )
+    
+    return Response({
+        'action': action,  # 'login' or 'registered'
+        'message': 'Login successful' if action == 'login' else 'Registration successful',
+        'user': UserDetailSerializer(user).data,
+        'tokens': {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+    })
+
+
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
     """Logout user"""
@@ -703,12 +802,22 @@ class CourseCategoryViewSet(viewsets.ModelViewSet):
 
 class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet for courses"""
-    queryset = Course.objects.filter(is_active=True).prefetch_related('batches')
     serializer_class = CourseSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'code', 'description']
     ordering_fields = ['created_at', 'fee']
     ordering = ['-created_at']
+    
+    def get_queryset(self):
+        """Return all courses for admin/staff, only active for others"""
+        user = self.request.user
+        
+        # Admin and staff can see all courses (including inactive)
+        if user.is_authenticated and user.role in ['admin', 'staff']:
+            return Course.objects.all().prefetch_related('batches')
+        
+        # Others see only active courses
+        return Course.objects.filter(is_active=True).prefetch_related('batches')
     
     def get_permissions(self):
         """Allow anyone to read courses, but only admin can write"""
@@ -720,7 +829,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         """Create a new course (admin only)"""
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            course = serializer.save()
+            # Ensure is_active is True by default if not provided
+            course = serializer.save(is_active=request.data.get('is_active', True))
             
             ActivityLog.objects.create(
                 user=request.user,
@@ -769,6 +879,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(courses, many=True)
         return Response(serializer.data)
+
 
 
 # ===================== BATCH & SCHEDULE VIEWS =====================

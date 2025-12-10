@@ -230,17 +230,10 @@ export default function Header({ onMenuClick }) {
           ) : (
             <>
               <Button
-                variant="outline"
-                onClick={() => navigate("/login")}
-                className="hidden sm:block text-sm sm:text-base font-medium border-[#0056D2] text-[#0056D2] hover:bg-blue-50"
+                onClick={() => navigate("/auth")}
+                className="text-xs sm:text-base font-medium bg-[#0056D2] hover:bg-[#00419e] text-white px-3 sm:px-6"
               >
-                Log In
-              </Button>
-              <Button
-                onClick={() => navigate("/register")}
-                className="text-xs sm:text-base font-medium bg-[#0056D2] hover:bg-[#00419e] text-white px-2 sm:px-4"
-              >
-                Join
+                Get Started
               </Button>
             </>
           )}

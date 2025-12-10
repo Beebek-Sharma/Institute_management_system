@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { ChevronLeft, ChevronRight, GraduationCap, Lightbulb, Award } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import CourseCard from '../components/CourseCard';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DashboardLayout from '../components/DashboardLayout';
-import { coursesAPI } from '../api/courses';
+import axios from '../api/axios';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -24,8 +23,8 @@ const HomePage = () => {
   const fetchCourses = async () => {
     try {
       setLoadingCourses(true);
-      const allCourses = await coursesAPI.getCourses();
-      setCourses(allCourses.slice(0, 4)); // Show first 4 courses
+      const response = await axios.get('/api/courses/');
+      setCourses(response.data.slice(0, 6)); // Show first 6 courses
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -148,10 +147,10 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Most Popular Certificates */}
+      {/* Popular Courses Section */}
       <section className="py-12 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Most Popular Courses</h2>
+          <h2 className="text-3xl font-bold text-white mb-8">Popular Courses</h2>
           <div className="flex flex-wrap justify-center gap-6">
             {loadingCourses ? (
               <div className="w-full flex justify-center items-center py-12">
@@ -202,6 +201,6 @@ const HomePage = () => {
   ) : (
     <PageContent />
   );
-}
+};
 
 export default HomePage;
