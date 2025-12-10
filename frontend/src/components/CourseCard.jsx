@@ -28,29 +28,24 @@ const CourseCard = ({ course, actionSlot }) => {
                     className="group relative w-[300px] flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer h-[340px]"
                 >
                     {/* Image Section */}
-                    <div className="relative h-40 w-full overflow-hidden bg-slate-100">
+                    <div className="relative h-40 w-full overflow-hidden bg-white">
                         {course.image_url ? (
                             <img
                                 src={course.image_url}
                                 alt={course.title}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-slate-200 text-6xl">
+                            <div className="w-full h-full flex items-center justify-center bg-slate-50 text-6xl">
                                 🎓
                             </div>
                         )}
 
                         {/* Absolute Badges */}
-                        <div className="absolute top-3 right-3 flex gap-2">
-                            <Badge className="bg-white/90 text-slate-800 hover:bg-white border-0 shadow-sm font-semibold text-[10px] px-2 py-0.5 pointer-events-none backdrop-blur-sm">
+                        <div className="absolute top-3 right-3">
+                            <Badge className="bg-white text-slate-800 hover:bg-white border border-slate-200 shadow-sm font-semibold text-[10px] px-2 py-0.5 pointer-events-none">
                                 {badgeText}
                             </Badge>
-                            {isAiSkill && (
-                                <Badge className="bg-white/90 text-slate-800 hover:bg-white border-0 shadow-sm font-semibold text-[10px] px-2 py-0.5 flex items-center gap-1 pointer-events-none backdrop-blur-sm">
-                                    <span className="text-purple-600">✨</span> AI skills
-                                </Badge>
-                            )}
                         </div>
                     </div>
 
@@ -61,7 +56,7 @@ const CourseCard = ({ course, actionSlot }) => {
                             {logoUrl ? (
                                 <img src={logoUrl} alt={orgName} className="w-5 h-5 object-contain" />
                             ) : (
-                                <div className="w-5 h-5 bg-slate-900 rounded-sm flex items-center justify-center text-white text-[10px] font-bold">
+                                <div className="w-5 h-5 bg-slate-100 rounded-sm flex items-center justify-center text-slate-900 text-[10px] font-bold border border-slate-200">
                                     {orgName.charAt(0)}
                                 </div>
                             )}
@@ -75,13 +70,7 @@ const CourseCard = ({ course, actionSlot }) => {
 
                         {/* Footer Info */}
                         <div className="mt-auto">
-                            {course.category && (
-                                <p className="text-xs text-slate-500 mb-1">{course.category}</p>
-                            )}
-                            <div className="flex items-center gap-2 text-xs font-semibold text-blue-700">
-                                <BarChart className="w-3 h-3" />
-                                <span>{course.type || "Professional Certificate"}</span>
-                            </div>
+                            <p className="text-xs text-slate-500">Course</p>
                         </div>
                     </div>
                 </div>

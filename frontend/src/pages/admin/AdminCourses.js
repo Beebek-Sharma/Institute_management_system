@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit, Trash2, BookOpen, Users, Calendar, User, Clock } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
+import CourseCard from '../../components/CourseCard';
 import FlippingCard from '../../components/FlippingCard';
 import axios from '../../api/axios';
 
@@ -288,93 +289,56 @@ const AdminCourses = () => {
 
 
 
+// ... imports
+                import CourseCard from '../../components/CourseCard';
+
+                // ... inside component ...
+
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading courses...</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredCourses.map((course) => (
-                            <div
+                            <CourseCard
                                 key={course.id}
-                                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-3 bg-blue-500/20 rounded-lg">
-                                                <BookOpen className="w-6 h-6 text-blue-400" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-white">{course.name || course.title}</h3>
-                                                <p className="text-sm text-gray-400">{course.code}</p>
-                                            </div>
-                                        </div>
+                                course={course}
+                                actionSlot={
+                                    <div className="flex gap-2 w-full mt-2">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedCourse(course);
+                                                setShowAssignModal(true);
+                                            }}
+                                            className="flex-1 p-2 bg-green-500/10 hover:bg-green-500/20 text-green-600 rounded-lg transition border border-green-200 flex items-center justify-center"
+                                            title="Assign Instructor"
+                                        >
+                                            <User className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditClick(course);
+                                            }}
+                                            className="flex-1 p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 rounded-lg transition border border-blue-200 flex items-center justify-center"
+                                            title="Edit Course"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteCourse(course.id);
+                                            }}
+                                            className="flex-1 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-lg transition border border-red-200 flex items-center justify-center"
+                                            title="Delete Course"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </div>
-
-                                    {course.category && (
-                                        <span className="inline-block px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-semibold mb-3">
-                                            {course.category_name || course.category}
-                                        </span>
-                                    )}
-
-                                    <p className="text-sm text-gray-300 mb-4 line-clamp-2">
-                                        {course.description || 'No description available'}
-                                    </p>
-
-                                    <div className="space-y-2 mb-4">
-                                        {(course.duration_weeks || course.duration) && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{course.duration_weeks || course.duration} weeks</span>
-                                            </div>
-                                        )}
-                                        {(course.max_capacity || course.max_students) && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Users className="w-4 h-4" />
-                                                <span>Max: {course.max_capacity || course.max_students} students</span>
-                                            </div>
-                                        )}
-                                        {course.instructor_name && (
-                                            <div className="flex items-center gap-2 text-sm text-green-400">
-                                                <User className="w-4 h-4" />
-                                                <span>{course.instructor_name}</span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                        <div className="text-sm text-gray-400">
-                                            {course.enrolled_count || 0} enrolled
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedCourse(course);
-                                                    setShowAssignModal(true);
-                                                }}
-                                                className="p-2 bg-green-500/20 hover:bg-green-500/40 text-green-300 rounded-lg transition"
-                                                title="Assign Instructor"
-                                            >
-                                                <User className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditClick(course)}
-                                                className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
-                                                title="Edit Course"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteCourse(course.id)}
-                                                className="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-300 rounded-lg transition"
-                                                title="Delete Course"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                }
+                            />
                         ))}
                     </div>
                 )}
