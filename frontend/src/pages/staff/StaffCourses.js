@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/ca
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { useToast } from "../../hooks/use-toast";
-import { FlippingCard } from "../../components/ui/flipping-card";
+import CourseCard from "../../components/CourseCard";
 import { BookOpen, Users, Clock, AlertCircle } from 'lucide-react';
 import {
     Table,
@@ -174,80 +174,30 @@ const StaffCourses = () => {
                         <div className="flex flex-wrap justify-center gap-6">
                             {filteredCourses.length > 0 ? (
                                 filteredCourses.map((course) => (
-                                    <FlippingCard
+                                    <CourseCard
                                         key={course.id}
-                                        width={300}
-                                        height={400}
-                                        frontContent={
-                                            <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900">
-                                                <div className="relative h-32 overflow-hidden rounded-t-lg bg-gradient-to-br from-teal-600 to-teal-700 flex items-center justify-center">
-                                                    <div className="text-5xl">📚</div>
-                                                    <div className="absolute top-2 left-2 bg-white/20 backdrop-blur px-2 py-1 rounded text-xs font-bold text-white">
-                                                        {course.category || 'Course'}
-                                                    </div>
-                                                </div>
-                                                <div className="p-5 flex flex-col flex-1">
-                                                    <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">
-                                                        {course.title || course.name}
-                                                    </h3>
-                                                    <p className="text-xs text-gray-400 mb-4">{course.code}</p>
-                                                    <p className="text-sm text-gray-300 mb-4 line-clamp-2">
-                                                        {course.description || 'No description available'}
-                                                    </p>
-                                                    <div className="space-y-2 mt-auto">
-                                                        <div className="flex items-center gap-2 text-xs text-gray-300">
-                                                            <Clock className="w-4 h-4 text-teal-400" />
-                                                            <span>{course.duration_weeks || 'N/A'} weeks</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-xs text-gray-300">
-                                                            <Users className="w-4 h-4 text-teal-400" />
-                                                            <span>Max: {course.max_students || 'N/A'} students</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-xs text-gray-300">
-                                                            <AlertCircle className="w-4 h-4 text-teal-400" />
-                                                            <span>{course.enrolled_count || 0} enrolled</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                        backContent={
-                                            <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900 p-6">
-                                                <div className="text-4xl mb-3 text-center">🎓</div>
-                                                <h3 className="text-lg font-bold text-white mb-3 text-center line-clamp-2">
-                                                    {course.title || course.name}
-                                                </h3>
-                                                <div className="space-y-3 mb-6 flex-1">
-                                                    <div className="border-b border-white/20 pb-2">
-                                                        <p className="text-xs text-gray-400">Code</p>
-                                                        <p className="text-white font-semibold">{course.code || 'N/A'}</p>
-                                                    </div>
-                                                    <div className="border-b border-white/20 pb-2">
-                                                        <p className="text-xs text-gray-400">Credits</p>
-                                                        <p className="text-white font-semibold">{course.credits || 'N/A'}</p>
-                                                    </div>
-                                                    <div className="border-b border-white/20 pb-2">
-                                                        <p className="text-xs text-gray-400">Level</p>
-                                                        <p className="text-white font-semibold">{course.level || 'All Levels'}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedCourse(course);
-                                                            setSelectedInstructor(course.instructor || '');
-                                                        }}
-                                                        className="flex-1 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
-                                                    >
-                                                        Assign Instructor
-                                                    </button>
-                                                    <button
-                                                        onClick={() => navigate(`/courses/${course.id}`)}
-                                                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors"
-                                                    >
-                                                        View Details
-                                                    </button>
-                                                </div>
+                                        course={course}
+                                        actionSlot={
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedCourse(course);
+                                                        setSelectedInstructor(course.instructor || '');
+                                                    }}
+                                                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs h-8"
+                                                >
+                                                    Assign
+                                                </Button>
+                                                <Button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/courses/${course.id}`);
+                                                    }}
+                                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
+                                                >
+                                                    Details
+                                                </Button>
                                             </div>
                                         }
                                     />

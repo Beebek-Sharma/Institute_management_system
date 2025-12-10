@@ -14,9 +14,32 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    const validationErrors = [];
+
+    if (!email.trim()) {
+      validationErrors.push('Email or username is required');
+    }
+
+    if (!password) {
+      validationErrors.push('Password is required');
+    } else if (password.length < 6) {
+      validationErrors.push('Password must be at least 6 characters');
+    }
+
+    return validationErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const validationErrors = validateForm();
+    if (validationErrors.length > 0) {
+      setError(validationErrors[0]);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -37,9 +60,11 @@ const Login = () => {
           default:
             break;
         }
+      } else {
+        setError(result.error || 'Login failed. Please try again.');
       }
     } catch (err) {
-      setError('Invalid credentials');
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -109,9 +134,9 @@ const Login = () => {
                 <input type="checkbox" className="w-4 h-4 border border-gray-300/50 rounded accent-blue-500" />
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+              <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button

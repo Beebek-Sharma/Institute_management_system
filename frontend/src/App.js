@@ -9,6 +9,8 @@ import HomePage from "./pages/HomePage";
 import CourseDetails from "./pages/CourseDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Unauthorized from "./pages/Unauthorized";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -105,6 +107,8 @@ function App() {
               <Route path="/courses/:courseId" element={<CourseDetails />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
