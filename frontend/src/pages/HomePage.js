@@ -75,7 +75,7 @@ const HomePage = () => {
 
   // Content component to avoid duplication
   const PageContent = () => (
-    <div className="min-h-screen bg-transparent flex flex-col">
+    <div className="min-h-screen bg-blue-50 flex flex-col">
       {!user && <Header />}
 
       {/* Banner Carousel */}
@@ -150,9 +150,9 @@ const HomePage = () => {
       </section>
 
       {/* Most Popular Certificates */}
-      <section className="py-12 bg-transparent">
+      <section className="py-12 bg-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Most Popular Courses</h2>
+          <h2 className="text-2xl font-bold text-blue-900 mb-6">Most Popular Courses</h2>
           <div className="flex flex-wrap justify-center gap-6">
             {loadingCourses ? (
               <div className="w-full flex justify-center items-center py-12">

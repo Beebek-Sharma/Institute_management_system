@@ -80,15 +80,15 @@ export default function Header({ onMenuClick }) {
               onMouseLeave={handleExploreLeave}
               style={{ display: "inline-block" }}
             >
-              <button className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2 flex items-center gap-1 focus:outline-none">
+              <button className="text-sm sm:text-base font-medium text-green-800 hover:text-green-600 px-2 sm:px-3 py-2 flex items-center gap-1 focus:outline-none">
                 Explore <span className="ml-1">▾</span>
               </button>
               <ExploreDropdown open={exploreOpen} />
             </div>
-            <Link to="/my-learning" className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2">
+            <Link to="/my-learning" className="text-sm sm:text-base font-medium text-green-800 hover:text-green-600 px-2 sm:px-3 py-2">
               My Learning
             </Link>
-            <Link to="/degrees" className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2">
+            <Link to="/degrees" className="text-sm sm:text-base font-medium text-green-800 hover:text-green-600 px-2 sm:px-3 py-2">
               Degrees
             </Link>
           </nav>
