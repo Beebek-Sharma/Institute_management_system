@@ -115,8 +115,17 @@ export const AuthProvider = ({ children }) => {
     return { success: false, error: 'Invalid user data' };
   };
 
+  const setAuthData = (userData, tokens) => {
+    // Directly set authentication data (for unified auth flow)
+    setUser(userData);
+    safeSetLocalStorage('user', JSON.stringify(userData));
+    safeSetLocalStorage('access_token', tokens.access);
+    safeSetLocalStorage('refresh_token', tokens.refresh);
+    return { success: true, user: userData };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, updateProfile, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, updateProfile, setAuthData, loading }}>
       {children}
     </AuthContext.Provider>
   );

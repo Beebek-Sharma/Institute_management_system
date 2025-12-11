@@ -8,7 +8,7 @@ import axios from '../api/axios';
 
 export function UnifiedAuth() {
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth();
+    const { setAuthData } = useAuth();
     const [formData, setFormData] = useState({
         email: '',
         username: '',
@@ -33,13 +33,8 @@ export function UnifiedAuth() {
 
             const { action, tokens, user } = response.data;
 
-            // Store tokens and user data
-            localStorage.setItem('access_token', tokens.access);
-            localStorage.setItem('refresh_token', tokens.refresh);
-            localStorage.setItem('user', JSON.stringify(user));
-
-            // Update auth context
-            authLogin(user, tokens.access, tokens.refresh);
+            // Update auth context with user and tokens
+            setAuthData(user, tokens);
 
             // Show success message
             if (action === 'registered') {
