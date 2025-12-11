@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit, Trash2, BookOpen, Users, Calendar, User, Clock } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import CourseCard from '../../components/CourseCard';
-import FlippingCard from '../../components/FlippingCard';
 import axios from '../../api/axios';
 
 const AdminCourses = () => {
@@ -31,33 +30,31 @@ const AdminCourses = () => {
         duration_weeks: '',
         max_capacity: '',
         fee: '',
-        instructor: ''
+        instructor: '',
+        image: null
     });
 
     useEffect(() => {
-        if (!authLoading) {
-            if (!user || user?.role !== 'admin') {
-                navigate('/unauthorized');
+        if (!authLoading && user) {
+            if (user.role !== 'admin' && user.role !== 'staff') {
+                navigate('/');
             } else {
                 fetchCourses();
                 fetchInstructors();
                 fetchCategories();
             }
         }
-    }, [authLoading, user, navigate]);
-
-    useEffect(() => {
-        filterCourses();
-    }, [courses, searchTerm, categoryFilter]);
+    }, [user, authLoading, navigate]);
 
     const fetchCourses = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             const response = await axios.get('/api/courses/');
-            setCourses(response.data || []);
+            setCourses(response.data);
+            setFilteredCourses(response.data);
         } catch (err) {
-            setError('Failed to fetch courses');
-            console.error(err);
+            console.error('Fetch courses error:', err);
+            setError('Failed to load courses');
         } finally {
             setLoading(false);
         }
@@ -65,40 +62,38 @@ const AdminCourses = () => {
 
     const fetchInstructors = async () => {
         try {
-            const response = await axios.get('/api/admin/users/');
-            const instructorList = response.data.users?.filter(u => u.role === 'instructor') || [];
-            setInstructors(instructorList);
+            const response = await axios.get('/api/users/?role=instructor');
+            setInstructors(response.data);
         } catch (err) {
-            console.error('Failed to fetch instructors', err);
+            console.error('Fetch instructors error:', err);
         }
     };
 
     const fetchCategories = async () => {
         try {
             const response = await axios.get('/api/course-categories/');
-            setCategories(response.data || []);
+            setCategories(response.data);
         } catch (err) {
-            console.error('Failed to fetch categories', err);
+            console.error('Fetch categories error:', err);
         }
     };
 
-    const filterCourses = () => {
+    useEffect(() => {
         let filtered = courses;
-
-        if (categoryFilter) {
-            filtered = filtered.filter(course => course.category === categoryFilter);
-        }
 
         if (searchTerm) {
             filtered = filtered.filter(course =>
-                course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                (course.name || course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (course.code || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
+        if (categoryFilter) {
+            filtered = filtered.filter(course => course.category === parseInt(categoryFilter));
+        }
+
         setFilteredCourses(filtered);
-    };
+    }, [searchTerm, categoryFilter, courses]);
 
     const handleCreateCourse = async (e) => {
         e.preventDefault();
@@ -106,7 +101,15 @@ const AdminCourses = () => {
         setSuccess('');
 
         try {
-            await axios.post('/api/courses/', formData);
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'image' && !formData[key]) return; // Skip if no image
+                data.append(key, formData[key]);
+            });
+
+            await axios.post('/api/courses/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             setSuccess('Course created successfully!');
             setFormData({
                 name: '',
@@ -116,7 +119,8 @@ const AdminCourses = () => {
                 duration_weeks: '',
                 max_capacity: '',
                 fee: '',
-                instructor: ''
+                instructor: '',
+                image: null
             });
             setShowCreateModal(false);
             fetchCourses();
@@ -131,14 +135,15 @@ const AdminCourses = () => {
         console.log('Editing course:', course);
         setSelectedCourse(course);
         setFormData({
-            name: course.name || course.title || '', // Fallback for safety
+            name: course.name || course.title || '',
             code: course.code || '',
             description: course.description || '',
-            category: course.category || '', // Should be ID from backend
+            category: course.category || '',
             duration_weeks: course.duration_weeks || course.duration || '',
             max_capacity: course.max_capacity || course.max_students || '',
             fee: course.fee || '',
-            instructor: course.instructor || '' // Should be ID from backend
+            instructor: course.instructor || '',
+            image: null // Reset image on edit open, or keep existing URL if needed visually, but for upload we start null
         });
         setShowCreateModal(true);
     };
@@ -150,10 +155,16 @@ const AdminCourses = () => {
 
         if (!selectedCourse) return;
 
-        console.log('Updating course ID:', selectedCourse.id);
-
         try {
-            await axios.put(`/api/courses/${selectedCourse.id}/`, formData);
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'image' && !formData[key]) return;
+                data.append(key, formData[key]);
+            });
+
+            await axios.put(`/api/courses/${selectedCourse.id}/`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             setSuccess('Course updated successfully!');
             setFormData({
                 name: '',
@@ -163,7 +174,8 @@ const AdminCourses = () => {
                 duration_weeks: '',
                 max_capacity: '',
                 fee: '',
-                instructor: ''
+                instructor: '',
+                image: null
             });
             setShowCreateModal(false);
             setSelectedCourse(null);
@@ -287,13 +299,6 @@ const AdminCourses = () => {
                     </div>
                 </div>
 
-
-
-// ... imports
-                import CourseCard from '../../components/CourseCard';
-
-                // ... inside component ...
-
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading courses...</div>
@@ -390,6 +395,20 @@ const AdminCourses = () => {
                                     placeholder="Course description..."
                                     rows="3"
                                     className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Course Image</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFormData({ ...formData, image: e.target.files[0] });
+                                        }
+                                    }}
+                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
                             </div>
 
