@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Edit, Trash2, BookOpen, Users, Calendar, User, Clock } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
-import { FlippingCard } from '../../components/ui/flipping-card';
+import CourseCard from '../../components/CourseCard';
 import axios from '../../api/axios';
 
 const AdminCourses = () => {
@@ -20,7 +20,6 @@ const AdminCourses = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
-    const [viewMode, setViewMode] = useState('cards');
 
     const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
@@ -31,33 +30,31 @@ const AdminCourses = () => {
         duration_weeks: '',
         max_capacity: '',
         fee: '',
-        instructor: ''
+        instructor: '',
+        image: null
     });
 
     useEffect(() => {
-        if (!authLoading) {
-            if (!user || user?.role !== 'admin') {
-                navigate('/unauthorized');
+        if (!authLoading && user) {
+            if (user.role !== 'admin' && user.role !== 'staff') {
+                navigate('/');
             } else {
                 fetchCourses();
                 fetchInstructors();
                 fetchCategories();
             }
         }
-    }, [authLoading, user, navigate]);
-
-    useEffect(() => {
-        filterCourses();
-    }, [courses, searchTerm, categoryFilter]);
+    }, [user, authLoading, navigate]);
 
     const fetchCourses = async () => {
-        setLoading(true);
         try {
+            setLoading(true);
             const response = await axios.get('/api/courses/');
-            setCourses(response.data || []);
+            setCourses(response.data);
+            setFilteredCourses(response.data);
         } catch (err) {
-            setError('Failed to fetch courses');
-            console.error(err);
+            console.error('Fetch courses error:', err);
+            setError('Failed to load courses');
         } finally {
             setLoading(false);
         }
@@ -65,40 +62,38 @@ const AdminCourses = () => {
 
     const fetchInstructors = async () => {
         try {
-            const response = await axios.get('/api/admin/users/');
-            const instructorList = response.data.users?.filter(u => u.role === 'instructor') || [];
-            setInstructors(instructorList);
+            const response = await axios.get('/api/users/?role=instructor');
+            setInstructors(response.data);
         } catch (err) {
-            console.error('Failed to fetch instructors', err);
+            console.error('Fetch instructors error:', err);
         }
     };
 
     const fetchCategories = async () => {
         try {
             const response = await axios.get('/api/course-categories/');
-            setCategories(response.data || []);
+            setCategories(response.data);
         } catch (err) {
-            console.error('Failed to fetch categories', err);
+            console.error('Fetch categories error:', err);
         }
     };
 
-    const filterCourses = () => {
+    useEffect(() => {
         let filtered = courses;
-
-        if (categoryFilter) {
-            filtered = filtered.filter(course => course.category === categoryFilter);
-        }
 
         if (searchTerm) {
             filtered = filtered.filter(course =>
-                course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                course.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                (course.name || course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (course.code || '').toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
+        if (categoryFilter) {
+            filtered = filtered.filter(course => course.category === parseInt(categoryFilter));
+        }
+
         setFilteredCourses(filtered);
-    };
+    }, [searchTerm, categoryFilter, courses]);
 
     const handleCreateCourse = async (e) => {
         e.preventDefault();
@@ -106,7 +101,15 @@ const AdminCourses = () => {
         setSuccess('');
 
         try {
-            await axios.post('/api/courses/', formData);
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'image' && !formData[key]) return; // Skip if no image
+                data.append(key, formData[key]);
+            });
+
+            await axios.post('/api/courses/', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             setSuccess('Course created successfully!');
             setFormData({
                 name: '',
@@ -116,7 +119,8 @@ const AdminCourses = () => {
                 duration_weeks: '',
                 max_capacity: '',
                 fee: '',
-                instructor: ''
+                instructor: '',
+                image: null
             });
             setShowCreateModal(false);
             fetchCourses();
@@ -131,14 +135,15 @@ const AdminCourses = () => {
         console.log('Editing course:', course);
         setSelectedCourse(course);
         setFormData({
-            name: course.name || course.title || '', // Fallback for safety
+            name: course.name || course.title || '',
             code: course.code || '',
             description: course.description || '',
-            category: course.category || '', // Should be ID from backend
+            category: course.category || '',
             duration_weeks: course.duration_weeks || course.duration || '',
             max_capacity: course.max_capacity || course.max_students || '',
             fee: course.fee || '',
-            instructor: course.instructor || '' // Should be ID from backend
+            instructor: course.instructor || '',
+            image: null // Reset image on edit open, or keep existing URL if needed visually, but for upload we start null
         });
         setShowCreateModal(true);
     };
@@ -150,10 +155,16 @@ const AdminCourses = () => {
 
         if (!selectedCourse) return;
 
-        console.log('Updating course ID:', selectedCourse.id);
-
         try {
-            await axios.put(`/api/courses/${selectedCourse.id}/`, formData);
+            const data = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (key === 'image' && !formData[key]) return;
+                data.append(key, formData[key]);
+            });
+
+            await axios.put(`/api/courses/${selectedCourse.id}/`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             setSuccess('Course updated successfully!');
             setFormData({
                 name: '',
@@ -163,7 +174,8 @@ const AdminCourses = () => {
                 duration_weeks: '',
                 max_capacity: '',
                 fee: '',
-                instructor: ''
+                instructor: '',
+                image: null
             });
             setShowCreateModal(false);
             setSelectedCourse(null);
@@ -287,197 +299,51 @@ const AdminCourses = () => {
                     </div>
                 </div>
 
-                {/* View Mode Toggle */}
-                <div className="flex gap-2 mb-6">
-                    <button
-                        onClick={() => setViewMode('cards')}
-                        className={`px-4 py-2 rounded-lg font-semibold transition ${
-                            viewMode === 'cards'
-                                ? 'bg-green-600 hover:bg-green-700 text-white'
-                                : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/20'
-                        }`}
-                    >
-                        Flip Cards
-                    </button>
-                    <button
-                        onClick={() => setViewMode('grid')}
-                        className={`px-4 py-2 rounded-lg font-semibold transition ${
-                            viewMode === 'grid'
-                                ? 'bg-green-600 hover:bg-green-700 text-white'
-                                : 'bg-white/10 border border-white/20 text-gray-300 hover:bg-white/20'
-                        }`}
-                    >
-                        Grid View
-                    </button>
-                </div>
-
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="text-center py-12 text-gray-300">Loading courses...</div>
-                ) : viewMode === 'cards' ? (
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {filteredCourses.map((course) => (
-                            <FlippingCard
-                                key={course.id}
-                                width={300}
-                                height={400}
-                                frontContent={
-                                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900">
-                                        <div className="relative h-32 overflow-hidden rounded-t-lg bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center">
-                                            <div className="text-5xl">📖</div>
-                                            <div className="absolute top-2 left-2 bg-white/20 backdrop-blur px-2 py-1 rounded text-xs font-bold text-white">
-                                                {course.category_name || course.category || 'Course'}
-                                            </div>
-                                        </div>
-                                        <div className="p-5 flex flex-col flex-1">
-                                            <h3 className="text-lg font-bold text-white mb-1 line-clamp-2">
-                                                {course.name || course.title}
-                                            </h3>
-                                            <p className="text-xs text-gray-400 mb-4">{course.code}</p>
-                                            <p className="text-sm text-gray-300 mb-4 line-clamp-2">
-                                                {course.description || 'No description available'}
-                                            </p>
-                                            <div className="space-y-2 mt-auto">
-                                                <div className="flex items-center gap-2 text-xs text-gray-300">
-                                                    <Clock className="w-4 h-4 text-green-400" />
-                                                    <span>{course.duration_weeks || course.duration || 'N/A'} weeks</span>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-xs text-gray-300">
-                                                    <Users className="w-4 h-4 text-green-400" />
-                                                    <span>{course.enrolled_count || 0} enrolled</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                backContent={
-                                    <div className="flex flex-col h-full w-full bg-gradient-to-br from-slate-800 to-slate-900 p-6">
-                                        <div className="text-4xl mb-3 text-center">🎓</div>
-                                        <h3 className="text-lg font-bold text-white mb-3 text-center line-clamp-2">
-                                            {course.name || course.title}
-                                        </h3>
-                                        <div className="space-y-3 mb-6 flex-1">
-                                            <div className="border-b border-white/20 pb-2">
-                                                <p className="text-xs text-gray-400">Code</p>
-                                                <p className="text-white font-semibold">{course.code}</p>
-                                            </div>
-                                            <div className="border-b border-white/20 pb-2">
-                                                <p className="text-xs text-gray-400">Max Capacity</p>
-                                                <p className="text-white font-semibold">{course.max_capacity || course.max_students || 'N/A'}</p>
-                                            </div>
-                                            {course.instructor_name && (
-                                                <div className="border-b border-white/20 pb-2">
-                                                    <p className="text-xs text-gray-400">Instructor</p>
-                                                    <p className="text-white font-semibold">{course.instructor_name}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedCourse(course);
-                                                    setShowAssignModal(true);
-                                                }}
-                                                className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-xs font-semibold transition-colors"
-                                            >
-                                                Assign
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditClick(course)}
-                                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-xs font-semibold transition-colors"
-                                            >
-                                                Edit
-                                            </button>
-                                        </div>
-                                    </div>
-                                }
-                            />
-                        ))}
-                    </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredCourses.map((course) => (
-                            <div
+                            <CourseCard
                                 key={course.id}
-                                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-3 bg-blue-500/20 rounded-lg">
-                                                <BookOpen className="w-6 h-6 text-blue-400" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-lg font-bold text-white">{course.name || course.title}</h3>
-                                                <p className="text-sm text-gray-400">{course.code}</p>
-                                            </div>
-                                        </div>
+                                course={course}
+                                actionSlot={
+                                    <div className="flex gap-2 w-full mt-2">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedCourse(course);
+                                                setShowAssignModal(true);
+                                            }}
+                                            className="flex-1 p-2 bg-green-500/10 hover:bg-green-500/20 text-green-600 rounded-lg transition border border-green-200 flex items-center justify-center"
+                                            title="Assign Instructor"
+                                        >
+                                            <User className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleEditClick(course);
+                                            }}
+                                            className="flex-1 p-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 rounded-lg transition border border-blue-200 flex items-center justify-center"
+                                            title="Edit Course"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteCourse(course.id);
+                                            }}
+                                            className="flex-1 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-lg transition border border-red-200 flex items-center justify-center"
+                                            title="Delete Course"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </div>
-
-                                    {course.category && (
-                                        <span className="inline-block px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-semibold mb-3">
-                                            {course.category_name || course.category}
-                                        </span>
-                                    )}
-
-                                    <p className="text-sm text-gray-300 mb-4 line-clamp-2">
-                                        {course.description || 'No description available'}
-                                    </p>
-
-                                    <div className="space-y-2 mb-4">
-                                        {(course.duration_weeks || course.duration) && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Calendar className="w-4 h-4" />
-                                                <span>{course.duration_weeks || course.duration} weeks</span>
-                                            </div>
-                                        )}
-                                        {(course.max_capacity || course.max_students) && (
-                                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                                                <Users className="w-4 h-4" />
-                                                <span>Max: {course.max_capacity || course.max_students} students</span>
-                                            </div>
-                                        )}
-                                        {course.instructor_name && (
-                                            <div className="flex items-center gap-2 text-sm text-green-400">
-                                                <User className="w-4 h-4" />
-                                                <span>{course.instructor_name}</span>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                        <div className="text-sm text-gray-400">
-                                            {course.enrolled_count || 0} enrolled
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedCourse(course);
-                                                    setShowAssignModal(true);
-                                                }}
-                                                className="p-2 bg-green-500/20 hover:bg-green-500/40 text-green-300 rounded-lg transition"
-                                                title="Assign Instructor"
-                                            >
-                                                <User className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditClick(course)}
-                                                className="p-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
-                                                title="Edit Course"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteCourse(course.id)}
-                                                className="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-300 rounded-lg transition"
-                                                title="Delete Course"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                }
+                            />
                         ))}
                     </div>
                 )}
@@ -529,6 +395,20 @@ const AdminCourses = () => {
                                     placeholder="Course description..."
                                     rows="3"
                                     className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-800 mb-2">Course Image</label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setFormData({ ...formData, image: e.target.files[0] });
+                                        }
+                                    }}
+                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
                             </div>
 

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog, Announcement
+    Attendance, Notification, ActivityLog, Announcement, PasswordReset
 )
 
 User = get_user_model()
@@ -109,7 +109,7 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = [
-            'id', 'name', 'code', 'description', 'category', 'category_name',
+            'id', 'name', 'code', 'description', 'image', 'category', 'category_name',
             'instructor', 'instructor_name', 'duration_weeks', 'credits', 'fee',
             'max_capacity', 'enrolled_count', 'available_seats', 'is_full',
             'schedule_description', 'start_date', 'end_date', 'is_active',
@@ -316,3 +316,28 @@ class AnnouncementSerializer(serializers.ModelSerializer):
             'target_audience', 'target_audience_display', 'is_published', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
+
+
+# ===================== PASSWORD RESET SERIALIZERS =====================
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """Serializer for requesting password reset"""
+    email = serializers.EmailField()
+    
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """Serializer for confirming password reset with token"""
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, min_length=6)
+    password_confirm = serializers.CharField(write_only=True, min_length=6)
+    
+    def validate(self, data):
+        if data['password'] != data['password_confirm']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
+

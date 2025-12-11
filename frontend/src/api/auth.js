@@ -1,5 +1,30 @@
 import api from './axios';
 
+// Check if localStorage is available
+const isStorageAvailable = () => {
+  try {
+    if (typeof window === 'undefined') return false;
+    const test = '__localStorage_test__';
+    window.localStorage.setItem(test, test);
+    window.localStorage.removeItem(test);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const storageAvailable = isStorageAvailable();
+
+// Helper function to safely remove localStorage item
+const safeRemoveLocalStorage = (key) => {
+  if (!storageAvailable) return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch (error) {
+    // Silently fail
+  }
+};
+
 export const authAPI = {
     // Register new user
     register: async (userData) => {
@@ -33,8 +58,8 @@ export const authAPI = {
 
     // Logout (client-side only, clear tokens)
     logout: () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user');
+        safeRemoveLocalStorage('access_token');
+        safeRemoveLocalStorage('refresh_token');
+        safeRemoveLocalStorage('user');
     },
 };

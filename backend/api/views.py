@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog, User as CustomUser, Announcement
+    Attendance, Notification, ActivityLog, User as CustomUser, Announcement, PasswordReset
 )
 from .serializers import (
     UserSerializer, UserDetailSerializer, UserRegistrationSerializer, UserCreateByStaffSerializer,
@@ -26,7 +26,8 @@ from .serializers import (
     AttendanceSerializer,
     NotificationSerializer,
     ActivityLogSerializer,
-    AnnouncementSerializer
+    AnnouncementSerializer,
+    PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 )
 from .permissions import (
     IsAdmin, IsStaff, IsInstructor, IsStudent, IsAdminOrStaff,
@@ -147,6 +148,105 @@ def login(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
+def unified_login(request):
+    """Unified authentication endpoint - handles both login and auto-registration"""
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    first_name = request.data.get('first_name', '')
+    last_name = request.data.get('last_name', '')
+    
+    # Validation
+    if not password:
+        return Response(
+            {'error': 'Password is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if not username and not email:
+        return Response(
+            {'error': 'Username or email is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Use email as username if username not provided
+    if not username:
+        username = email.split('@')[0]
+    
+    # Use username as email if email not provided (with temp domain)
+    if not email:
+        email = f"{username}@temp.local"
+    
+    # Try to find existing user by username or email
+    user = User.objects.filter(Q(username=username) | Q(email=email)).first()
+    
+    if user:
+        # User exists - attempt login
+        if not user.check_password(password):
+            return Response(
+                {'error': 'Invalid credentials'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        if not user.is_active:
+            return Response(
+                {'error': 'Account is disabled'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        action = 'login'
+    else:
+        # User doesn't exist - auto-register
+        try:
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                role='student'  # Default role for auto-registered users
+            )
+            action = 'registered'
+            
+            # Log registration activity
+            ActivityLog.objects.create(
+                user=user,
+                action='user_create',
+                description=f'User {user.username} auto-registered via unified auth',
+                ip_address=get_client_ip(request),
+                device_info=request.META.get('HTTP_USER_AGENT', '')
+            )
+        except Exception as e:
+            return Response(
+                {'error': f'Registration failed: {str(e)}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    # Generate tokens
+    refresh = RefreshToken.for_user(user)
+    
+    # Log login activity
+    ActivityLog.objects.create(
+        user=user,
+        action='login',
+        description=f'User {user.username} logged in via unified auth',
+        ip_address=get_client_ip(request),
+        device_info=request.META.get('HTTP_USER_AGENT', '')
+    )
+    
+    return Response({
+        'action': action,  # 'login' or 'registered'
+        'message': 'Login successful' if action == 'login' else 'Registration successful',
+        'user': UserDetailSerializer(user).data,
+        'tokens': {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+    })
+
+
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
     """Logout user"""
@@ -157,6 +257,146 @@ def logout(request):
         ip_address=get_client_ip(request)
     )
     return Response({'message': 'Logout successful'})
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def request_password_reset(request):
+    """Request password reset - sends email with reset link"""
+    import secrets
+    from django.core.mail import send_mail
+    from django.conf import settings
+    from django.utils import timezone
+    from datetime import timedelta
+    
+    serializer = PasswordResetRequestSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    email = serializer.validated_data['email']
+    
+    try:
+        user = User.objects.get(email=email)
+        
+        # Generate secure reset token
+        token = secrets.token_urlsafe(32)
+        expiry_hours = getattr(settings, 'PASSWORD_RESET_TOKEN_EXPIRY_HOURS', 24)
+        expires_at = timezone.now() + timedelta(hours=expiry_hours)
+        
+        # Create password reset record
+        PasswordReset.objects.create(
+            user=user,
+            token=token,
+            expires_at=expires_at
+        )
+        
+        # Send email
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:3001')
+        reset_link = f"{frontend_url}/reset-password?token={token}"
+        
+        email_subject = 'Password Reset Request - Institute Management System'
+        email_message = f"""
+        Hello {user.get_full_name() or user.username},
+
+        You requested to reset your password. Click the link below to proceed:
+
+        {reset_link}
+
+        This link will expire in {expiry_hours} hours.
+
+        If you did not request this, please ignore this email.
+
+        Best regards,
+        Institute Management System
+        """
+        
+        send_mail(
+            email_subject,
+            email_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+        )
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=user,
+            action='password_reset',
+            description=f'Password reset requested for {user.username}',
+            target_user=user,
+            ip_address=get_client_ip(request)
+        )
+        
+        return Response({
+            'message': 'Password reset link sent to your email. Please check your inbox.'
+        }, status=status.HTTP_200_OK)
+        
+    except User.DoesNotExist:
+        # Don't reveal if email exists for security
+        return Response({
+            'message': 'If an account exists with this email, you will receive a password reset link.'
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({
+            'error': f'Failed to send password reset email: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def confirm_password_reset(request):
+    """Confirm password reset with token"""
+    serializer = PasswordResetConfirmSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    token = serializer.validated_data['token']
+    new_password = serializer.validated_data['password']
+    
+    try:
+        password_reset = PasswordReset.objects.get(token=token)
+        
+        # Validate token
+        if not password_reset.is_valid:
+            if password_reset.is_used:
+                return Response({
+                    'error': 'This password reset link has already been used.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({
+                    'error': 'This password reset link has expired. Please request a new one.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Update password
+        user = password_reset.user
+        user.set_password(new_password)
+        user.save()
+        
+        # Mark token as used
+        password_reset.is_used = True
+        password_reset.save()
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=user,
+            action='password_reset',
+            description=f'Password reset completed for {user.username}',
+            target_user=user,
+            ip_address=get_client_ip(request)
+        )
+        
+        return Response({
+            'message': 'Password has been reset successfully. You can now login with your new password.'
+        }, status=status.HTTP_200_OK)
+        
+    except PasswordReset.DoesNotExist:
+        return Response({
+            'error': 'Invalid or expired password reset token.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({
+            'error': f'Failed to reset password: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
@@ -562,12 +802,22 @@ class CourseCategoryViewSet(viewsets.ModelViewSet):
 
 class CourseViewSet(viewsets.ModelViewSet):
     """ViewSet for courses"""
-    queryset = Course.objects.filter(is_active=True).prefetch_related('batches')
     serializer_class = CourseSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'code', 'description']
     ordering_fields = ['created_at', 'fee']
     ordering = ['-created_at']
+    
+    def get_queryset(self):
+        """Return all courses for admin/staff, only active for others"""
+        user = self.request.user
+        
+        # Admin and staff can see all courses (including inactive)
+        if user.is_authenticated and user.role in ['admin', 'staff']:
+            return Course.objects.all().prefetch_related('batches')
+        
+        # Others see only active courses
+        return Course.objects.filter(is_active=True).prefetch_related('batches')
     
     def get_permissions(self):
         """Allow anyone to read courses, but only admin can write"""
@@ -579,7 +829,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         """Create a new course (admin only)"""
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            course = serializer.save()
+            # Ensure is_active is True by default if not provided
+            course = serializer.save(is_active=request.data.get('is_active', True))
             
             ActivityLog.objects.create(
                 user=request.user,
@@ -628,6 +879,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(courses, many=True)
         return Response(serializer.data)
+
 
 
 # ===================== BATCH & SCHEDULE VIEWS =====================

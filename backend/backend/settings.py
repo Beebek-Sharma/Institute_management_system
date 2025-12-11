@@ -130,6 +130,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files (User uploaded files)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -166,9 +170,29 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:3002',
+    'http://localhost:5173',  # Vite default port
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
     'http://127.0.0.1:3002',
+    'http://127.0.0.1:5173',  # Vite default port
 ]
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Console backend for development
+# For production, use: 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'  # Change to your email provider
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'your-email@gmail.com'  # Set this in environment variables
+EMAIL_HOST_PASSWORD = 'your-app-password'  # Set this in environment variables
+DEFAULT_FROM_EMAIL = 'noreply@institute.edu.np'
+
+# Password Reset Token Expiry (in hours)
+PASSWORD_RESET_TOKEN_EXPIRY_HOURS = 24
+
+# Frontend URL for password reset link
+FRONTEND_URL = 'http://localhost:3001'
+

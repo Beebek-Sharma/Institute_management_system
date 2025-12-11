@@ -21,11 +21,14 @@ urlpatterns = [
     # Authentication endpoints
     path('auth/register/', views.register, name='register'),
     path('auth/login/', views.login, name='login'),
+    path('auth/unified-login/', views.unified_login, name='unified_login'),
     path('auth/logout/', views.logout, name='logout'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/profile/', views.get_profile, name='get_profile'),
     path('auth/profile/update/', views.update_profile, name='update_profile'),
     path('auth/create-admin/', views.create_admin, name='create_admin'),
+    path('auth/password-reset/', views.request_password_reset, name='password_reset'),
+    path('auth/password-reset-confirm/', views.confirm_password_reset, name='password_reset_confirm'),
     
     # Admin user management endpoints
     path('admin/create-staff/', views.create_staff, name='create_staff'),

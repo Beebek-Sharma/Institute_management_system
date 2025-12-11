@@ -32,12 +32,10 @@ const InstructorSchedule = () => {
             }
         }
     }, [authLoading, user, navigate]);
-
     const fetchMySchedule = async () => {
         setLoading(true);
         try {
             console.log('Fetching schedules...');
-            console.log('Access token:', localStorage.getItem('access_token')?.substring(0, 20) + '...');
             
             // Fetch schedules for batches assigned to this instructor
             const response = await axios.get('/api/schedules/?instructor=true');
