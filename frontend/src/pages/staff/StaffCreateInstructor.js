@@ -97,36 +97,36 @@ const StaffCreateInstructor = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                     <button
                         onClick={() => navigate('/staff/dashboard')}
-                        className="p-2 hover:bg-white/10 rounded-lg transition"
+                        className="p-2 hover:bg-white rounded-lg transition"
                         title="Go back"
                     >
                         <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </button>
                     <div>
                         <h1 className="text-2xl sm:text-4xl font-bold text-white">Create Instructor</h1>
-                        <p className="text-sm sm:text-base text-gray-300">Add a new instructor to the system</p>
+                        <p className="text-sm sm:text-base text-gray-700">Add a new instructor to the system</p>
                     </div>
                 </div>
 
                 {/* Alert Messages */}
                 {success && (
-                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-sm sm:text-base text-green-200">
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg text-sm sm:text-base text-green-800">
                         ✓ {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-sm sm:text-base text-red-200">
+                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg text-sm sm:text-base text-red-800">
                         ✗ {error}
                     </div>
                 )}
 
                 {/* Form */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-8 max-w-2xl">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-8 max-w-2xl">
                     <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                         {/* Row 1 */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Username <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -135,12 +135,12 @@ const StaffCreateInstructor = () => {
                                     value={formData.username}
                                     onChange={handleChange}
                                     placeholder="instructor123"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
                                     disabled={loading}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Email <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -149,7 +149,7 @@ const StaffCreateInstructor = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="instructor@example.com"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
                                     disabled={loading}
                                 />
                             </div>
@@ -158,7 +158,7 @@ const StaffCreateInstructor = () => {
                         {/* Row 2 */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                             <div>
-                                <label className="block text-xs sm:text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                                     Password <span className="text-red-400">*</span>
                                 </label>
                                 <input
@@ -167,13 +167,13 @@ const StaffCreateInstructor = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••"
-                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-sm"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent text-sm"
                                     disabled={loading}
                                 />
-                                <p className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+                                <p className="text-xs text-gray-700 mt-1">Minimum 8 characters</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Phone
                                 </label>
                                 <input
@@ -182,7 +182,7 @@ const StaffCreateInstructor = () => {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     placeholder="+1 (555) 000-0000"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
                                     disabled={loading}
                                 />
                             </div>
@@ -191,7 +191,7 @@ const StaffCreateInstructor = () => {
                         {/* Row 3 */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     First Name
                                 </label>
                                 <input
@@ -200,12 +200,12 @@ const StaffCreateInstructor = () => {
                                     value={formData.first_name}
                                     onChange={handleChange}
                                     placeholder="John"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
                                     disabled={loading}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-semibold text-gray-300 mb-2">
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Last Name
                                 </label>
                                 <input
@@ -214,7 +214,7 @@ const StaffCreateInstructor = () => {
                                     value={formData.last_name}
                                     onChange={handleChange}
                                     placeholder="Doe"
-                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent"
                                     disabled={loading}
                                 />
                             </div>
@@ -233,7 +233,7 @@ const StaffCreateInstructor = () => {
                                 type="button"
                                 onClick={() => navigate('/staff/dashboard')}
                                 disabled={loading}
-                                className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white/10 hover:bg-white/20 disabled:bg-white/5 text-white font-semibold rounded-lg transition border border-white/20 text-sm sm:text-base"
+                                className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-white hover:bg-white/20 disabled:bg-white text-white font-semibold rounded-lg transition border border-gray-200 text-sm sm:text-base"
                             >
                                 Cancel
                             </button>

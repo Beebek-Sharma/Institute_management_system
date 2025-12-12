@@ -137,7 +137,7 @@ const InstructorDashboard = () => {
                   ))}
                   {courses.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center text-gray-500">
+                      <TableCell colSpan={3} className="text-center text-gray-800">
                         No courses assigned yet.
                       </TableCell>
                     </TableRow>
@@ -175,7 +175,7 @@ const InstructorDashboard = () => {
                   ))}
                   {enrollments.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center text-gray-500">
+                      <TableCell colSpan={3} className="text-center text-gray-800">
                         No recent enrollments.
                       </TableCell>
                     </TableRow>

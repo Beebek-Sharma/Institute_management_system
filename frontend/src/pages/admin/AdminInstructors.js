@@ -105,34 +105,34 @@ const AdminInstructors = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-3 sm:p-6 mb-8 rounded-lg">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Instructor Management</h1>
-                    <p className="text-sm sm:text-base text-gray-200">Manage instructors and course assignments</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-3 sm:p-6 mb-8 rounded-lg">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Instructor Management</h1>
+                    <p className="text-sm sm:text-base text-gray-900">Manage instructors and course assignments</p>
                 </div>
 
                 {/* Alert */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
 
                 {/* Search & Actions */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-6 mb-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-3 sm:p-6 mb-6">
                     <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-700" />
                             <input
                                 type="text"
                                 placeholder="Search instructors..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <button
@@ -148,13 +148,13 @@ const AdminInstructors = () => {
 
                 {/* Instructors Grid */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading instructors...</div>
+                    <div className="text-center py-12 text-gray-700">Loading instructors...</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                         {filteredInstructors.map((instructor) => (
                             <div
                                 key={instructor.id}
-                                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 hover:shadow-lg transition-shadow"
+                                className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
                             >
                                 <div className="flex items-start gap-4 mb-4">
                                     <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center">
@@ -163,32 +163,32 @@ const AdminInstructors = () => {
                                         </span>
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-lg font-bold text-white mb-1">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1">
                                             {instructor.first_name} {instructor.last_name}
                                         </h3>
-                                        <p className="text-sm text-gray-400">@{instructor.username}</p>
-                                        <p className="text-sm text-gray-400">{instructor.email}</p>
+                                        <p className="text-sm text-gray-700">@{instructor.username}</p>
+                                        <p className="text-sm text-gray-700">{instructor.email}</p>
                                     </div>
                                 </div>
 
                                 <div className="space-y-2 mb-4">
-                                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                                    <div className="flex items-center gap-2 text-sm text-gray-700">
                                         <BookOpen className="w-4 h-4" />
                                         <span>{instructor.course_count || 0} courses assigned</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                                    <div className="flex items-center gap-2 text-sm text-gray-700">
                                         <Award className="w-4 h-4" />
                                         <span>{instructor.student_count || 0} total students</span>
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 pt-4 border-t border-white/10">
+                                <div className="flex gap-2 pt-4 border-t border-gray-200">
                                     <button
                                         onClick={() => {
                                             setSelectedInstructor(instructor);
                                             setShowAssignModal(true);
                                         }}
-                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-500/20 hover:bg-green-500/40 text-green-300 rounded-lg transition"
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-green-50 hover:bg-green-500/40 text-green-300 rounded-lg transition"
                                     >
                                         <BookOpen className="w-4 h-4" />
                                         Assign Course
@@ -207,25 +207,25 @@ const AdminInstructors = () => {
                 )}
 
                 {filteredInstructors.length === 0 && !loading && (
-                    <div className="text-center py-12 text-gray-300">
+                    <div className="text-center py-12 text-gray-700">
                         No instructors found
                     </div>
                 )}
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Instructors</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Total Instructors</div>
                         <div className="text-2xl sm:text-4xl font-bold text-white">{instructors.length}</div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Courses Assigned</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Total Courses Assigned</div>
                         <div className="text-2xl sm:text-4xl font-bold text-purple-400">
                             {instructors.reduce((sum, i) => sum + (i.course_count || 0), 0)}
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Students Taught</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Total Students Taught</div>
                         <div className="text-2xl sm:text-4xl font-bold text-blue-400">
                             {instructors.reduce((sum, i) => sum + (i.student_count || 0), 0)}
                         </div>
@@ -236,7 +236,7 @@ const AdminInstructors = () => {
             {/* Assign Course Modal */}
             {showAssignModal && selectedInstructor && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-md w-full border border-white/40 p-6 sm:p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-md w-full border border-gray-300 p-6 sm:p-8">
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Assign Course</h2>
                         <p className="text-sm sm:text-base text-gray-700 mb-6">
                             Instructor: <span className="font-semibold">{selectedInstructor.first_name} {selectedInstructor.last_name}</span>
@@ -249,7 +249,7 @@ const AdminInstructors = () => {
                                     value={selectedCourseId}
                                     onChange={(e) => setSelectedCourseId(e.target.value)}
                                     required
-                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 >
                                     <option value="">Choose a course</option>
                                     {courses.map(course => (
@@ -274,7 +274,7 @@ const AdminInstructors = () => {
                                         setSelectedInstructor(null);
                                         setSelectedCourseId('');
                                     }}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
+                                    className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-2 sm:py-3 text-sm sm:text-base rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
@@ -287,7 +287,7 @@ const AdminInstructors = () => {
             {/* Instructor Details Modal */}
             {showDetailsModal && selectedInstructor && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-6 sm:p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-300 p-6 sm:p-8">
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Instructor Details</h2>
 
                         <div className="space-y-6">
@@ -318,7 +318,7 @@ const AdminInstructors = () => {
                                     <p className="text-xs sm:text-sm text-gray-600">
                                         Total Courses: <span className="font-semibold text-gray-900">{selectedInstructor.course_count || 0}</span>
                                     </p>
-                                    <p className="text-gray-500 text-xs mt-2">
+                                    <p className="text-gray-800 text-xs mt-2">
                                         Detailed course list will be loaded from the backend.
                                     </p>
                                 </div>
@@ -347,7 +347,7 @@ const AdminInstructors = () => {
                             <div>
                                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Class Schedule</h3>
                                 <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
-                                    <p className="text-xs sm:text-sm text-gray-500">
+                                    <p className="text-xs sm:text-sm text-gray-800">
                                         Class schedule will be displayed here once the schedule system is implemented.
                                     </p>
                                 </div>

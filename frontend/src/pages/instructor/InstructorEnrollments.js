@@ -50,7 +50,7 @@ const InstructorEnrollments = () => {
         )}
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading enrollments...</div>
+          <div className="text-center py-12 text-gray-800">Loading enrollments...</div>
         ) : (
           <Card>
             <CardHeader>
@@ -81,7 +81,7 @@ const InstructorEnrollments = () => {
                   ))}
                   {enrollments.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-gray-500 py-8">
+                      <TableCell colSpan={4} className="text-center text-gray-800 py-8">
                         No enrollments found.
                       </TableCell>
                     </TableRow>

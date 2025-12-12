@@ -52,7 +52,7 @@ export default function Header({ onMenuClick }) {
   };
 
   return (
-    <header className="bg-transparent backdrop-blur-md border-b border-slate-700/30 sticky top-0 z-50 w-full">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 w-full shadow-sm">
       <div className="flex items-center justify-between h-14 max-w-full mx-auto px-3 sm:px-6">
         {/* Left Side: Hamburger + Logo + Nav + Search */}
         <div className="flex items-center gap-2 sm:gap-6 flex-1 min-w-0">
@@ -64,7 +64,7 @@ export default function Header({ onMenuClick }) {
                 className="p-2 hover:bg-slate-800/50 rounded-lg transition-colors"
                 title="Toggle sidebar"
               >
-                <Menu className="w-5 sm:w-6 h-5 sm:h-6 text-gray-200" />
+                <Menu className="w-5 sm:w-6 h-5 sm:h-6 text-gray-700" />
               </button>
             )}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0">
@@ -80,15 +80,15 @@ export default function Header({ onMenuClick }) {
               onMouseLeave={handleExploreLeave}
               style={{ display: "inline-block" }}
             >
-              <button className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2 flex items-center gap-1 focus:outline-none">
+              <button className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2 flex items-center gap-1 focus:outline-none">
                 Explore <span className="ml-1">▾</span>
               </button>
               <ExploreDropdown open={exploreOpen} />
             </div>
-            <Link to="/my-learning" className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2">
+            <Link to="/my-learning" className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2">
               My Learning
             </Link>
-            <Link to="/degrees" className="text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878] px-2 sm:px-3 py-2">
+            <Link to="/degrees" className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2">
               Degrees
             </Link>
           </nav>
@@ -103,7 +103,7 @@ export default function Header({ onMenuClick }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
-                className="w-full pl-10 pr-4 h-10 bg-slate-800 border-slate-600 text-white placeholder-gray-400 rounded-full focus:border-[#00a878] focus:ring-1 focus:ring-[#00a878] text-sm"
+                className="w-full pl-10 pr-4 h-10 bg-gray-100 border-gray-300 text-gray-900 placeholder-gray-500 rounded-full focus:border-[#00a878] focus:ring-1 focus:ring-[#00a878] text-sm"
               />
             </div>
           </div>
@@ -111,7 +111,7 @@ export default function Header({ onMenuClick }) {
 
         {/* Right Side: Notifications + Dashboard + Profile */}
         <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-          <button className="rounded-full hover:bg-slate-800/50 p-2 text-gray-400 transition-colors hidden sm:block">
+          <button className="rounded-full hover:bg-gray-100 p-2 text-gray-600 transition-colors hidden sm:block">
             <span role="img" aria-label="bell">🔔</span>
           </button>
           {user ? (
@@ -136,7 +136,7 @@ export default function Header({ onMenuClick }) {
                       break;
                   }
                 }}
-                className="hidden sm:block text-sm sm:text-base font-medium text-gray-200 hover:text-[#00a878]"
+                className="hidden sm:block text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878]"
               >
                 Dashboard
               </Button>

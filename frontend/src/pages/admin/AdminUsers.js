@@ -210,7 +210,7 @@ const AdminUsers = () => {
             case 'staff': return <Briefcase className="w-4 h-4 text-blue-500" />;
             case 'instructor': return <GraduationCap className="w-4 h-4 text-purple-500" />;
             case 'student': return <User className="w-4 h-4 text-green-500" />;
-            default: return <User className="w-4 h-4 text-gray-500" />;
+            default: return <User className="w-4 h-4 text-gray-800" />;
         }
     };
 
@@ -220,7 +220,7 @@ const AdminUsers = () => {
             case 'staff': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
             case 'instructor': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
             case 'student': return 'bg-green-500/10 text-green-500 border-green-500/20';
-            default: return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
+            default: return 'bg-gray-500/10 text-gray-800 border-gray-500/20';
         }
     };
 
@@ -230,7 +230,7 @@ const AdminUsers = () => {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
                     <div>
                         <h1 className="text-2xl sm:text-3xl font-bold text-white">User Management</h1>
-                        <p className="text-xs sm:text-sm text-gray-400">Manage all users in the system</p>
+                        <p className="text-xs sm:text-sm text-gray-700">Manage all users in the system</p>
                     </div>
                     <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
                         <DialogTrigger asChild>
@@ -246,7 +246,7 @@ const AdminUsers = () => {
                             <form onSubmit={handleAddUser} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-300">First Name</label>
+                                        <label className="text-sm font-medium text-gray-700">First Name</label>
                                         <Input
                                             name="first_name"
                                             value={formData.first_name}
@@ -256,7 +256,7 @@ const AdminUsers = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-300">Last Name</label>
+                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
                                         <Input
                                             name="last_name"
                                             value={formData.last_name}
@@ -268,7 +268,7 @@ const AdminUsers = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Username</label>
+                                    <label className="text-sm font-medium text-gray-700">Username</label>
                                     <Input
                                         name="username"
                                         value={formData.username}
@@ -279,7 +279,7 @@ const AdminUsers = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Email</label>
+                                    <label className="text-sm font-medium text-gray-700">Email</label>
                                     <Input
                                         name="email"
                                         type="email"
@@ -291,7 +291,7 @@ const AdminUsers = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Password</label>
+                                    <label className="text-sm font-medium text-gray-700">Password</label>
                                     <Input
                                         name="password"
                                         type="password"
@@ -303,7 +303,7 @@ const AdminUsers = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Role</label>
+                                    <label className="text-sm font-medium text-gray-700">Role</label>
                                     <Select value={formData.role} onValueChange={handleRoleChange}>
                                         <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
                                             <SelectValue placeholder="Select role" />
@@ -319,7 +319,7 @@ const AdminUsers = () => {
 
                                 {formData.role === 'instructor' && (
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-300">Phone</label>
+                                        <label className="text-sm font-medium text-gray-700">Phone</label>
                                         <Input
                                             name="phone"
                                             value={formData.phone}
@@ -330,7 +330,7 @@ const AdminUsers = () => {
                                 )}
 
                                 <DialogFooter>
-                                    <Button type="button" variant="ghost" onClick={() => setIsAddUserOpen(false)} className="text-gray-300 hover:text-white hover:bg-slate-800">
+                                    <Button type="button" variant="ghost" onClick={() => setIsAddUserOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
                                         Cancel
                                     </Button>
                                     <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
@@ -345,16 +345,16 @@ const AdminUsers = () => {
                 {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 bg-slate-900/50 p-3 sm:p-4 rounded-lg border border-slate-800">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
                         <Input
                             placeholder="Search users..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 bg-slate-800 border-slate-700 text-white text-sm"
+                            className="pl-10 bg-slate-800 border-slate-700 text-gray-900 text-sm"
                         />
                     </div>
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-white text-sm">
+                        <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-gray-900 text-sm">
                             <SelectValue placeholder="Filter by Role" />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-800 border-slate-700 text-white">
@@ -374,23 +374,23 @@ const AdminUsers = () => {
                         <Table>
                             <TableHeader>
                                 <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                                    <TableHead className="text-gray-300">User</TableHead>
-                                    <TableHead className="text-gray-300">Role</TableHead>
-                                    <TableHead className="text-gray-300">Email</TableHead>
-                                    <TableHead className="text-gray-300">Joined Date</TableHead>
-                                    <TableHead className="text-gray-300 text-right">Actions</TableHead>
+                                    <TableHead className="text-gray-700">User</TableHead>
+                                    <TableHead className="text-gray-700">Role</TableHead>
+                                    <TableHead className="text-gray-700">Email</TableHead>
+                                    <TableHead className="text-gray-700">Joined Date</TableHead>
+                                    <TableHead className="text-gray-700 text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-gray-400">
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-700">
                                             Loading users...
                                         </TableCell>
                                     </TableRow>
                                 ) : users.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-gray-400">
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-700">
                                             No users found
                                         </TableCell>
                                     </TableRow>
@@ -404,7 +404,7 @@ const AdminUsers = () => {
                                                     </div>
                                                     <div>
                                                         <p className="font-medium text-white">{user.first_name} {user.last_name}</p>
-                                                        <p className="text-xs text-gray-400">@{user.username}</p>
+                                                        <p className="text-xs text-gray-700">@{user.username}</p>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -414,14 +414,14 @@ const AdminUsers = () => {
                                                     {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-gray-300">{user.email}</TableCell>
-                                            <TableCell className="text-gray-300">
+                                            <TableCell className="text-gray-700">{user.email}</TableCell>
+                                            <TableCell className="text-gray-700">
                                                 {new Date(user.date_joined || user.created_at).toLocaleDateString()}
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-slate-800">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-700 hover:text-white hover:bg-slate-800">
                                                             <MoreVertical className="w-4 h-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
@@ -430,7 +430,7 @@ const AdminUsers = () => {
                                                             <Edit className="w-4 h-4 mr-2" />
                                                             Edit Details
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer">
+                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-600 cursor-pointer">
                                                             <Trash2 className="w-4 h-4 mr-2" />
                                                             Delete User
                                                         </DropdownMenuItem>
@@ -447,9 +447,9 @@ const AdminUsers = () => {
                     {/* Mobile View - Cards */}
                     <div className="md:hidden">
                         {loading ? (
-                            <div className="text-center py-8 text-gray-400">Loading users...</div>
+                            <div className="text-center py-8 text-gray-700">Loading users...</div>
                         ) : users.length === 0 ? (
-                            <div className="text-center py-8 text-gray-400">No users found</div>
+                            <div className="text-center py-8 text-gray-700">No users found</div>
                         ) : (
                             <div className="space-y-4 p-4">
                                 {users.map((user) => (
@@ -462,12 +462,12 @@ const AdminUsers = () => {
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
-                                                    <p className="text-xs text-gray-400 truncate">@{user.username}</p>
+                                                    <p className="text-xs text-gray-700 truncate">@{user.username}</p>
                                                 </div>
                                             </div>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white hover:bg-slate-800 flex-shrink-0">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-700 hover:text-white hover:bg-slate-800 flex-shrink-0">
                                                         <MoreVertical className="w-4 h-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
@@ -476,7 +476,7 @@ const AdminUsers = () => {
                                                         <Edit className="w-4 h-4 mr-2" />
                                                         Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer">
+                                                    <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-600 cursor-pointer">
                                                         <Trash2 className="w-4 h-4 mr-2" />
                                                         Delete
                                                     </DropdownMenuItem>
@@ -495,12 +495,12 @@ const AdminUsers = () => {
                                         {/* Details */}
                                         <div className="space-y-2 text-sm border-t border-slate-700 pt-3">
                                             <div className="flex justify-between">
-                                                <span className="text-gray-400">Email:</span>
-                                                <span className="text-gray-300 break-all text-right">{user.email}</span>
+                                                <span className="text-gray-700">Email:</span>
+                                                <span className="text-gray-700 break-all text-right">{user.email}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-gray-400">Joined:</span>
-                                                <span className="text-gray-300">{new Date(user.date_joined || user.created_at).toLocaleDateString()}</span>
+                                                <span className="text-gray-700">Joined:</span>
+                                                <span className="text-gray-700">{new Date(user.date_joined || user.created_at).toLocaleDateString()}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -520,7 +520,7 @@ const AdminUsers = () => {
                     <form onSubmit={handleUpdateUser} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300">First Name</label>
+                                <label className="text-sm font-medium text-gray-700">First Name</label>
                                 <Input
                                     name="first_name"
                                     value={formData.first_name}
@@ -530,7 +530,7 @@ const AdminUsers = () => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-300">Last Name</label>
+                                <label className="text-sm font-medium text-gray-700">Last Name</label>
                                 <Input
                                     name="last_name"
                                     value={formData.last_name}
@@ -542,7 +542,7 @@ const AdminUsers = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-300">Email</label>
+                            <label className="text-sm font-medium text-gray-700">Email</label>
                             <Input
                                 name="email"
                                 type="email"
@@ -554,7 +554,7 @@ const AdminUsers = () => {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-300">Phone</label>
+                            <label className="text-sm font-medium text-gray-700">Phone</label>
                             <Input
                                 name="phone"
                                 value={formData.phone}
@@ -564,7 +564,7 @@ const AdminUsers = () => {
                         </div>
 
                         <DialogFooter>
-                            <Button type="button" variant="ghost" onClick={() => setIsEditUserOpen(false)} className="text-gray-300 hover:text-white hover:bg-slate-800">
+                            <Button type="button" variant="ghost" onClick={() => setIsEditUserOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
                                 Cancel
                             </Button>
                             <Button type="submit" className="bg-teal-600 hover:bg-teal-700">

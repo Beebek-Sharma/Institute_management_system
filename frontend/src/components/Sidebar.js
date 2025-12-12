@@ -6,7 +6,7 @@ const Sidebar = () => {
   return (
     <div className="space-y-6">
       {/* Quick Stats */}
-      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+      <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-md">
         <CardHeader>
           <CardTitle className="text-base text-white">Quick Stats</CardTitle>
         </CardHeader>
@@ -23,7 +23,7 @@ const Sidebar = () => {
       </Card>
 
       {/* Upcoming Events */}
-      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm">
+      <Card className="bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700 shadow-md">
         <CardHeader>
           <CardTitle className="text-base text-white flex items-center gap-2">
             <Calendar className="w-4 h-4" />
@@ -38,7 +38,7 @@ const Sidebar = () => {
       </Card>
 
       {/* Important Notice */}
-      <Card className="bg-gradient-to-br from-amber-900/30 to-amber-950/30 border-amber-700/50 backdrop-blur-sm">
+      <Card className="bg-gradient-to-br from-amber-900 to-amber-950 border-amber-700 shadow-md">
         <CardHeader>
           <CardTitle className="text-base text-amber-200 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />

@@ -114,7 +114,7 @@ const StaffCourses = () => {
                 <div className="flex items-center justify-center py-12">
                     <div className="text-center">
                         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
-                        <p className="text-gray-300">Loading courses...</p>
+                        <p className="text-gray-700">Loading courses...</p>
                     </div>
                 </div>
             </DashboardLayout>
@@ -125,11 +125,11 @@ const StaffCourses = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h1 className="text-4xl font-bold text-white mb-2">Course Management</h1>
-                            <p className="text-gray-200">Manage all physical courses, batches, and instructors</p>
+                            <h1 className="text-4xl font-bold text-gray-900 mb-2">Course Management</h1>
+                            <p className="text-gray-900">Manage all physical courses, batches, and instructors</p>
                         </div>
                         <Button
                             onClick={() => setShowCreateDialog(true)}
@@ -146,7 +146,7 @@ const StaffCourses = () => {
                                 placeholder="Search courses..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="bg-white/20 border-white/40 text-white placeholder:text-gray-400"
+                                className="bg-white/20 border-gray-300 text-white placeholder:text-gray-700"
                             />
                         </div>
                         <div className="flex gap-2">
@@ -185,7 +185,7 @@ const StaffCourses = () => {
                                                         setSelectedCourse(course);
                                                         setSelectedInstructor(course.instructor || '');
                                                     }}
-                                                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs h-8"
+                                                    className="flex-1 bg-teal-600 hover:bg-teal-700 text-gray-900 text-xs h-8"
                                                 >
                                                     Assign
                                                 </Button>
@@ -194,7 +194,7 @@ const StaffCourses = () => {
                                                         e.stopPropagation();
                                                         navigate(`/courses/${course.id}`);
                                                     }}
-                                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
+                                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 text-xs h-8"
                                                 >
                                                     Details
                                                 </Button>
@@ -204,7 +204,7 @@ const StaffCourses = () => {
                                 ))
                             ) : (
                                 <div className="w-full text-center py-12">
-                                    <p className="text-gray-400">No courses found</p>
+                                    <p className="text-gray-700">No courses found</p>
                                 </div>
                             )}
                         </div>
@@ -213,30 +213,30 @@ const StaffCourses = () => {
 
                 {/* Table View */}
                 {viewMode === 'table' && (
-                    <Card className="bg-white/10 border-white/20">
+                    <Card className="bg-white border-gray-200">
                         <CardHeader>
-                            <CardTitle className="text-white">All Courses</CardTitle>
+                            <CardTitle className="text-gray-900">All Courses</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="border-white/20">
-                                        <TableHead className="text-gray-300">Code</TableHead>
-                                        <TableHead className="text-gray-300">Name</TableHead>
-                                        <TableHead className="text-gray-300">Category</TableHead>
-                                        <TableHead className="text-gray-300">Duration</TableHead>
-                                        <TableHead className="text-gray-300">Enrolled</TableHead>
-                                        <TableHead className="text-gray-300">Actions</TableHead>
+                                    <TableRow className="border-gray-200">
+                                        <TableHead className="text-gray-700">Code</TableHead>
+                                        <TableHead className="text-gray-700">Name</TableHead>
+                                        <TableHead className="text-gray-700">Category</TableHead>
+                                        <TableHead className="text-gray-700">Duration</TableHead>
+                                        <TableHead className="text-gray-700">Enrolled</TableHead>
+                                        <TableHead className="text-gray-700">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {filteredCourses.map((course) => (
-                                        <TableRow key={course.id} className="border-white/20 hover:bg-white/5">
-                                            <TableCell className="text-white font-mono text-sm">{course.code}</TableCell>
-                                            <TableCell className="text-white">{course.title || course.name}</TableCell>
-                                            <TableCell className="text-gray-300">{course.category || 'General'}</TableCell>
-                                            <TableCell className="text-gray-300">{course.duration_weeks || 'N/A'} weeks</TableCell>
-                                            <TableCell className="text-gray-300">{course.enrolled_count || 0}</TableCell>
+                                        <TableRow key={course.id} className="border-gray-200 hover:bg-white">
+                                            <TableCell className="text-gray-900 font-mono text-sm">{course.code}</TableCell>
+                                            <TableCell className="text-gray-900">{course.title || course.name}</TableCell>
+                                            <TableCell className="text-gray-700">{course.category || 'General'}</TableCell>
+                                            <TableCell className="text-gray-700">{course.duration_weeks || 'N/A'} weeks</TableCell>
+                                            <TableCell className="text-gray-700">{course.enrolled_count || 0}</TableCell>
                                             <TableCell>
                                                 <div className="flex gap-2">
                                                     <Dialog>
@@ -280,9 +280,9 @@ const StaffCourses = () => {
 
                 {/* Create Course Dialog */}
                 <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-                    <DialogContent className="bg-slate-900 border-white/20">
+                    <DialogContent className="bg-slate-900 border-gray-200">
                         <DialogHeader>
-                            <DialogTitle className="text-white">Create New Course</DialogTitle>
+                            <DialogTitle className="text-gray-900">Create New Course</DialogTitle>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-2 gap-2">
@@ -290,39 +290,39 @@ const StaffCourses = () => {
                                     placeholder="Code"
                                     value={newCourse.code}
                                     onChange={e => setNewCourse({ ...newCourse, code: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                    className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                                 />
                                 <Input
                                     placeholder="Name"
                                     value={newCourse.name}
                                     onChange={e => setNewCourse({ ...newCourse, name: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                    className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                                 />
                             </div>
                             <Input
                                 placeholder="Description"
                                 value={newCourse.description}
                                 onChange={e => setNewCourse({ ...newCourse, description: e.target.value })}
-                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                             />
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     placeholder="Credits"
                                     value={newCourse.credits}
                                     onChange={e => setNewCourse({ ...newCourse, credits: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                    className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                                 />
                                 <Input
                                     placeholder="Schedule"
                                     value={newCourse.schedule}
                                     onChange={e => setNewCourse({ ...newCourse, schedule: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                    className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                                 />
                                 <Input
                                     placeholder="Capacity"
                                     value={newCourse.capacity}
                                     onChange={e => setNewCourse({ ...newCourse, capacity: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                                    className="bg-white border-gray-200 text-white placeholder:text-gray-700"
                                 />
                             </div>
                             <Button

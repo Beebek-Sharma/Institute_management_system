@@ -56,7 +56,7 @@ const Search = () => {
         <div className="bg-white border-b border-gray-200 py-6">
           <div className="max-w-6xl mx-auto px-6">
             <div className="flex items-center gap-3 mb-2">
-              <SearchIcon className="w-6 h-6 text-gray-400" />
+              <SearchIcon className="w-6 h-6 text-gray-700" />
               <h1 className="text-2xl font-bold text-gray-900">Search Results</h1>
             </div>
             <p className="text-gray-600 mt-2">
@@ -76,7 +76,7 @@ const Search = () => {
             </div>
           ) : noResults ? (
             <div className="text-center py-12">
-              <X className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <X className="w-16 h-16 text-gray-700 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">No courses found</h2>
               <p className="text-gray-600 mb-8">
                 {query 

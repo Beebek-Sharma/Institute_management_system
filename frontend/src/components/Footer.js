@@ -34,7 +34,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-slate-900/98 backdrop-blur-sm text-gray-300 mt-16 border-t border-slate-700/50 bg-black/60">
+    <footer className="bg-white text-gray-600 mt-16 border-t border-gray-200">
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 ">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -44,22 +44,22 @@ const Footer = () => {
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">I</span>
               </div>
-              <span className="text-white font-bold text-lg">Institute</span>
+              <span className="text-gray-900 font-bold text-lg">Institute</span>
             </div>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Empowering education through innovative learning solutions.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="#" className="text-gray-500 hover:text-gray-900 transition">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="#" className="text-gray-500 hover:text-gray-900 transition">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="#" className="text-gray-500 hover:text-gray-900 transition">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="#" className="text-gray-500 hover:text-gray-900 transition">
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
@@ -67,13 +67,13 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-white font-bold mb-4">Quick Links</h3>
+            <h3 className="text-gray-900 font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <button
                     onClick={() => navigate(link.path)}
-                    className="text-sm text-gray-400 hover:text-white transition"
+                    className="text-sm text-gray-500 hover:text-gray-900 transition"
                   >
                     {link.name}
                   </button>
@@ -84,13 +84,13 @@ const Footer = () => {
 
           {/* Courses */}
           <div>
-            <h3 className="text-white font-bold mb-4">Courses</h3>
+            <h3 className="text-gray-900 font-bold mb-4">Courses</h3>
             <ul className="space-y-2">
               {courses.map((course) => (
                 <li key={course.name}>
                   <button
                     onClick={() => navigate(course.path)}
-                    className="text-sm text-gray-400 hover:text-white transition"
+                    className="text-sm text-gray-500 hover:text-gray-900 transition"
                   >
                     {course.name}
                   </button>
@@ -101,13 +101,13 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h3 className="text-white font-bold mb-4">Company</h3>
+            <h3 className="text-gray-900 font-bold mb-4">Company</h3>
             <ul className="space-y-2">
               {company.map((item) => (
                 <li key={item.name}>
                   <button
                     onClick={() => navigate(item.path)}
-                    className="text-sm text-gray-400 hover:text-white transition"
+                    className="text-sm text-gray-500 hover:text-gray-900 transition"
                   >
                     {item.name}
                   </button>
@@ -118,17 +118,17 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-white font-bold mb-4">Contact</h3>
+            <h3 className="text-gray-900 font-bold mb-4">Contact</h3>
             <ul className="space-y-3">
               <li className="flex gap-3">
                 <MapPin className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-600">
                   Kathmandu, Nepal
                 </span>
               </li>
               <li className="flex gap-3">
                 <Phone className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-600">
                   +977-1-4123456
                 </span>
               </li>
@@ -136,7 +136,7 @@ const Footer = () => {
                 <Mail className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
                 <a
                   href="mailto:info@institute.edu.np"
-                  className="text-sm text-gray-400 hover:text-white transition"
+                  className="text-sm text-gray-600 hover:text-gray-900 transition"
                 >
                   info@institute.edu.np
                 </a>
@@ -146,11 +146,11 @@ const Footer = () => {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-800 my-8"></div>
+        <div className="border-t border-gray-200 my-8"></div>
 
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-400 mb-4 md:mb-0">
+          <p className="text-sm text-gray-500 mb-4 md:mb-0">
             &copy; 2025 Physical Institute Management System. All rights reserved.
           </p>
           <div className="flex gap-6">
@@ -158,7 +158,7 @@ const Footer = () => {
               <button
                 key={item.name}
                 onClick={() => navigate(item.path)}
-                className="text-sm text-gray-400 hover:text-white transition"
+                className="text-sm text-gray-500 hover:text-gray-900 transition"
               >
                 {item.name}
               </button>

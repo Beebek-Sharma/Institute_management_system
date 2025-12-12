@@ -24,7 +24,7 @@ const NotFound = () => {
 
             {/* Illustration */}
             <div className="mb-8">
-              <Search className="w-24 h-24 mx-auto text-gray-400 opacity-50" />
+              <Search className="w-24 h-24 mx-auto text-gray-700 opacity-50" />
             </div>
 
             {/* Error Message */}
@@ -32,7 +32,7 @@ const NotFound = () => {
             <p className="text-lg text-gray-600 mb-4">
               Sorry, the page you're looking for doesn't exist or has been moved.
             </p>
-            <p className="text-sm text-gray-500 mb-8">
+            <p className="text-sm text-gray-800 mb-8">
               Please check the URL and try again, or use the buttons below to navigate.
             </p>
 

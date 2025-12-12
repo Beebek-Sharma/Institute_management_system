@@ -172,12 +172,12 @@ const CourseDetails = () => {
                     <div className="flex justify-center items-center py-24">
                         <div className="text-center">
                             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
-                            <p className="text-gray-300">Loading course details...</p>
+                            <p className="text-gray-700">Loading course details...</p>
                         </div>
                     </div>
                 ) : error || !course ? (
                     <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-                        <h2 className="text-2xl font-bold text-white mb-4">{error || 'Course not found'}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">{error || 'Course not found'}</h2>
                         <Button onClick={() => navigate('/')} className="bg-teal-600 hover:bg-teal-700">
                             Back to Home
                         </Button>
@@ -282,15 +282,15 @@ const CourseDetails = () => {
                                             <h3 className="font-bold text-gray-900 mb-4 text-sm">Quick Stats</h3>
                                             <div className="space-y-3">
                                                 <div>
-                                                    <p className="text-xs text-gray-500">Duration</p>
+                                                    <p className="text-xs text-gray-800">Duration</p>
                                                     <p className="text-lg font-bold text-gray-900">{course.duration_weeks} weeks</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-500">Credits</p>
+                                                    <p className="text-xs text-gray-800">Credits</p>
                                                     <p className="text-lg font-bold text-gray-900">{course.credits}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs text-gray-500">Code</p>
+                                                    <p className="text-xs text-gray-800">Code</p>
                                                     <p className="text-sm font-bold text-gray-700">{course.code}</p>
                                                 </div>
                                             </div>
@@ -357,7 +357,7 @@ const CourseDetails = () => {
                                                 <AccordionItem key={index} value={`item-${index}`}>
                                                     <AccordionTrigger className="hover:no-underline py-6">
                                                         <div className="flex flex-col items-start text-left">
-                                                            <span className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-1">Course {index + 1}</span>
+                                                            <span className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-1">Course {index + 1}</span>
                                                             <span className="text-lg font-bold text-gray-900">{item.title}</span>
                                                         </div>
                                                     </AccordionTrigger>

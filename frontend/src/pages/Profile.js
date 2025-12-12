@@ -50,7 +50,7 @@ const Profile = () => {
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                    <p className="mt-4 text-gray-300">Loading...</p>
+                    <p className="mt-4 text-gray-700">Loading...</p>
                 </div>
             </div>
         );
@@ -62,7 +62,7 @@ const Profile = () => {
             case 'staff': return <Briefcase className="w-6 h-6 text-blue-400" />;
             case 'instructor': return <GraduationCap className="w-6 h-6 text-purple-400" />;
             case 'student': return <User className="w-6 h-6 text-green-400" />;
-            default: return <User className="w-6 h-6 text-gray-400" />;
+            default: return <User className="w-6 h-6 text-gray-700" />;
         }
     };
 
@@ -150,10 +150,10 @@ const Profile = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg flex justify-between items-center">
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg flex justify-between items-center">
                     <div>
-                        <h1 className="text-4xl font-bold text-white mb-2">Profile</h1>
-                        <p className="text-gray-200">View and manage your profile</p>
+                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Profile</h1>
+                        <p className="text-gray-900">View and manage your profile</p>
                     </div>
 
                     <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
@@ -174,7 +174,7 @@ const Profile = () => {
                                             {previewImage ? (
                                                 <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-2xl font-bold text-white">
+                                                <span className="text-2xl font-bold text-gray-900">
                                                     {formData.first_name?.[0]}{formData.last_name?.[0]}
                                                 </span>
                                             )}
@@ -192,7 +192,7 @@ const Profile = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-300">First Name</label>
+                                        <label className="text-sm font-medium text-gray-700">First Name</label>
                                         <Input
                                             name="first_name"
                                             value={formData.first_name}
@@ -201,7 +201,7 @@ const Profile = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-300">Last Name</label>
+                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
                                         <Input
                                             name="last_name"
                                             value={formData.last_name}
@@ -212,7 +212,7 @@ const Profile = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Email</label>
+                                    <label className="text-sm font-medium text-gray-700">Email</label>
                                     <Input
                                         name="email"
                                         type="email"
@@ -224,7 +224,7 @@ const Profile = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">Phone</label>
+                                    <label className="text-sm font-medium text-gray-700">Phone</label>
                                     <Input
                                         name="phone"
                                         value={formData.phone}
@@ -234,7 +234,7 @@ const Profile = () => {
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)} className="text-gray-300 hover:text-white hover:bg-slate-800">
+                                    <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
                                         Cancel
                                     </Button>
                                     <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
@@ -247,18 +247,18 @@ const Profile = () => {
                 </div>
 
                 {/* Profile Card */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-8 max-w-2xl mx-auto md:mx-0">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-8 max-w-2xl mx-auto md:mx-0">
                     {/* Profile Header with Avatar */}
-                    <div className="flex flex-col items-center mb-8 pb-8 border-b border-white/20">
-                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg overflow-hidden`}>
+                    <div className="flex flex-col items-center mb-8 pb-8 border-b border-gray-200">
+                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-gray-900 text-3xl font-bold mb-4 shadow-lg overflow-hidden`}>
                             {user?.profile_picture ? (
                                 <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <span>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
                             )}
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-2">{user?.first_name} {user?.last_name}</h2>
-                        <div className="flex items-center gap-2 text-gray-300 text-lg bg-white/5 px-4 py-1 rounded-full">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-2">{user?.first_name} {user?.last_name}</h2>
+                        <div className="flex items-center gap-2 text-gray-700 text-lg bg-white px-4 py-1 rounded-full">
                             {getRoleIcon(user?.role)}
                             <span>{user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}</span>
                         </div>
@@ -267,40 +267,40 @@ const Profile = () => {
                     {/* Information Grid */}
                     <div className="space-y-6">
                         {/* Email */}
-                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors">
+                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white transition-colors">
                             <Mail className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-400 mb-1">Email</p>
-                                <p className="text-white text-lg">{user?.email}</p>
+                                <p className="text-sm font-semibold text-gray-700 mb-1">Email</p>
+                                <p className="text-gray-900 text-lg">{user?.email}</p>
                             </div>
                         </div>
 
                         {/* Username */}
-                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors">
+                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white transition-colors">
                             <User className="w-6 h-6 text-green-400 mt-1 flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-400 mb-1">Username</p>
-                                <p className="text-white text-lg">{user?.username}</p>
+                                <p className="text-sm font-semibold text-gray-700 mb-1">Username</p>
+                                <p className="text-gray-900 text-lg">{user?.username}</p>
                             </div>
                         </div>
 
                         {/* Phone */}
-                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors">
+                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white transition-colors">
                             <Phone className="w-6 h-6 text-purple-400 mt-1 flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-400 mb-1">Phone</p>
-                                <p className="text-white text-lg">{user?.phone || 'Not set'}</p>
+                                <p className="text-sm font-semibold text-gray-700 mb-1">Phone</p>
+                                <p className="text-gray-900 text-lg">{user?.phone || 'Not set'}</p>
                             </div>
                         </div>
 
                         {/* Enrollment/Join Date */}
-                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors">
+                        <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white transition-colors">
                             <Calendar className="w-6 h-6 text-yellow-400 mt-1 flex-shrink-0" />
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-gray-400 mb-1">
+                                <p className="text-sm font-semibold text-gray-700 mb-1">
                                     {user?.role === 'student' ? 'Enrollment Date' : 'Joined Date'}
                                 </p>
-                                <p className="text-white text-lg">
+                                <p className="text-gray-900 text-lg">
                                     {user?.enrollment_date || user?.date_joined || user?.created_at
                                         ? new Date(user.enrollment_date || user.date_joined || user.created_at).toLocaleDateString()
                                         : 'N/A'
@@ -310,10 +310,10 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    <div className="mt-8 pt-8 border-t border-white/20 flex justify-end">
+                    <div className="mt-8 pt-8 border-t border-gray-200 flex justify-end">
                         <Button
                             variant="outline"
-                            className="text-gray-300 border-gray-600 hover:bg-white/10"
+                            className="text-gray-700 border-gray-600 hover:bg-white"
                             onClick={() => navigate('/student/settings')}
                         >
                             Advanced Settings

@@ -135,34 +135,34 @@ const AdminStudents = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-3 sm:p-6 mb-8 rounded-lg">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Student Management</h1>
-                    <p className="text-sm sm:text-base text-gray-200">View and manage all students</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-3 sm:p-6 mb-8 rounded-lg">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">Student Management</h1>
+                    <p className="text-sm sm:text-base text-gray-900">View and manage all students</p>
                 </div>
 
                 {/* Alert */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
 
                 {/* Search & Actions */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-3 sm:p-6 mb-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-3 sm:p-6 mb-6">
                     <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 mb-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-2.5 sm:top-3.5 w-4 sm:w-5 h-4 sm:h-5 text-gray-700" />
                             <input
                                 type="text"
                                 placeholder="Search students..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <button
@@ -199,15 +199,15 @@ const AdminStudents = () => {
 
                 {/* Students Table */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading students...</div>
+                    <div className="text-center py-12 text-gray-700">Loading students...</div>
                 ) : (
                     <>
                         {/* Desktop View */}
-                        <div className="hidden md:block bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
+                        <div className="hidden md:block bg-white backdrop-blur-md border border-gray-200 rounded-lg overflow-hidden">
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead>
-                                        <tr className="border-b border-white/20 bg-white/5">
+                                        <tr className="border-b border-gray-200 bg-white">
                                             <th className="px-6 py-4 text-left">
                                                 <input
                                                     type="checkbox"
@@ -216,16 +216,16 @@ const AdminStudents = () => {
                                                     className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
                                                 />
                                             </th>
-                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Username</th>
-                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Name</th>
-                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Email</th>
-                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Enrollments</th>
-                                            <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
+                                            <th className="px-6 py-4 text-left text-gray-700 font-semibold">Username</th>
+                                            <th className="px-6 py-4 text-left text-gray-700 font-semibold">Name</th>
+                                            <th className="px-6 py-4 text-left text-gray-700 font-semibold">Email</th>
+                                            <th className="px-6 py-4 text-left text-gray-700 font-semibold">Enrollments</th>
+                                            <th className="px-6 py-4 text-left text-gray-700 font-semibold">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {filteredStudents.map((student) => (
-                                            <tr key={student.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                                            <tr key={student.id} className="border-b border-gray-200 hover:bg-white transition">
                                                 <td className="px-6 py-4">
                                                     <input
                                                         type="checkbox"
@@ -235,11 +235,11 @@ const AdminStudents = () => {
                                                     />
                                                 </td>
                                                 <td className="px-6 py-4 text-white font-medium">{student.username}</td>
-                                                <td className="px-6 py-4 text-gray-300">
+                                                <td className="px-6 py-4 text-gray-700">
                                                     {student.first_name} {student.last_name}
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-300">{student.email}</td>
-                                                <td className="px-6 py-4 text-gray-300">
+                                                <td className="px-6 py-4 text-gray-700">{student.email}</td>
+                                                <td className="px-6 py-4 text-gray-700">
                                                     <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
                                                         {student.enrollment_count || 0} courses
                                                     </span>
@@ -259,7 +259,7 @@ const AdminStudents = () => {
                                 </table>
                             </div>
                             {filteredStudents.length === 0 && !loading && (
-                                <div className="text-center py-12 text-gray-300">
+                                <div className="text-center py-12 text-gray-700">
                                     No students found
                                 </div>
                             )}
@@ -268,12 +268,12 @@ const AdminStudents = () => {
                         {/* Mobile View - Cards */}
                         <div className="md:hidden space-y-4">
                             {filteredStudents.length === 0 ? (
-                                <div className="text-center py-12 text-gray-300 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">
+                                <div className="text-center py-12 text-gray-700 bg-white backdrop-blur-md border border-gray-200 rounded-lg">
                                     No students found
                                 </div>
                             ) : (
                                 filteredStudents.map((student) => (
-                                    <div key={student.id} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4">
+                                    <div key={student.id} className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4">
                                         <div className="flex items-start justify-between mb-3">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
@@ -283,9 +283,9 @@ const AdminStudents = () => {
                                                         onChange={() => handleSelectStudent(student.id)}
                                                         className="w-4 h-4 rounded border-gray-400 text-blue-600 focus:ring-blue-500"
                                                     />
-                                                    <p className="text-white font-semibold">{student.username}</p>
+                                                    <p className="text-gray-900 font-semibold">{student.username}</p>
                                                 </div>
-                                                <p className="text-sm text-gray-300">{student.first_name} {student.last_name}</p>
+                                                <p className="text-sm text-gray-700">{student.first_name} {student.last_name}</p>
                                             </div>
                                             <button
                                                 onClick={() => viewStudentDetails(student)}
@@ -295,12 +295,12 @@ const AdminStudents = () => {
                                                 <Eye className="w-4 h-4" />
                                             </button>
                                         </div>
-                                        <div className="space-y-2 border-t border-white/10 pt-3">
-                                            <p className="text-xs text-gray-400">
-                                                <span className="text-gray-300">Email:</span> {student.email}
+                                        <div className="space-y-2 border-t border-gray-200 pt-3">
+                                            <p className="text-xs text-gray-700">
+                                                <span className="text-gray-700">Email:</span> {student.email}
                                             </p>
-                                            <p className="text-xs text-gray-400">
-                                                <span className="text-gray-300">Enrollments:</span>{' '}
+                                            <p className="text-xs text-gray-700">
+                                                <span className="text-gray-700">Enrollments:</span>{' '}
                                                 <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 rounded text-xs">
                                                     {student.enrollment_count || 0} courses
                                                 </span>
@@ -315,18 +315,18 @@ const AdminStudents = () => {
 
                 {/* Stats */}
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Total Students</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Total Students</div>
                         <div className="text-2xl sm:text-4xl font-bold text-white">{students.length}</div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Active Enrollments</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Active Enrollments</div>
                         <div className="text-2xl sm:text-4xl font-bold text-green-400">
                             {students.reduce((sum, s) => sum + (s.enrollment_count || 0), 0)}
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 sm:p-6">
-                        <div className="text-xs sm:text-sm text-gray-300 font-semibold mb-2">Selected</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-4 sm:p-6">
+                        <div className="text-xs sm:text-sm text-gray-700 font-semibold mb-2">Selected</div>
                         <div className="text-2xl sm:text-4xl font-bold text-blue-400">{selectedStudents.length}</div>
                     </div>
                 </div>
@@ -335,7 +335,7 @@ const AdminStudents = () => {
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 sm:p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-6 sm:p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-gray-300 p-6 sm:p-8">
                         <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">Student Details</h2>
 
                         <div className="space-y-6">
@@ -366,7 +366,7 @@ const AdminStudents = () => {
                                     <p className="text-xs sm:text-sm text-gray-600">
                                         Total Enrollments: <span className="font-semibold text-gray-900">{selectedStudent.enrollment_count || 0}</span>
                                     </p>
-                                    <p className="text-gray-500 text-xs mt-2">
+                                    <p className="text-gray-800 text-xs mt-2">
                                         Detailed enrollment history will be loaded from the backend.
                                     </p>
                                 </div>
@@ -376,7 +376,7 @@ const AdminStudents = () => {
                             <div>
                                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Payment History</h3>
                                 <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
-                                    <p className="text-xs sm:text-sm text-gray-500">
+                                    <p className="text-xs sm:text-sm text-gray-800">
                                         Payment records will be displayed here.
                                     </p>
                                 </div>
@@ -386,7 +386,7 @@ const AdminStudents = () => {
                             <div>
                                 <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">Attendance Records</h3>
                                 <div className="bg-gray-100 rounded-lg p-3 sm:p-4">
-                                    <p className="text-xs sm:text-sm text-gray-500">
+                                    <p className="text-xs sm:text-sm text-gray-800">
                                         Attendance data will be shown here once the attendance system is implemented.
                                     </p>
                                 </div>

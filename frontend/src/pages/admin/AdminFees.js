@@ -146,12 +146,12 @@ const AdminFees = () => {
 
     const getStatusColor = (status) => {
         const colors = {
-            verified: 'bg-green-500/20 text-green-300 border-green-500/30',
+            verified: 'bg-green-50 text-green-300 border-green-500/30',
             pending: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-            failed: 'bg-red-500/20 text-red-300 border-red-500/30',
+            failed: 'bg-red-50 text-red-600 border-red-500/30',
             refunded: 'bg-blue-500/20 text-blue-300 border-blue-500/30'
         };
-        return colors[status] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return colors[status] || 'bg-gray-500/20 text-gray-700 border-gray-500/30';
     };
 
     const getMethodBadge = (method) => {
@@ -169,19 +169,19 @@ const AdminFees = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Payment & Fee Management</h1>
-                    <p className="text-gray-200">Track payments, revenue, and manage refunds</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Payment & Fee Management</h1>
+                    <p className="text-gray-900">Track payments, revenue, and manage refunds</p>
                 </div>
 
                 {/* Alert */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
@@ -193,76 +193,76 @@ const AdminFees = () => {
                             <div className="text-green-300 text-sm font-semibold">Total Revenue</div>
                             <TrendingUp className="w-5 h-5 text-green-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">NPR {stats.total_revenue.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-gray-900">NPR {stats.total_revenue.toLocaleString()}</div>
                     </div>
                     <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 backdrop-blur-md border border-blue-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-blue-300 text-sm font-semibold">Verified</div>
                             <CheckCircle className="w-5 h-5 text-blue-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">NPR {stats.verified_amount.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-gray-900">NPR {stats.verified_amount.toLocaleString()}</div>
                     </div>
                     <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 backdrop-blur-md border border-yellow-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-yellow-300 text-sm font-semibold">Pending</div>
                             <RefreshCw className="w-5 h-5 text-yellow-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">NPR {stats.pending_amount.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-gray-900">NPR {stats.pending_amount.toLocaleString()}</div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-md border border-purple-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-purple-300 text-sm font-semibold">Refunded</div>
                             <XCircle className="w-5 h-5 text-purple-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">NPR {stats.refunded_amount.toLocaleString()}</div>
+                        <div className="text-3xl font-bold text-gray-900">NPR {stats.refunded_amount.toLocaleString()}</div>
                     </div>
                 </div>
 
                 {/* Payment Gateway Status */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
-                    <h3 className="text-lg font-bold text-white mb-4">Payment Gateway Status</h3>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 mb-6">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Payment Gateway Status</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="flex items-center justify-between p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
                             <div>
-                                <div className="font-semibold text-white">Esewa</div>
-                                <div className="text-xs text-gray-400">Nepal's Payment Gateway</div>
+                                <div className="font-semibold text-gray-900">Esewa</div>
+                                <div className="text-xs text-gray-700">Nepal's Payment Gateway</div>
                             </div>
-                            <div className="px-3 py-1 bg-green-600 text-white text-xs rounded-full">Active</div>
+                            <div className="px-3 py-1 bg-green-600 text-gray-900 text-xs rounded-full">Active</div>
                         </div>
                         <div className="flex items-center justify-between p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
                             <div>
-                                <div className="font-semibold text-white">Khalti</div>
-                                <div className="text-xs text-gray-400">Digital Wallet</div>
+                                <div className="font-semibold text-gray-900">Khalti</div>
+                                <div className="text-xs text-gray-700">Digital Wallet</div>
                             </div>
-                            <div className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full">Active</div>
+                            <div className="px-3 py-1 bg-purple-600 text-gray-900 text-xs rounded-full">Active</div>
                         </div>
                         <div className="flex items-center justify-between p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                             <div>
-                                <div className="font-semibold text-white">PhonePay</div>
-                                <div className="text-xs text-gray-400">Mobile Payment</div>
+                                <div className="font-semibold text-gray-900">PhonePay</div>
+                                <div className="text-xs text-gray-700">Mobile Payment</div>
                             </div>
-                            <div className="px-3 py-1 bg-blue-600 text-white text-xs rounded-full">Active</div>
+                            <div className="px-3 py-1 bg-blue-600 text-gray-900 text-xs rounded-full">Active</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Search & Filter */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-700" />
                             <input
                                 type="text"
                                 placeholder="Search payments..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="px-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         >
                             <option value="">All Status</option>
                             <option value="verified">Verified</option>
@@ -273,7 +273,7 @@ const AdminFees = () => {
                         <select
                             value={methodFilter}
                             onChange={(e) => setMethodFilter(e.target.value)}
-                            className="px-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         >
                             <option value="">All Methods</option>
                             <option value="esewa">Esewa</option>
@@ -294,32 +294,32 @@ const AdminFees = () => {
 
                 {/* Payments Table */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading payments...</div>
+                    <div className="text-center py-12 text-gray-700">Loading payments...</div>
                 ) : (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="border-b border-white/20 bg-white/5">
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Date</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Student</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Course</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Amount</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Method</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Status</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Actions</th>
+                                    <tr className="border-b border-gray-200 bg-white">
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Date</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Student</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Course</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Amount</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Method</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Status</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredPayments.map((payment) => (
-                                        <tr key={payment.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                                            <td className="px-6 py-4 text-gray-300">
+                                        <tr key={payment.id} className="border-b border-gray-200 hover:bg-white transition">
+                                            <td className="px-6 py-4 text-gray-700">
                                                 {payment.payment_date ? new Date(payment.payment_date).toLocaleDateString() : 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 text-white font-medium">
                                                 {payment.student_name || 'Unknown'}
                                             </td>
-                                            <td className="px-6 py-4 text-gray-300">
+                                            <td className="px-6 py-4 text-gray-700">
                                                 {payment.course_title || 'Unknown'}
                                             </td>
                                             <td className="px-6 py-4 text-white font-semibold">
@@ -340,7 +340,7 @@ const AdminFees = () => {
                                                     {payment.status === 'pending' && (
                                                         <button
                                                             onClick={() => handleVerifyPayment(payment.id)}
-                                                            className="p-2 bg-green-500/20 hover:bg-green-500/40 text-green-300 rounded-lg transition"
+                                                            className="p-2 bg-green-50 hover:bg-green-500/40 text-green-300 rounded-lg transition"
                                                             title="Verify Payment"
                                                         >
                                                             <CheckCircle className="w-4 h-4" />
@@ -362,7 +362,7 @@ const AdminFees = () => {
                             </table>
                         </div>
                         {filteredPayments.length === 0 && !loading && (
-                            <div className="text-center py-12 text-gray-300">
+                            <div className="text-center py-12 text-gray-700">
                                 No payments found
                             </div>
                         )}

@@ -77,13 +77,13 @@ const StudentEnrollments = () => {
             {loading ? (
               <div className="text-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500 mx-auto"></div>
-                <p className="mt-2 text-gray-500">Loading enrollments...</p>
+                <p className="mt-2 text-gray-800">Loading enrollments...</p>
               </div>
             ) : enrollments.length === 0 ? (
               <div className="text-center py-12">
-                <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                <BookOpen className="h-12 w-12 text-gray-700 mx-auto mb-3" />
                 <h3 className="text-lg font-medium text-gray-900">No enrollments yet</h3>
-                <p className="text-gray-500 mb-4">You haven't enrolled in any courses yet.</p>
+                <p className="text-gray-800 mb-4">You haven't enrolled in any courses yet.</p>
                 <Button
                   className="bg-teal-600 hover:bg-teal-700 text-white"
                   onClick={() => window.location.href = '/student/courses'}
@@ -109,13 +109,13 @@ const StudentEnrollments = () => {
                       <TableCell className="font-medium">
                         <div>
                           <div className="font-bold">{enrollment.course_name}</div>
-                          <div className="text-xs text-gray-500">{enrollment.course_code}</div>
+                          <div className="text-xs text-gray-800">{enrollment.course_code}</div>
                         </div>
                       </TableCell>
                       <TableCell>{enrollment.instructor_name || 'TBA'}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3 text-gray-400" />
+                          <Calendar className="h-3 w-3 text-gray-700" />
                           {new Date(enrollment.enrollment_date).toLocaleDateString()}
                         </div>
                       </TableCell>

@@ -160,7 +160,7 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              <p className="mt-4 text-gray-300">Loading dashboard...</p>
+              <p className="mt-4 text-gray-700">Loading dashboard...</p>
             </div>
           </div>
         )}
@@ -168,31 +168,31 @@ const AdminDashboard = () => {
         {!authLoading && (
           <>
             {/* Header */}
-            <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-              <h1 className="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>
-              <p className="text-gray-200">Manage users, courses, and institute settings</p>
+            <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+              <p className="text-gray-900">Manage users, courses, and institute settings</p>
             </div>
 
             {/* Alerts */}
             {success && (
-              <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                 {success}
               </div>
             )}
             {error && (
-              <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                 {error}
               </div>
             )}
 
             {/* Tabs */}
-            <div className="flex gap-4 mb-6 border-b border-white/20">
+            <div className="flex gap-4 mb-6 border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('users')}
                 className={`px-6 py-3 font-semibold transition-all ${
                   activeTab === 'users'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-gray-300 hover:text-gray-100'
+                    : 'text-gray-700 hover:text-gray-900'
                 }`}
               >
                 User Management
@@ -202,7 +202,7 @@ const AdminDashboard = () => {
                 className={`px-6 py-3 font-semibold transition-all ${
                   activeTab === 'stats'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-gray-300 hover:text-gray-100'
+                    : 'text-gray-700 hover:text-gray-900'
                 }`}
               >
                 Statistics
@@ -213,22 +213,22 @@ const AdminDashboard = () => {
             {activeTab === 'users' && (
               <div className="space-y-6">
                 {/* Search & Filter */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
                   <div className="flex flex-col md:flex-row gap-4 mb-6">
                     <div className="flex-1 relative">
-                      <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                      <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-700" />
                       <input
                         type="text"
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       />
                     </div>
                     <select
                       value={roleFilter}
                       onChange={(e) => setRoleFilter(e.target.value)}
-                      className="px-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     >
                       <option value="">All Roles</option>
                       <option value="admin">Admin</option>
@@ -247,25 +247,25 @@ const AdminDashboard = () => {
 
                   {/* Users Table */}
                   {loading ? (
-                    <div className="text-center py-8 text-gray-300">Loading users...</div>
+                    <div className="text-center py-8 text-gray-700">Loading users...</div>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b border-white/20">
-                            <th className="px-4 py-3 text-left text-gray-300 font-semibold">Username</th>
-                            <th className="px-4 py-3 text-left text-gray-300 font-semibold">Email</th>
-                            <th className="px-4 py-3 text-left text-gray-300 font-semibold">Name</th>
-                            <th className="px-4 py-3 text-left text-gray-300 font-semibold">Role</th>
-                            <th className="px-4 py-3 text-left text-gray-300 font-semibold">Actions</th>
+                          <tr className="border-b border-gray-200">
+                            <th className="px-4 py-3 text-left text-gray-700 font-semibold">Username</th>
+                            <th className="px-4 py-3 text-left text-gray-700 font-semibold">Email</th>
+                            <th className="px-4 py-3 text-left text-gray-700 font-semibold">Name</th>
+                            <th className="px-4 py-3 text-left text-gray-700 font-semibold">Role</th>
+                            <th className="px-4 py-3 text-left text-gray-700 font-semibold">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {filteredUsers.map((u) => (
-                            <tr key={u.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                            <tr key={u.id} className="border-b border-gray-200 hover:bg-white transition">
                               <td className="px-4 py-3 text-white">{u.username}</td>
-                              <td className="px-4 py-3 text-gray-300">{u.email}</td>
-                              <td className="px-4 py-3 text-gray-300">{u.first_name} {u.last_name}</td>
+                              <td className="px-4 py-3 text-gray-700">{u.email}</td>
+                              <td className="px-4 py-3 text-gray-700">{u.first_name} {u.last_name}</td>
                               <td className="px-4 py-3">
                                 <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleColor(u.role)}`}>
                                   {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
@@ -281,7 +281,7 @@ const AdminDashboard = () => {
                                 </button>
                                 <button
                                   onClick={() => handleDeleteUser(u.id)}
-                                  className="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-300 rounded-lg transition"
+                                  className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition"
                                   title="Delete User"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -292,7 +292,7 @@ const AdminDashboard = () => {
                         </tbody>
                       </table>
                       {filteredUsers.length === 0 && (
-                        <div className="text-center py-8 text-gray-300">No users found</div>
+                        <div className="text-center py-8 text-gray-700">No users found</div>
                       )}
                     </div>
                   )}
@@ -303,20 +303,20 @@ const AdminDashboard = () => {
             {/* Statistics Tab */}
             {activeTab === 'stats' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                  <div className="text-gray-300 text-sm font-semibold mb-2">Total Users</div>
-                  <div className="text-4xl font-bold text-white">{users.length}</div>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                  <div className="text-gray-700 text-sm font-semibold mb-2">Total Users</div>
+                  <div className="text-4xl font-bold text-gray-900">{users.length}</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                  <div className="text-gray-300 text-sm font-semibold mb-2">Admins</div>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                  <div className="text-gray-700 text-sm font-semibold mb-2">Admins</div>
                   <div className="text-4xl font-bold text-red-400">{users.filter(u => u.role === 'admin').length}</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                  <div className="text-gray-300 text-sm font-semibold mb-2">Instructors</div>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                  <div className="text-gray-700 text-sm font-semibold mb-2">Instructors</div>
                   <div className="text-4xl font-bold text-purple-400">{users.filter(u => u.role === 'instructor').length}</div>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                  <div className="text-gray-300 text-sm font-semibold mb-2">Students</div>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                  <div className="text-gray-700 text-sm font-semibold mb-2">Students</div>
                   <div className="text-4xl font-bold text-green-400">{users.filter(u => u.role === 'student').length}</div>
                 </div>
               </div>
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-300 p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New User</h2>
 
             <form onSubmit={handleCreateUser} className="space-y-4">
@@ -337,7 +337,7 @@ const AdminDashboard = () => {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 >
                   <option value="admin">Admin</option>
                   <option value="staff">Staff</option>
@@ -353,7 +353,7 @@ const AdminDashboard = () => {
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   placeholder="Enter username"
-                  className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>
 
@@ -364,7 +364,7 @@ const AdminDashboard = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="Enter email"
-                  className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>
 
@@ -375,7 +375,7 @@ const AdminDashboard = () => {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Enter password"
-                  className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>
 
@@ -387,7 +387,7 @@ const AdminDashboard = () => {
                     value={formData.first_name}
                     onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                     placeholder="First name"
-                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
                 <div>
@@ -397,7 +397,7 @@ const AdminDashboard = () => {
                     value={formData.last_name}
                     onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                     placeholder="Last name"
-                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
               </div>
@@ -410,7 +410,7 @@ const AdminDashboard = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="Phone number"
-                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   />
                 </div>
               )}
@@ -425,7 +425,7 @@ const AdminDashboard = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                  className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
                 >
                   Cancel
                 </button>

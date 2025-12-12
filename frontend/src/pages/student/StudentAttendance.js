@@ -103,12 +103,12 @@ const StudentAttendance = () => {
 
     const getStatusColor = (status) => {
         const colors = {
-            present: 'bg-green-500/20 text-green-300 border-green-500/30',
-            absent: 'bg-red-500/20 text-red-300 border-red-500/30',
+            present: 'bg-green-50 text-green-300 border-green-500/30',
+            absent: 'bg-red-50 text-red-600 border-red-500/30',
             late: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
             excused: 'bg-blue-500/20 text-blue-300 border-blue-500/30'
         };
-        return colors[status] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return colors[status] || 'bg-gray-500/20 text-gray-700 border-gray-500/30';
     };
 
     const getStatusIcon = (status) => {
@@ -130,14 +130,14 @@ const StudentAttendance = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">My Attendance</h1>
-                    <p className="text-gray-200">Track your class attendance</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">My Attendance</h1>
+                    <p className="text-gray-900">Track your class attendance</p>
                 </div>
 
                 {/* Alert */}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
@@ -149,39 +149,39 @@ const StudentAttendance = () => {
                             <div className="text-blue-300 text-sm font-semibold">Total Classes</div>
                             <Calendar className="w-5 h-5 text-blue-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">{stats.total_classes}</div>
+                        <div className="text-3xl font-bold text-gray-900">{stats.total_classes}</div>
                     </div>
                     <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 backdrop-blur-md border border-green-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-green-300 text-sm font-semibold">Present</div>
                             <CheckCircle className="w-5 h-5 text-green-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">{stats.present}</div>
+                        <div className="text-3xl font-bold text-gray-900">{stats.present}</div>
                     </div>
                     <div className="bg-gradient-to-br from-red-500/20 to-red-600/20 backdrop-blur-md border border-red-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
-                            <div className="text-red-300 text-sm font-semibold">Absent</div>
+                            <div className="text-red-600 text-sm font-semibold">Absent</div>
                             <XCircle className="w-5 h-5 text-red-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">{stats.absent}</div>
+                        <div className="text-3xl font-bold text-gray-900">{stats.absent}</div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 backdrop-blur-md border border-purple-500/30 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-purple-300 text-sm font-semibold">Attendance Rate</div>
                             <TrendingUp className="w-5 h-5 text-purple-400" />
                         </div>
-                        <div className="text-3xl font-bold text-white">{stats.attendance_rate}%</div>
+                        <div className="text-3xl font-bold text-gray-900">{stats.attendance_rate}%</div>
                     </div>
                 </div>
 
                 {/* Filter */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-4">
-                        <label className="text-white font-semibold">Filter by Course:</label>
+                        <label className="text-gray-900 font-semibold">Filter by Course:</label>
                         <select
                             value={courseFilter}
                             onChange={(e) => setCourseFilter(e.target.value)}
-                            className="flex-1 px-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         >
                             <option value="">All Courses</option>
                             {courses.map(course => (
@@ -195,23 +195,23 @@ const StudentAttendance = () => {
 
                 {/* Attendance Table */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading attendance...</div>
+                    <div className="text-center py-12 text-gray-700">Loading attendance...</div>
                 ) : (
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead>
-                                    <tr className="border-b border-white/20 bg-white/5">
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Date</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Course</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Status</th>
-                                        <th className="px-6 py-4 text-left text-gray-300 font-semibold">Marked By</th>
+                                    <tr className="border-b border-gray-200 bg-white">
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Date</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Course</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Status</th>
+                                        <th className="px-6 py-4 text-left text-gray-700 font-semibold">Marked By</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredRecords.map((record) => (
-                                        <tr key={record.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                                            <td className="px-6 py-4 text-gray-300">
+                                        <tr key={record.id} className="border-b border-gray-200 hover:bg-white transition">
+                                            <td className="px-6 py-4 text-gray-700">
                                                 {record.date ? new Date(record.date).toLocaleDateString() : 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 text-white font-medium">
@@ -223,7 +223,7 @@ const StudentAttendance = () => {
                                                     {record.status_display || 'N/A'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-gray-300">
+                                            <td className="px-6 py-4 text-gray-700">
                                                 {record.instructor_name || 'Instructor'}
                                             </td>
                                         </tr>
@@ -232,7 +232,7 @@ const StudentAttendance = () => {
                             </table>
                         </div>
                         {filteredRecords.length === 0 && !loading && (
-                            <div className="text-center py-12 text-gray-300">
+                            <div className="text-center py-12 text-gray-700">
                                 No attendance records found
                             </div>
                         )}

@@ -236,40 +236,40 @@ const AdminCourses = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Course Management</h1>
-                    <p className="text-gray-200">Manage all physical courses, batches, and instructors</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Course Management</h1>
+                    <p className="text-gray-900">Manage all physical courses, batches, and instructors</p>
                 </div>
 
                 {/* Alerts */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
 
                 {/* Search & Actions */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 mb-6">
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-700" />
                             <input
                                 type="text"
                                 placeholder="Search courses..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                             />
                         </div>
                         <select
                             value={categoryFilter}
                             onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="px-4 py-3 bg-white/30 border border-white/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                         >
                             <option value="">All Categories</option>
                             {categories.map(cat => (
@@ -301,7 +301,7 @@ const AdminCourses = () => {
 
                 {/* Courses Grid */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading courses...</div>
+                    <div className="text-center py-12 text-gray-700">Loading courses...</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredCourses.map((course) => (
@@ -316,7 +316,7 @@ const AdminCourses = () => {
                                                 setSelectedCourse(course);
                                                 setShowAssignModal(true);
                                             }}
-                                            className="flex-1 p-2 bg-green-500/10 hover:bg-green-500/20 text-green-600 rounded-lg transition border border-green-200 flex items-center justify-center"
+                                            className="flex-1 p-2 bg-green-500/10 hover:bg-green-50 text-green-600 rounded-lg transition border border-green-200 flex items-center justify-center"
                                             title="Assign Instructor"
                                         >
                                             <User className="w-4 h-4" />
@@ -336,7 +336,7 @@ const AdminCourses = () => {
                                                 e.stopPropagation();
                                                 handleDeleteCourse(course.id);
                                             }}
-                                            className="flex-1 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 rounded-lg transition border border-red-200 flex items-center justify-center"
+                                            className="flex-1 p-2 bg-red-500/10 hover:bg-red-50 text-red-600 rounded-lg transition border border-red-200 flex items-center justify-center"
                                             title="Delete Course"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -349,7 +349,7 @@ const AdminCourses = () => {
                 )}
 
                 {filteredCourses.length === 0 && !loading && (
-                    <div className="text-center py-12 text-gray-300">
+                    <div className="text-center py-12 text-gray-700">
                         No courses found. Create your first course to get started!
                     </div>
                 )}
@@ -358,7 +358,7 @@ const AdminCourses = () => {
             {/* Create Course Modal */}
             {showCreateModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-300 p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">{selectedCourse ? 'Edit Course' : 'Create New Course'}</h2>
 
                         <form onSubmit={selectedCourse ? handleUpdateCourse : handleCreateCourse} className="space-y-4">
@@ -371,7 +371,7 @@ const AdminCourses = () => {
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         placeholder="e.g., Web Development"
                                         required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                                 <div>
@@ -382,7 +382,7 @@ const AdminCourses = () => {
                                         onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                                         placeholder="e.g., WEB-101"
                                         required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                             </div>
@@ -394,7 +394,7 @@ const AdminCourses = () => {
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     placeholder="Course description..."
                                     rows="3"
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 />
                             </div>
 
@@ -408,7 +408,7 @@ const AdminCourses = () => {
                                             setFormData({ ...formData, image: e.target.files[0] });
                                         }
                                     }}
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                 />
                             </div>
 
@@ -418,7 +418,7 @@ const AdminCourses = () => {
                                     <select
                                         value={formData.category}
                                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     >
                                         <option value="">Select Category</option>
                                         {categories.map(cat => (
@@ -433,7 +433,7 @@ const AdminCourses = () => {
                                         value={formData.duration_weeks}
                                         onChange={(e) => setFormData({ ...formData, duration_weeks: e.target.value })}
                                         placeholder="e.g., 12"
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                             </div>
@@ -446,7 +446,7 @@ const AdminCourses = () => {
                                         value={formData.max_capacity}
                                         onChange={(e) => setFormData({ ...formData, max_capacity: e.target.value })}
                                         placeholder="e.g., 30"
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                                 <div>
@@ -456,7 +456,7 @@ const AdminCourses = () => {
                                         value={formData.fee}
                                         onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
                                         placeholder="e.g., 15000"
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                             </div>
@@ -474,7 +474,7 @@ const AdminCourses = () => {
                                         setShowCreateModal(false);
                                         setSelectedCourse(null);
                                     }}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
@@ -487,7 +487,7 @@ const AdminCourses = () => {
             {/* Assign Instructor Modal */}
             {showAssignModal && selectedCourse && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full border border-white/40 p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-md w-full border border-gray-300 p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">Assign Instructor</h2>
                         <p className="text-gray-700 mb-6">Course: <span className="font-semibold">{selectedCourse.name || selectedCourse.title}</span></p>
 
@@ -498,7 +498,7 @@ const AdminCourses = () => {
                                     value={formData.instructor}
                                     onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
                                     required
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 >
                                     <option value="">Choose an instructor</option>
                                     {instructors.map(instructor => (
@@ -522,7 +522,7 @@ const AdminCourses = () => {
                                         setShowAssignModal(false);
                                         setSelectedCourse(null);
                                     }}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
                                 >
                                     Cancel
                                 </button>

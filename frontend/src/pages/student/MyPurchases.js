@@ -39,7 +39,7 @@ const MyPurchases = () => {
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-gray-300">Loading...</p>
+          <p className="mt-4 text-gray-700">Loading...</p>
         </div>
       </div>
     );
@@ -49,47 +49,47 @@ const MyPurchases = () => {
     <DashboardLayout>
       <div className="min-h-screen bg-transparent">
         {/* Header */}
-        <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
+        <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
             <ShoppingBag className="w-8 h-8 text-blue-400" />
-            <h1 className="text-4xl font-bold text-white">My Purchases</h1>
+            <h1 className="text-4xl font-bold text-gray-900">My Purchases</h1>
           </div>
-          <p className="text-gray-200">View your course purchases and transactions</p>
+          <p className="text-gray-900">View your course purchases and transactions</p>
         </div>
 
         {/* Purchases List */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
+        <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
           {loadingPurchases ? (
-            <div className="text-center py-12 text-gray-300">Loading purchases...</div>
+            <div className="text-center py-12 text-gray-700">Loading purchases...</div>
           ) : purchases.length === 0 ? (
             <div className="text-center py-12">
-              <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4 opacity-50" />
-              <p className="text-gray-300 text-lg">No purchases yet</p>
-              <p className="text-gray-400 text-sm mt-2">Explore courses and make your first purchase</p>
+              <ShoppingBag className="w-16 h-16 text-gray-700 mx-auto mb-4 opacity-50" />
+              <p className="text-gray-700 text-lg">No purchases yet</p>
+              <p className="text-gray-700 text-sm mt-2">Explore courses and make your first purchase</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/20">
-                    <th className="px-4 py-3 text-left text-gray-300 font-semibold">Course</th>
-                    <th className="px-4 py-3 text-left text-gray-300 font-semibold">Amount</th>
-                    <th className="px-4 py-3 text-left text-gray-300 font-semibold">Date</th>
-                    <th className="px-4 py-3 text-left text-gray-300 font-semibold">Status</th>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-4 py-3 text-left text-gray-700 font-semibold">Course</th>
+                    <th className="px-4 py-3 text-left text-gray-700 font-semibold">Amount</th>
+                    <th className="px-4 py-3 text-left text-gray-700 font-semibold">Date</th>
+                    <th className="px-4 py-3 text-left text-gray-700 font-semibold">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {purchases.map((purchase) => (
-                    <tr key={purchase.id} className="border-b border-white/10 hover:bg-white/5 transition">
+                    <tr key={purchase.id} className="border-b border-gray-200 hover:bg-white transition">
                       <td className="px-4 py-3 text-white">{purchase.course_name || 'Course'}</td>
-                      <td className="px-4 py-3 text-gray-300">${parseFloat(purchase.amount).toFixed(2)}</td>
-                      <td className="px-4 py-3 text-gray-300">
+                      <td className="px-4 py-3 text-gray-700">${parseFloat(purchase.amount).toFixed(2)}</td>
+                      <td className="px-4 py-3 text-gray-700">
                         {new Date(purchase.payment_date).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                           purchase.status === 'completed'
-                            ? 'bg-green-500/20 text-green-300'
+                            ? 'bg-green-50 text-green-300'
                             : 'bg-yellow-500/20 text-yellow-300'
                         }`}>
                           {purchase.status ? purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1) : 'Pending'}

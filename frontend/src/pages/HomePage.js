@@ -92,7 +92,7 @@ const HomePage = () => {
                   <div className="flex-1">
                     <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white">{banner.title}</h2>
                     {banner.subtitle && (
-                      <p className="text-base md:text-lg mb-6 text-teal-100">{banner.subtitle}</p>
+                      <p className="text-base md:text-lg mb-6 text-teal-700">{banner.subtitle}</p>
                     )}
                     <Button
                       onClick={() => {
@@ -136,7 +136,7 @@ const HomePage = () => {
                     <button
                       key={index}
                       onClick={() => setCurrentSlide(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? 'bg-white w-6' : 'bg-white/50'
+                      className={`w-2 h-2 rounded-full transition-all ${index === currentSlide ? 'bg-white w-6' : 'bg-white0'
                         }`}
                     />
                   ))}
@@ -150,13 +150,13 @@ const HomePage = () => {
       {/* Popular Courses Section */}
       <section className="py-12 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-8">Popular Courses</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8">Popular Courses</h2>
           <div className="flex flex-wrap justify-center gap-6">
             {loadingCourses ? (
               <div className="w-full flex justify-center items-center py-12">
                 <div className="text-center">
                   <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
-                  <p className="text-gray-300">Loading courses...</p>
+                  <p className="text-gray-700">Loading courses...</p>
                 </div>
               </div>
             ) : courses.length > 0 ? (
@@ -165,7 +165,7 @@ const HomePage = () => {
               ))
             ) : (
               <div className="w-full text-center py-12">
-                <p className="text-gray-400">No courses available at the moment</p>
+                <p className="text-gray-700">No courses available at the moment</p>
               </div>
             )}
           </div>

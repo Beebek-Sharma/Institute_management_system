@@ -237,7 +237,7 @@ const Contact = () => {
             <h2 className="text-2xl font-bold mb-8 text-gray-900">Find Us</h2>
             <div className="bg-gray-300 rounded-lg h-96 flex items-center justify-center text-gray-600">
               <div className="text-center">
-                <MapPin className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                <MapPin className="w-16 h-16 mx-auto mb-4 text-gray-800" />
                 <p className="text-lg">Map integration coming soon</p>
                 <p className="text-sm">Kathmandu, Nepal</p>
               </div>

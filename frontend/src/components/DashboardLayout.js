@@ -125,13 +125,13 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
               setSidebarOpen(false);
             }}
             className={`flex items-center ${sidebarExpanded ? 'gap-6 px-4' : 'justify-center px-0'} py-3 rounded-lg transition-all duration-200 ${isActive
-              ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-md'
-              : 'text-gray-200 hover:bg-slate-800/50'
+              ? 'bg-gray-100 text-gray-900 font-medium shadow-sm'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
             title={!sidebarExpanded ? item.label : ''}
           >
-            <Icon className="w-6 h-6 flex-shrink-0" />
-            {sidebarExpanded && <span className="font-medium text-sm">{item.label}</span>}
+            <Icon className={`w-6 h-6 flex-shrink-0 ${isActive ? 'text-gray-900' : 'text-gray-500'}`} />
+            {sidebarExpanded && <span className="text-sm">{item.label}</span>}
           </Link>
         );
       })}
@@ -139,7 +139,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
   );
 
   return (
-    <div className="min-h-screen bg-transparent flex flex-col">
+    <div className="h-screen bg-white flex flex-col overflow-hidden">
       <Header onMenuClick={() => {
         // On desktop: toggle sidebar expansion
         // On mobile: toggle mobile sidebar
@@ -150,12 +150,12 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
         }
       }} />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Desktop (YouTube Style) */}
-        <aside className={`hidden lg:flex flex-col bg-slate-900/40 backdrop-blur-md border-r border-slate-700/30 min-h-[calc(100vh-64px)] sticky top-16 transition-all duration-300 overflow-hidden ${sidebarExpanded ? 'w-64' : 'w-20'
+        <aside className={`hidden lg:flex flex-col bg-white border-r border-gray-200 h-full transition-all duration-300 overflow-y-auto ${sidebarExpanded ? 'w-64' : 'w-20'
           }`}>
           {/* Navigation Links */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-4">
             <NavLinks />
           </div>
 
@@ -171,17 +171,17 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
             aria-label="Close sidebar"
           >
             <aside
-              className="w-64 bg-slate-900/95 backdrop-blur-md h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300"
+              className="w-64 bg-white h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300 border-r border-gray-200"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
-                <h2 className="text-lg font-bold text-white">Menu</h2>
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1 hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
                   aria-label="Close sidebar"
                 >
-                  <X className="w-5 h-5 text-gray-300" />
+                  <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
               <div className="p-4">
@@ -192,15 +192,16 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
         )}
 
         {/* Main Content */}
-        <main className={`flex-1 ${disablePadding ? '' : 'p-4 md:p-6 lg:p-8'} bg-transparent`}>
-          <div className="w-full">
+        <main className={`flex-1 ${disablePadding ? '' : 'p-4 md:p-6 lg:p-8'} bg-gray-50 overflow-y-auto h-full`}>
+          <div className="w-full min-h-full flex flex-col">
             {/* Main content area */}
-            {children}
+            <div className="flex-1">
+              {children}
+            </div>
+            <Footer />
           </div>
         </main>
       </div>
-
-      <Footer />
     </div>
   );
 };

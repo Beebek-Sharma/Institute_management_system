@@ -66,7 +66,7 @@ const StudentCourseLearning = () => {
         <div className="flex justify-center items-center min-h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
-            <p className="text-gray-300">Loading course...</p>
+            <p className="text-gray-700">Loading course...</p>
           </div>
         </div>
       </DashboardLayout>
@@ -78,7 +78,7 @@ const StudentCourseLearning = () => {
       <DashboardLayout>
         <div className="min-h-screen bg-transparent p-6">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-6 text-red-200">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-red-800">
               <p className="text-lg font-semibold mb-2">Error</p>
               <p>{error || 'Course not found'}</p>
               <Button
@@ -99,28 +99,28 @@ const StudentCourseLearning = () => {
       <div className="min-h-screen bg-transparent p-4 sm:p-6">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Course Header */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 sm:p-8">
+          <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex-1">
-                <Badge className="mb-2 bg-teal-500/20 text-teal-300 border-teal-500/30">
+                <Badge className="mb-2 bg-teal-500/20 text-teal-600 border-teal-500/30">
                   {course.code}
                 </Badge>
-                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
                   {course.name}
                 </h1>
-                <p className="text-gray-300 mb-4">
+                <p className="text-gray-700 mb-4">
                   {course.description || 'Professional course to advance your skills'}
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
-                  <div className="flex items-center gap-2 text-gray-300">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <Clock className="w-4 h-4" />
                     <span>{course.duration_weeks || 'N/A'} weeks</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <Award className="w-4 h-4" />
                     <span>{course.credits || 'N/A'} Credits</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300">
+                  <div className="flex items-center gap-2 text-gray-700">
                     <CheckCircle className="w-4 h-4 text-green-400" />
                     <span className="text-green-300">Enrolled</span>
                   </div>
@@ -131,50 +131,50 @@ const StudentCourseLearning = () => {
 
           {/* Course Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-white/10 border-white/20">
+            <Card className="bg-white border-gray-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-gray-300">Enrollment Status</CardTitle>
+                <CardTitle className="text-sm font-semibold text-gray-700">Enrollment Status</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-green-400 mb-2">Active</div>
-                <p className="text-gray-400 text-sm">You are actively enrolled</p>
+                <p className="text-gray-700 text-sm">You are actively enrolled</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/10 border-white/20">
+            <Card className="bg-white border-gray-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-gray-300">Enrollment Date</CardTitle>
+                <CardTitle className="text-sm font-semibold text-gray-700">Enrollment Date</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-xl font-bold text-teal-300">
+                <div className="text-xl font-bold text-teal-600">
                   {enrollment?.enrollment_date ? new Date(enrollment.enrollment_date).toLocaleDateString() : 'N/A'}
                 </div>
-                <p className="text-gray-400 text-sm">Date you joined</p>
+                <p className="text-gray-700 text-sm">Date you joined</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/10 border-white/20">
+            <Card className="bg-white border-gray-200">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-gray-300">Progress</CardTitle>
+                <CardTitle className="text-sm font-semibold text-gray-700">Progress</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-blue-400">0%</div>
-                <p className="text-gray-400 text-sm">Course completion</p>
+                <p className="text-gray-700 text-sm">Course completion</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Course Content Section */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Course Materials</h2>
+          <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 sm:p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Course Materials</h2>
             <div className="space-y-4">
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-teal-400" />
+                    <BookOpen className="w-5 h-5 text-teal-600" />
                     <div>
-                      <p className="text-white font-semibold">Course Overview</p>
-                      <p className="text-gray-400 text-sm">Getting started with {course.name}</p>
+                      <p className="text-gray-900 font-semibold">Course Overview</p>
+                      <p className="text-gray-700 text-sm">Getting started with {course.name}</p>
                     </div>
                   </div>
                   <Button
@@ -186,13 +186,13 @@ const StudentCourseLearning = () => {
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 opacity-50">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 opacity-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-gray-500" />
+                    <BookOpen className="w-5 h-5 text-gray-800" />
                     <div>
-                      <p className="text-gray-400 font-semibold">Course Content</p>
-                      <p className="text-gray-500 text-sm">Locked - Complete overview first</p>
+                      <p className="text-gray-700 font-semibold">Course Content</p>
+                      <p className="text-gray-800 text-sm">Locked - Complete overview first</p>
                     </div>
                   </div>
                 </div>
@@ -201,9 +201,9 @@ const StudentCourseLearning = () => {
           </div>
 
           {/* Course Description */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 sm:p-8">
-            <h2 className="text-2xl font-bold text-white mb-4">About This Course</h2>
-            <p className="text-gray-300 leading-relaxed">
+          <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 sm:p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Course</h2>
+            <p className="text-gray-700 leading-relaxed">
               {course.description || 'No description available'}
             </p>
           </div>

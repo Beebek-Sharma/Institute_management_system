@@ -71,8 +71,8 @@ const StudentDashboard = () => {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-white">Student Dashboard</h1>
-          <p className="text-gray-300">Welcome back, {user?.first_name}!</p>
+          <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
+          <p className="text-gray-700">Welcome back, {user?.first_name}!</p>
         </div>
 
         {/* Stats Grid */}
@@ -139,7 +139,7 @@ const StudentDashboard = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-gray-500 py-8">
+                    <TableCell colSpan={4} className="text-center text-gray-800 py-8">
                       No courses found. Enroll in a course to get started!
                     </TableCell>
                   </TableRow>

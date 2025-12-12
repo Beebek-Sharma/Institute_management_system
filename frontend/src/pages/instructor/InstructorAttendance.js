@@ -132,31 +132,31 @@ const InstructorAttendance = () => {
 
     const getStatusColor = (status) => {
         const colors = {
-            present: 'bg-green-500/20 text-green-300 border-green-500/30',
-            absent: 'bg-red-500/20 text-red-300 border-red-500/30',
+            present: 'bg-green-50 text-green-300 border-green-500/30',
+            absent: 'bg-red-50 text-red-600 border-red-500/30',
             late: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
             excused: 'bg-blue-500/20 text-blue-300 border-blue-500/30'
         };
-        return colors[status] || 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return colors[status] || 'bg-gray-500/20 text-gray-700 border-gray-500/30';
     };
 
     return (
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Mark Attendance</h1>
-                    <p className="text-gray-200">Mark attendance for your classes</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Mark Attendance</h1>
+                    <p className="text-gray-900">Mark attendance for your classes</p>
                 </div>
 
                 {/* Alert */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
@@ -173,30 +173,30 @@ const InstructorAttendance = () => {
                 </div>
 
                 {/* Recent Attendance Records */}
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden">
-                    <div className="p-6 border-b border-white/20">
-                        <h2 className="text-xl font-bold text-white">Recent Attendance</h2>
+                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                        <h2 className="text-xl font-bold text-gray-900">Recent Attendance</h2>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-white/20 bg-white/5">
-                                    <th className="px-6 py-4 text-left text-gray-300 font-semibold">Date</th>
-                                    <th className="px-6 py-4 text-left text-gray-300 font-semibold">Course</th>
-                                    <th className="px-6 py-4 text-left text-gray-300 font-semibold">Student</th>
-                                    <th className="px-6 py-4 text-left text-gray-300 font-semibold">Status</th>
+                                <tr className="border-b border-gray-200 bg-white">
+                                    <th className="px-6 py-4 text-left text-gray-700 font-semibold">Date</th>
+                                    <th className="px-6 py-4 text-left text-gray-700 font-semibold">Course</th>
+                                    <th className="px-6 py-4 text-left text-gray-700 font-semibold">Student</th>
+                                    <th className="px-6 py-4 text-left text-gray-700 font-semibold">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {attendanceRecords.slice(0, 20).map((record) => (
-                                    <tr key={record.id} className="border-b border-white/10 hover:bg-white/5 transition">
-                                        <td className="px-6 py-4 text-gray-300">
+                                    <tr key={record.id} className="border-b border-gray-200 hover:bg-white transition">
+                                        <td className="px-6 py-4 text-gray-700">
                                             {record.date ? new Date(record.date).toLocaleDateString() : 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 text-white font-medium">
                                             {record.course_title || 'Unknown'}
                                         </td>
-                                        <td className="px-6 py-4 text-gray-300">
+                                        <td className="px-6 py-4 text-gray-700">
                                             {record.student_name || 'Unknown'}
                                         </td>
                                         <td className="px-6 py-4">
@@ -210,7 +210,7 @@ const InstructorAttendance = () => {
                         </table>
                     </div>
                     {attendanceRecords.length === 0 && !loading && (
-                        <div className="text-center py-12 text-gray-300">
+                        <div className="text-center py-12 text-gray-700">
                             No attendance records yet. Click "Mark Attendance" to get started.
                         </div>
                     )}
@@ -220,7 +220,7 @@ const InstructorAttendance = () => {
             {/* Mark Attendance Modal */}
             {showMarkModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-white/40 p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-300 p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Mark Attendance</h2>
 
                         <form onSubmit={handleMarkAttendance} className="space-y-6">
@@ -231,7 +231,7 @@ const InstructorAttendance = () => {
                                         value={formData.course_id}
                                         onChange={(e) => handleCourseChange(e.target.value)}
                                         required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     >
                                         <option value="">Select Course</option>
                                         {courses.map(course => (
@@ -248,7 +248,7 @@ const InstructorAttendance = () => {
                                         value={formData.date}
                                         onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                         required
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     />
                                 </div>
                             </div>
@@ -330,7 +330,7 @@ const InstructorAttendance = () => {
                                         });
                                         setStudents([]);
                                     }}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
                                 >
                                     Cancel
                                 </button>

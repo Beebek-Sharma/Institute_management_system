@@ -80,9 +80,9 @@ const AdminAnnouncements = () => {
 
     const getPriorityColor = (priority) => {
         const colors = {
-            high: 'bg-red-500/20 text-red-300 border-red-500/30',
+            high: 'bg-red-50 text-red-600 border-red-500/30',
             normal: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-            low: 'bg-gray-500/20 text-gray-300 border-gray-500/30'
+            low: 'bg-gray-500/20 text-gray-700 border-gray-500/30'
         };
         return colors[priority] || colors.normal;
     };
@@ -103,19 +103,19 @@ const AdminAnnouncements = () => {
         <DashboardLayout>
             <div className="min-h-screen bg-transparent">
                 {/* Header */}
-                <div className="bg-white/10 backdrop-blur-md border-b border-white/20 p-6 mb-8 rounded-lg">
-                    <h1 className="text-4xl font-bold text-white mb-2">Announcements</h1>
-                    <p className="text-gray-200">Send institute-wide announcements and notifications</p>
+                <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Announcements</h1>
+                    <p className="text-gray-900">Send institute-wide announcements and notifications</p>
                 </div>
 
                 {/* Alert */}
                 {success && (
-                    <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-200">
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
                         {success}
                     </div>
                 )}
                 {error && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200">
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                         {error}
                     </div>
                 )}
@@ -133,24 +133,24 @@ const AdminAnnouncements = () => {
 
                 {/* Announcements List */}
                 {loading ? (
-                    <div className="text-center py-12 text-gray-300">Loading announcements...</div>
+                    <div className="text-center py-12 text-gray-700">Loading announcements...</div>
                 ) : (
                     <div className="space-y-4">
                         {announcements.map((announcement) => (
                             <div
                                 key={announcement.id}
-                                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6 hover:shadow-lg transition"
+                                className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="text-xl font-bold text-white">{announcement.title}</h3>
+                                            <h3 className="text-xl font-bold text-gray-900">{announcement.title}</h3>
                                             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(announcement.priority)}`}>
                                                 {announcement.priority || 'normal'}
                                             </span>
                                         </div>
-                                        <p className="text-gray-300 mb-3">{announcement.message}</p>
-                                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                                        <p className="text-gray-700 mb-3">{announcement.message}</p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-700">
                                             <div className="flex items-center gap-1">
                                                 {getAudienceIcon(announcement.target_audience)}
                                                 <span>
@@ -168,7 +168,7 @@ const AdminAnnouncements = () => {
                                     </div>
                                     <button
                                         onClick={() => handleDeleteAnnouncement(announcement.id)}
-                                        className="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-300 rounded-lg transition"
+                                        className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition"
                                         title="Delete"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -177,7 +177,7 @@ const AdminAnnouncements = () => {
                             </div>
                         ))}
                         {announcements.length === 0 && !loading && (
-                            <div className="text-center py-12 text-gray-300">
+                            <div className="text-center py-12 text-gray-700">
                                 No announcements yet. Create your first announcement!
                             </div>
                         )}
@@ -186,18 +186,18 @@ const AdminAnnouncements = () => {
 
                 {/* Stats */}
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">Total Announcements</div>
-                        <div className="text-4xl font-bold text-white">{announcements.length}</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                        <div className="text-gray-700 text-sm font-semibold mb-2">Total Announcements</div>
+                        <div className="text-4xl font-bold text-gray-900">{announcements.length}</div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">High Priority</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                        <div className="text-gray-700 text-sm font-semibold mb-2">High Priority</div>
                         <div className="text-4xl font-bold text-red-400">
                             {announcements.filter(a => a.priority === 'high').length}
                         </div>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-6">
-                        <div className="text-gray-300 text-sm font-semibold mb-2">This Month</div>
+                    <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6">
+                        <div className="text-gray-700 text-sm font-semibold mb-2">This Month</div>
                         <div className="text-4xl font-bold text-blue-400">
                             {announcements.filter(a => {
                                 const date = new Date(a.created_at);
@@ -212,7 +212,7 @@ const AdminAnnouncements = () => {
             {/* Create Announcement Modal */}
             {showCreateModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-2xl w-full border border-white/40 p-8">
+                    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl max-w-2xl w-full border border-gray-300 p-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Announcement</h2>
 
                         <form onSubmit={handleCreateAnnouncement} className="space-y-4">
@@ -224,7 +224,7 @@ const AdminAnnouncements = () => {
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     placeholder="Announcement title"
                                     required
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 />
                             </div>
 
@@ -236,7 +236,7 @@ const AdminAnnouncements = () => {
                                     placeholder="Announcement message..."
                                     rows="5"
                                     required
-                                    className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                 />
                             </div>
 
@@ -246,7 +246,7 @@ const AdminAnnouncements = () => {
                                     <select
                                         value={formData.target_audience}
                                         onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     >
                                         <option value="all">Everyone</option>
                                         <option value="students">Students Only</option>
@@ -259,7 +259,7 @@ const AdminAnnouncements = () => {
                                     <select
                                         value={formData.priority}
                                         onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                                        className="w-full px-4 py-3 bg-white/30 border border-gray-300/50 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                                     >
                                         <option value="low">Low</option>
                                         <option value="normal">Normal</option>
@@ -279,7 +279,7 @@ const AdminAnnouncements = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateModal(false)}
-                                    className="flex-1 bg-gray-300/30 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
+                                    className="flex-1 bg-gray-100 hover:bg-gray-400/30 text-gray-800 font-semibold py-3 rounded-lg transition"
                                 >
                                     Cancel
                                 </button>
