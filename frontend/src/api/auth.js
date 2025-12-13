@@ -26,40 +26,61 @@ const safeRemoveLocalStorage = (key) => {
 };
 
 export const authAPI = {
-    // Register new user
-    register: async (userData) => {
-        const response = await api.post('/api/auth/register/', userData);
-        return response.data;
-    },
+  // Register new user
+  register: async (userData) => {
+    const response = await api.post('/api/auth/register/', userData);
+    return response.data;
+  },
 
-    // Login user
-    login: async (username, password) => {
-        const response = await api.post('/api/auth/login/', { username, password });
-        return response.data;
-    },
+  // Login user with email (Coursera-style)
+  login: async (email, password) => {
+    const response = await api.post('/api/auth/login/', { email, password });
+    return response.data;
+  },
 
-    // Get user profile
-    getProfile: async () => {
-        const response = await api.get('/api/auth/profile/');
-        return response.data;
-    },
+  // Get user profile
+  getProfile: async () => {
+    const response = await api.get('/api/auth/profile/');
+    return response.data;
+  },
 
-    // Update user profile
-    updateProfile: async (userData) => {
-        // Check if userData is FormData (for file uploads)
-        if (userData instanceof FormData) {
-            const response = await api.patch('/api/auth/profile/update/', userData);
-            return response.data;
-        }
-        // Regular JSON data
-        const response = await api.patch('/api/auth/profile/update/', userData);
-        return response.data;
-    },
+  // Update user profile
+  updateProfile: async (userData) => {
+    // Check if userData is FormData (for file uploads)
+    if (userData instanceof FormData) {
+      const response = await api.patch('/api/auth/profile/update/', userData);
+      return response.data;
+    }
+    // Regular JSON data
+    const response = await api.patch('/api/auth/profile/update/', userData);
+    return response.data;
+  },
 
-    // Logout (client-side only, clear tokens)
-    logout: () => {
-        safeRemoveLocalStorage('access_token');
-        safeRemoveLocalStorage('refresh_token');
-        safeRemoveLocalStorage('user');
-    },
+  // Logout (client-side only, clear tokens)
+  logout: () => {
+    safeRemoveLocalStorage('access_token');
+    safeRemoveLocalStorage('refresh_token');
+    safeRemoveLocalStorage('user');
+  },
+
+  // Coursera-style authentication endpoints
+  checkEmail: async (email) => {
+    const response = await api.post('/api/auth/check-email/', { email });
+    return response.data;
+  },
+
+  sendVerificationCode: async (email) => {
+    const response = await api.post('/api/auth/send-verification/', { email });
+    return response.data;
+  },
+
+  verifyCode: async (email, code) => {
+    const response = await api.post('/api/auth/verify-code/', { email, code });
+    return response.data;
+  },
+
+  completeSignup: async (signupData) => {
+    const response = await api.post('/api/auth/complete-signup/', signupData);
+    return response.data;
+  },
 };

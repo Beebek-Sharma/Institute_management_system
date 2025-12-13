@@ -85,23 +85,22 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-    """Login and return JWT tokens"""
-    username_or_email = request.data.get('username')
+    """Login with email and password (Coursera-style)"""
+    email = request.data.get('email')
     password = request.data.get('password')
     
-    if not username_or_email or not password:
+    if not email or not password:
         return Response(
-            {'error': 'Username and password are required'},
+            {'error': 'Email and password are required'},
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Try to find user by username or email
-    user = None
+    # Find user by email only
     try:
-        user = User.objects.get(Q(username=username_or_email) | Q(email=username_or_email))
+        user = User.objects.get(email=email)
     except User.DoesNotExist:
         return Response(
-            {'error': 'Invalid credentials'},
+            {'error': 'Invalid email or password'},
             status=status.HTTP_401_UNAUTHORIZED
         )
     
@@ -110,11 +109,11 @@ def login(request):
         # Log failed attempt
         ActivityLog.objects.create(
             action='login',
-            description=f'Failed login attempt for {username_or_email}',
+            description=f'Failed login attempt for {email}',
             ip_address=get_client_ip(request)
         )
         return Response(
-            {'error': 'Invalid credentials'},
+            {'error': 'Invalid email or password'},
             status=status.HTTP_401_UNAUTHORIZED
         )
     
@@ -131,7 +130,7 @@ def login(request):
     ActivityLog.objects.create(
         user=user,
         action='login',
-        description=f'User {user.username} logged in',
+        description=f'User {user.email} logged in',
         target_user=user,
         ip_address=get_client_ip(request),
         device_info=request.META.get('HTTP_USER_AGENT', '')
@@ -257,6 +256,207 @@ def logout(request):
         ip_address=get_client_ip(request)
     )
     return Response({'message': 'Logout successful'})
+
+
+# ===================== COURSERA-STYLE EMAIL VERIFICATION ENDPOINTS =====================
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def check_email(request):
+    """Check if email exists in the system"""
+    from .serializers import EmailCheckSerializer
+    
+    serializer = EmailCheckSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    email = serializer.validated_data['email']
+    user = User.objects.filter(email=email).first()
+    
+    if user:
+        return Response({
+            'exists': True,
+            'user_id': user.id
+        })
+    else:
+        return Response({
+            'exists': False
+        })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_verification_code(request):
+    """Send verification code to email for new user signup"""
+    import random
+    from datetime import timedelta
+    from .serializers import SendVerificationCodeSerializer
+    from .models import EmailVerification
+    
+    serializer = SendVerificationCodeSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    email = serializer.validated_data['email']
+    
+    # Check if email already exists
+    if User.objects.filter(email=email).exists():
+        return Response(
+            {'error': 'Email already registered'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Generate 6-digit code
+    code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    
+    # Set expiry to 10 minutes from now
+    expires_at = timezone.now() + timedelta(minutes=10)
+    
+    # Create verification record
+    EmailVerification.objects.create(
+        email=email,
+        code=code,
+        expires_at=expires_at
+    )
+    
+    # Send email (using console backend for development)
+    from django.core.mail import send_mail
+    from django.conf import settings
+    
+    try:
+        send_mail(
+            'Email Verification Code - Institute Management System',
+            f'Your verification code is: {code}\n\nThis code will expire in 10 minutes.',
+            settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@institute.com',
+            [email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        # Log the error but don't fail the request
+        print(f"Email sending failed: {e}")
+        print(f"Verification code for {email}: {code}")
+    
+    return Response({
+        'message': 'Verification code sent to your email',
+        'expires_in': 600  # 10 minutes in seconds
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_code(request):
+    """Verify the email verification code"""
+    import secrets
+    from .serializers import VerifyCodeSerializer
+    from .models import EmailVerification
+    
+    serializer = VerifyCodeSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    email = serializer.validated_data['email']
+    code = serializer.validated_data['code']
+    
+    # Find the most recent unused verification code for this email
+    verification = EmailVerification.objects.filter(
+        email=email,
+        code=code,
+        is_used=False
+    ).order_by('-created_at').first()
+    
+    if not verification:
+        return Response(
+            {'error': 'Invalid verification code'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if verification.is_expired:
+        return Response(
+            {'error': 'Verification code has expired. Please request a new one.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Mark as used
+    verification.is_used = True
+    verification.save()
+    
+    # Generate a temporary token for completing signup
+    temp_token = secrets.token_urlsafe(32)
+    
+    return Response({
+        'valid': True,
+        'token': temp_token,
+        'message': 'Email verified successfully'
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def complete_signup(request):
+    """Complete user signup after email verification"""
+    from .serializers import CompleteSignupSerializer
+    
+    serializer = CompleteSignupSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    email = serializer.validated_data['email']
+    full_name = serializer.validated_data['full_name']
+    password = serializer.validated_data['password']
+    
+    # Split full name into first and last name
+    name_parts = full_name.strip().split(' ', 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1] if len(name_parts) > 1 else ''
+    
+    # Generate username from email
+    username = email.split('@')[0]
+    
+    # Ensure username is unique
+    base_username = username
+    counter = 1
+    while User.objects.filter(username=username).exists():
+        username = f"{base_username}{counter}"
+        counter += 1
+    
+    try:
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name,
+            role='student'
+        )
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=user,
+            action='user_create',
+            description=f'User {user.username} registered via Coursera-style auth',
+            target_user=user,
+            ip_address=get_client_ip(request),
+            device_info=request.META.get('HTTP_USER_AGENT', '')
+        )
+        
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'message': 'Account created successfully',
+            'user': UserDetailSerializer(user).data,
+            'tokens': {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+        }, status=status.HTTP_201_CREATED)
+        
+    except Exception as e:
+        return Response(
+            {'error': f'Failed to create account: {str(e)}'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 @api_view(['POST'])

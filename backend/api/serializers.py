@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog, Announcement, PasswordReset
+    Attendance, Notification, ActivityLog, Announcement, PasswordReset, EmailVerification
 )
 
 User = get_user_model()
@@ -341,3 +341,38 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             raise serializers.ValidationError("Passwords do not match.")
         return data
 
+
+# ===================== EMAIL VERIFICATION SERIALIZERS (Coursera-style Auth) =====================
+
+class EmailCheckSerializer(serializers.Serializer):
+    """Serializer for checking if email exists"""
+    email = serializers.EmailField()
+
+
+class SendVerificationCodeSerializer(serializers.Serializer):
+    """Serializer for sending verification code"""
+    email = serializers.EmailField()
+
+
+class VerifyCodeSerializer(serializers.Serializer):
+    """Serializer for verifying email code"""
+    email = serializers.EmailField()
+    code = serializers.CharField(max_length=6, min_length=6)
+
+
+class CompleteSignupSerializer(serializers.Serializer):
+    """Serializer for completing signup after email verification"""
+    email = serializers.EmailField()
+    full_name = serializers.CharField(max_length=255)
+    password = serializers.CharField(write_only=True, min_length=8, max_length=72)
+    verification_token = serializers.CharField(write_only=True)
+    
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Email already registered")
+        return value
+    
+    def validate_password(self, value):
+        if len(value) < 8 or len(value) > 72:
+            raise serializers.ValidationError("Password must be between 8 and 72 characters")
+        return value

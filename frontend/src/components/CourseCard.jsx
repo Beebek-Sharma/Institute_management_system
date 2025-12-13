@@ -39,7 +39,7 @@ const CourseCard = ({ course, actionSlot }) => {
                             <img
                                 src={imageUrl}
                                 alt={title}
-                                className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-slate-50 text-6xl">
@@ -70,13 +70,25 @@ const CourseCard = ({ course, actionSlot }) => {
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-base font-bold text-slate-900 leading-tight mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors">
+                        <h3 className="text-lg font-bold text-gray-900 leading-tight mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
                             {title}
                         </h3>
 
+                        {/* Rating on Card Face */}
+                        <div className="flex items-center gap-1 mb-2">
+                            <span className="font-bold text-amber-500 text-sm">{rating}</span>
+                            <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className={`w-3 h-3 ${i < Math.floor(rating) ? 'fill-amber-500 text-amber-500' : 'fill-gray-200 text-gray-200'}`} />
+                                ))}
+                            </div>
+                            <span className="text-xs text-slate-500">({reviewCount})</span>
+                        </div>
+
                         {/* Footer Info */}
-                        <div className="mt-auto">
-                            <p className="text-xs text-slate-500">Course</p>
+                        <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Course</p>
+                            <span className="text-xs font-bold text-blue-600">Beginner</span>
                         </div>
                     </div>
                 </div>

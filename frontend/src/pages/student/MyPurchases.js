@@ -47,7 +47,7 @@ const MyPurchases = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-transparent">
+      <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
@@ -81,17 +81,16 @@ const MyPurchases = () => {
                 <tbody>
                   {purchases.map((purchase) => (
                     <tr key={purchase.id} className="border-b border-gray-200 hover:bg-white transition">
-                      <td className="px-4 py-3 text-white">{purchase.course_name || 'Course'}</td>
+                      <td className="px-4 py-3 text-gray-900 font-medium">{purchase.course_name || 'Course'}</td>
                       <td className="px-4 py-3 text-gray-700">${parseFloat(purchase.amount).toFixed(2)}</td>
                       <td className="px-4 py-3 text-gray-700">
                         {new Date(purchase.payment_date).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                          purchase.status === 'completed'
+                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${purchase.status === 'completed'
                             ? 'bg-green-50 text-green-300'
                             : 'bg-yellow-500/20 text-yellow-300'
-                        }`}>
+                          }`}>
                           {purchase.status ? purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1) : 'Pending'}
                         </span>
                       </td>

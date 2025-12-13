@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import DashboardLayout from '../components/DashboardLayout';
 import axios from '../api/axios';
+import Loader from '../components/Loader';
 
 const HomePage = () => {
   const { user } = useAuth();
@@ -154,10 +155,7 @@ const HomePage = () => {
           <div className="flex flex-wrap justify-center gap-6">
             {loadingCourses ? (
               <div className="w-full flex justify-center items-center py-12">
-                <div className="text-center">
-                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500 mb-4"></div>
-                  <p className="text-gray-700">Loading courses...</p>
-                </div>
+                <Loader />
               </div>
             ) : courses.length > 0 ? (
               courses.map((course) => (

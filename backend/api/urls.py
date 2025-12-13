@@ -30,6 +30,12 @@ urlpatterns = [
     path('auth/password-reset/', views.request_password_reset, name='password_reset'),
     path('auth/password-reset-confirm/', views.confirm_password_reset, name='password_reset_confirm'),
     
+    # Coursera-style email verification endpoints
+    path('auth/check-email/', views.check_email, name='check_email'),
+    path('auth/send-verification/', views.send_verification_code, name='send_verification'),
+    path('auth/verify-code/', views.verify_code, name='verify_code'),
+    path('auth/complete-signup/', views.complete_signup, name='complete_signup'),
+    
     # Admin user management endpoints
     path('admin/create-staff/', views.create_staff, name='create_staff'),
     path('admin/create-instructor/', views.create_instructor, name='create_instructor'),

@@ -457,3 +457,31 @@ class PasswordReset(models.Model):
     def is_valid(self):
         return not self.is_used and not self.is_expired
 
+
+class EmailVerification(models.Model):
+    """Email verification codes for new user signup"""
+    email = models.EmailField(db_index=True)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    class Meta:
+        db_table = 'email_verifications'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['email', 'is_used']),
+            models.Index(fields=['code']),
+        ]
+    
+    def __str__(self):
+        return f"Verification code for {self.email}"
+    
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+    @property
+    def is_valid(self):
+        return not self.is_used and not self.is_expired

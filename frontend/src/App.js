@@ -9,7 +9,7 @@ import HomePage from "./pages/HomePage";
 import CourseDetails from "./pages/CourseDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import UnifiedAuth from "./pages/UnifiedAuth";
+import CourseraAuth from "./pages/CourseraAuth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Unauthorized from "./pages/Unauthorized";
@@ -78,7 +78,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/courses/:courseId" element={<CourseDetails />} />
-            <Route path="/auth" element={<UnifiedAuth />} />
+            <Route path="/auth" element={<CourseraAuth />} />
             {/* Redirect old routes to unified auth */}
             <Route path="/login" element={<Navigate to="/auth" replace />} />
             <Route path="/register" element={<Navigate to="/auth" replace />} />

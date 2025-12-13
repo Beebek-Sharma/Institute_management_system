@@ -15,6 +15,7 @@ import {
 } from '../components/ui/dialog';
 import { useToast } from '../hooks/use-toast';
 import { authAPI } from '../api/auth';
+import Loader from '../components/Loader';
 
 const Profile = () => {
     const { user, loading, login } = useAuth(); // We might need to update user context after edit
@@ -46,14 +47,7 @@ const Profile = () => {
     }, [loading, user, navigate]);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                    <p className="mt-4 text-gray-700">Loading...</p>
-                </div>
-            </div>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     const getRoleIcon = (role) => {
@@ -116,9 +110,9 @@ const Profile = () => {
         } catch (error) {
             console.error('Error updating profile:', error);
             console.error('Error response:', error.response?.data);
-            
+
             let errorMsg = 'Failed to update profile';
-            
+
             if (error.response?.data) {
                 // Handle field-level errors from backend
                 const errorData = error.response.data;
@@ -137,7 +131,7 @@ const Profile = () => {
             } else if (error.message) {
                 errorMsg = error.message;
             }
-            
+
             toast({
                 title: "Error",
                 description: errorMsg,
@@ -148,7 +142,7 @@ const Profile = () => {
 
     return (
         <DashboardLayout>
-            <div className="min-h-screen bg-transparent">
+            <div className="min-h-screen bg-gray-50">
                 {/* Header */}
                 <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg flex justify-between items-center">
                     <div>
@@ -163,14 +157,14 @@ const Profile = () => {
                                 Edit Profile
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-slate-900 border-slate-800 text-white">
+                        <DialogContent className="bg-white border-gray-200 text-gray-900 sm:max-w-[500px]">
                             <DialogHeader>
                                 <DialogTitle>Edit Profile</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleUpdateProfile} className="space-y-4">
                                 <div className="flex justify-center mb-4">
                                     <div className="relative">
-                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-700 flex items-center justify-center border-2 border-teal-500">
+                                        <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-2 border-teal-500">
                                             {previewImage ? (
                                                 <img src={previewImage} alt="Profile" className="w-full h-full object-cover" />
                                             ) : (
@@ -197,7 +191,7 @@ const Profile = () => {
                                             name="first_name"
                                             value={formData.first_name}
                                             onChange={handleInputChange}
-                                            className="bg-slate-800 border-slate-700 text-white"
+                                            className="bg-white border-gray-300 text-gray-900 focus:ring-teal-500"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -206,7 +200,7 @@ const Profile = () => {
                                             name="last_name"
                                             value={formData.last_name}
                                             onChange={handleInputChange}
-                                            className="bg-slate-800 border-slate-700 text-white"
+                                            className="bg-white border-gray-300 text-gray-900 focus:ring-teal-500"
                                         />
                                     </div>
                                 </div>
@@ -234,7 +228,7 @@ const Profile = () => {
                                 </div>
 
                                 <DialogFooter>
-                                    <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
+                                    <Button type="button" variant="ghost" onClick={() => setIsEditOpen(false)} className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
                                         Cancel
                                     </Button>
                                     <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
@@ -247,7 +241,7 @@ const Profile = () => {
                 </div>
 
                 {/* Profile Card */}
-                <div className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-8 max-w-2xl mx-auto md:mx-0">
+                <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-8 max-w-2xl mx-auto md:mx-0">
                     {/* Profile Header with Avatar */}
                     <div className="flex flex-col items-center mb-8 pb-8 border-b border-gray-200">
                         <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-gray-900 text-3xl font-bold mb-4 shadow-lg overflow-hidden`}>

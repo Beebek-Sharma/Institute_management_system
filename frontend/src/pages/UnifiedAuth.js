@@ -65,9 +65,17 @@ export function UnifiedAuth() {
     };
 
     return (
-        <>
-            <HomePage />
-            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="relative min-h-screen w-full overflow-hidden">
+            {/* Background Content - Home Page */}
+            <div className="absolute inset-0 z-0 h-full w-full pointer-events-none select-none">
+                <HomePage />
+            </div>
+
+            {/* Backdrop Overlay */}
+            <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
+
+            {/* Modal Container */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -206,7 +214,7 @@ export function UnifiedAuth() {
                     </motion.div>
                 </motion.div>
             </div>
-        </>
+        </div>
     );
 }
 

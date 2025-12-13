@@ -63,9 +63,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (username, password) => {
+  const login = async (email, password) => {
     try {
-      const data = await authAPI.login(username, password);
+      const data = await authAPI.login(email, password);
 
       setUser(data.user);
       safeSetLocalStorage('user', JSON.stringify(data.user));
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, user: data.user };
     } catch (error) {
-      const errorMessage = error.response?.data?.error 
+      const errorMessage = error.response?.data?.error
         || error.response?.data?.username?.[0]
         || error.response?.data?.email?.[0]
         || error.response?.data?.password?.[0]

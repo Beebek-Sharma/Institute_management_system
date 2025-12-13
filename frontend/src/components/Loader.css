@@ -1,0 +1,80 @@
+@keyframes bounce {
+
+    0%,
+    100% {
+        translate: 0px 36px;
+    }
+
+    50% {
+        translate: 0px 46px;
+    }
+}
+
+@keyframes bounce2 {
+
+    0%,
+    100% {
+        translate: 0px 46px;
+    }
+
+    50% {
+        translate: 0px 56px;
+    }
+}
+
+@keyframes umbral {
+    0% {
+        stop-color: #d3a5102e;
+    }
+
+    50% {
+        stop-color: rgba(211, 165, 16, 0.519);
+    }
+
+    100% {
+        stop-color: #d3a5102e;
+    }
+}
+
+@keyframes particles {
+
+    0%,
+    100% {
+        translate: 0px 16px;
+    }
+
+    50% {
+        translate: 0px 6px;
+    }
+}
+
+.loader-wrapper #particles {
+    animation: particles 4s ease-in-out infinite;
+}
+
+.loader-wrapper #animatedStop {
+    animation: umbral 4s infinite;
+}
+
+.loader-wrapper #bounce {
+    animation: bounce 4s ease-in-out infinite;
+    translate: 0px 36px;
+}
+
+.loader-wrapper #bounce2 {
+    animation: bounce2 4s ease-in-out infinite;
+    translate: 0px 46px;
+    animation-delay: 0.5s;
+}
+
+.loader-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
+}
+
+.loader-wrapper.loader-full-screen {
+    min-height: 80vh;
+}

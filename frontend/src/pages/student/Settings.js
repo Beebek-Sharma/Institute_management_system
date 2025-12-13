@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import { Settings as SettingsIcon, User, Bell, Lock, Mail, Upload } from 'lucide-react';
 import { authAPI } from '../../api/auth';
+import Loader from '../../components/Loader';
 
 const Settings = () => {
   const { user, loading, updateProfile } = useAuth();
@@ -75,7 +76,7 @@ const Settings = () => {
         setMessage('Profile updated successfully!');
         setIsEditing(false);
         setProfilePhoto(null);
-        
+
         // Update form data with new values
         setFormData({
           first_name: response.user.first_name || '',
@@ -89,9 +90,9 @@ const Settings = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
       console.error('Error response:', error.response?.data);
-      
+
       let errorMsg = 'Failed to update profile. Please try again.';
-      
+
       if (error.response?.data) {
         // Handle field-level errors from backend
         const errorData = error.response.data;
@@ -110,7 +111,7 @@ const Settings = () => {
       } else if (error.message) {
         errorMsg = error.message;
       }
-      
+
       setMessage(errorMsg);
     } finally {
       setSaving(false);
@@ -118,19 +119,12 @@ const Settings = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="mt-4 text-gray-700">Loading...</p>
-        </div>
-      </div>
-    );
+    return <Loader fullScreen={true} />;
   }
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-transparent">
+      <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white backdrop-blur-md border-b border-gray-200 p-6 mb-8 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
@@ -145,8 +139,8 @@ const Settings = () => {
           <button
             onClick={() => setActiveTab('profile')}
             className={`px-6 py-3 font-semibold transition-all ${activeTab === 'profile'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-700 hover:text-gray-900'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-700 hover:text-gray-900'
               }`}
           >
             Profile Settings
@@ -154,8 +148,8 @@ const Settings = () => {
           <button
             onClick={() => setActiveTab('security')}
             className={`px-6 py-3 font-semibold transition-all ${activeTab === 'security'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-700 hover:text-gray-900'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-700 hover:text-gray-900'
               }`}
           >
             Security
@@ -163,8 +157,8 @@ const Settings = () => {
           <button
             onClick={() => setActiveTab('notifications')}
             className={`px-6 py-3 font-semibold transition-all ${activeTab === 'notifications'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-700 hover:text-gray-900'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-700 hover:text-gray-900'
               }`}
           >
             Notifications
@@ -174,8 +168,8 @@ const Settings = () => {
         {/* Message */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg border ${message.includes('successfully')
-              ? 'bg-green-50 border-green-200 text-green-800'
-              : 'bg-red-50 border-red-200 text-red-800'
+            ? 'bg-green-50 border-green-200 text-green-800'
+            : 'bg-red-50 border-red-200 text-red-800'
             }`}>
             {message}
           </div>
@@ -272,7 +266,7 @@ const Settings = () => {
                         name="last_name"
                         value={formData.last_name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       />
                     </div>
                   </div>
@@ -295,7 +289,7 @@ const Settings = () => {
                       name="email"
                       value={formData.email}
                       disabled
-                      className="w-full px-4 py-3 bg-white/20 border border-gray-300 rounded-lg text-gray-700 cursor-not-allowed"
+                      className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed"
                     />
                   </div>
 

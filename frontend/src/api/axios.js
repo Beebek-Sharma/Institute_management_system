@@ -56,9 +56,28 @@ const api = axios.create({
 // Request interceptor to add JWT token
 api.interceptors.request.use(
     (config) => {
-        const token = safeGetLocalStorage('access_token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        // List of endpoints that should NOT have Authorization header
+        const publicEndpoints = [
+            '/api/auth/login/',
+            '/api/auth/register/',
+            '/api/auth/check-email/',
+            '/api/auth/send-verification/',
+            '/api/auth/verify-code/',
+            '/api/auth/complete-signup/',
+            '/api/auth/refresh/'
+        ];
+        
+        // Check if this is a public endpoint
+        const isPublicEndpoint = publicEndpoints.some(endpoint => 
+            config.url?.includes(endpoint)
+        );
+        
+        // Only add token if NOT a public endpoint
+        if (!isPublicEndpoint) {
+            const token = safeGetLocalStorage('access_token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         
         // Remove Content-Type header for FormData to let axios set multipart/form-data
