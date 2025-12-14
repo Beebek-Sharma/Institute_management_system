@@ -15,10 +15,11 @@ import {
 } from '../components/ui/dialog';
 import { useToast } from '../hooks/use-toast';
 import { authAPI } from '../api/auth';
+import { getMediaUrl } from '../api/utils';
 import Loader from '../components/Loader';
 
 const Profile = () => {
-    const { user, loading, login } = useAuth(); // We might need to update user context after edit
+    const { user, loading, updateProfile } = useAuth();
     const navigate = useNavigate();
     const { toast } = useToast();
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -42,7 +43,7 @@ const Profile = () => {
                 email: user.email || '',
                 profile_picture: null
             });
-            setPreviewImage(user.profile_picture);
+            setPreviewImage(getMediaUrl(user.profile_picture));
         }
     }, [loading, user, navigate]);
 
@@ -98,14 +99,18 @@ const Profile = () => {
             const response = await authAPI.updateProfile(data);
             console.log('Profile update response:', response);
 
-            if (response) {
+            if (response && response.user) {
+                // Update the user context and localStorage with new data
+                updateProfile(response.user);
+
                 toast({
                     title: "Success",
                     description: "Profile updated successfully",
                 });
                 setIsEditOpen(false);
-                // Reload to refresh the page with new data
-                window.location.reload();
+
+                // Update preview image with new profile picture
+                setPreviewImage(getMediaUrl(response.user.profile_picture));
             }
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -246,7 +251,7 @@ const Profile = () => {
                     <div className="flex flex-col items-center mb-8 pb-8 border-b border-gray-200">
                         <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${getRoleColor(user?.role)} flex items-center justify-center text-gray-900 text-3xl font-bold mb-4 shadow-lg overflow-hidden`}>
                             {user?.profile_picture ? (
-                                <img src={user.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                                <img src={getMediaUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <span>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
                             )}

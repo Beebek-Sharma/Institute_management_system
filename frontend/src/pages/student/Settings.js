@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/DashboardLayout';
 import { Settings as SettingsIcon, User, Bell, Lock, Mail, Upload } from 'lucide-react';
 import { authAPI } from '../../api/auth';
+import { getMediaUrl } from '../../api/utils';
 import Loader from '../../components/Loader';
 
 const Settings = () => {
@@ -183,8 +184,12 @@ const Settings = () => {
                 <div>
                   {/* Profile Info Display */}
                   <div className="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-gray-900 text-3xl font-bold">
-                      {formData.first_name?.[0]}{formData.last_name?.[0]}
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-gray-900 text-3xl font-bold overflow-hidden">
+                      {user?.profile_picture ? (
+                        <img src={getMediaUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{formData.first_name?.[0]}{formData.last_name?.[0]}</span>
+                      )}
                     </div>
                     <div>
                       <h2 className="text-2xl font-bold text-gray-900 mb-1">{formData.first_name} {formData.last_name}</h2>
@@ -231,8 +236,12 @@ const Settings = () => {
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Photo</label>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-gray-900 text-2xl font-bold flex-shrink-0">
-                        {formData.first_name?.[0]}{formData.last_name?.[0]}
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-gray-900 text-2xl font-bold flex-shrink-0 overflow-hidden">
+                        {user?.profile_picture ? (
+                          <img src={getMediaUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <span>{formData.first_name?.[0]}{formData.last_name?.[0]}</span>
+                        )}
                       </div>
                       <label className="px-4 py-2 bg-blue-600/50 hover:bg-blue-600/70 text-white rounded-lg cursor-pointer transition flex items-center gap-2">
                         <Upload className="w-4 h-4" />

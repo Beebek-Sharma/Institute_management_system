@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Search, LogOut, Settings, Award, ShoppingBag, User, Menu } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { getMediaUrl } from "../api/utils";
 
 export default function Header({ onMenuClick }) {
   const { user, logout } = useAuth();
@@ -146,8 +147,12 @@ export default function Header({ onMenuClick }) {
                 onMouseEnter={handleProfileEnter}
                 onMouseLeave={handleProfileLeave}
               >
-                <button className="w-8 h-8 rounded-full bg-[#0056D2] text-white flex items-center justify-center font-bold text-xs sm:text-sm hover:bg-[#00419e] transition flex-shrink-0">
-                  {user.first_name?.[0]}{user.last_name?.[0]}
+                <button className="w-8 h-8 rounded-full bg-[#0056D2] text-white flex items-center justify-center font-bold text-xs sm:text-sm hover:bg-[#00419e] transition flex-shrink-0 overflow-hidden">
+                  {user.profile_picture ? (
+                    <img src={getMediaUrl(user.profile_picture)} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{user.first_name?.[0]}{user.last_name?.[0]}</span>
+                  )}
                 </button>
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-48 sm:w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-2">
