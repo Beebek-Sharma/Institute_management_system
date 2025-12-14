@@ -7,8 +7,6 @@ import { Toaster } from "./components/ui/toaster";
 // Pages
 import HomePage from "./pages/HomePage";
 import CourseDetails from "./pages/CourseDetails";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import CourseraAuth from "./pages/CourseraAuth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";

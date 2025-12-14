@@ -7,7 +7,7 @@ import './CourseraAuth.css';
 
 const CourseraAuth = () => {
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth();
+    const { setAuthData } = useAuth();
 
     // State management
     const [step, setStep] = useState('email'); // email, password, verification, signup
@@ -54,13 +54,13 @@ const CourseraAuth = () => {
             // Pass email as username since backend accepts both
             const result = await authAPI.login(email, password);
 
-            // Store tokens
+            // Store tokens directly (don't call authLogin as it would make another API call)
             localStorage.setItem('access_token', result.tokens.access);
             localStorage.setItem('refresh_token', result.tokens.refresh);
             localStorage.setItem('user', JSON.stringify(result.user));
 
-            // Update auth context
-            authLogin(result.user, result.tokens.access);
+            // Update auth context directly using setAuthData (doesn't make API calls)
+            setAuthData(result.user, result.tokens);
 
             // Redirect based on role
             const role = result.user.role;
@@ -128,13 +128,13 @@ const CourseraAuth = () => {
                 verification_token: verificationToken
             });
 
-            // Store tokens
+            // Store tokens directly (don't call authLogin as it would make another API call)
             localStorage.setItem('access_token', result.tokens.access);
             localStorage.setItem('refresh_token', result.tokens.refresh);
             localStorage.setItem('user', JSON.stringify(result.user));
 
-            // Update auth context
-            authLogin(result.user, result.tokens.access);
+            // Update auth context directly using setAuthData (doesn't make API calls)
+            setAuthData(result.user, result.tokens);
 
             // Redirect to student dashboard
             navigate('/student/dashboard');
