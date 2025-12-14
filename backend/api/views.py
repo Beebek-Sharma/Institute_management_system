@@ -459,6 +459,164 @@ def complete_signup(request):
         )
 
 
+# ===================== PASSWORD RESET WITH VERIFICATION CODE =====================
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_password_reset_code(request):
+    """Send verification code for password reset"""
+    import random
+    from datetime import timedelta
+    from .models import EmailVerification
+    
+    email = request.data.get('email')
+    
+    if not email:
+        return Response(
+            {'error': 'Email is required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Check if email exists
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        # Don't reveal if email exists for security
+        return Response({
+            'message': 'If an account exists with this email, you will receive a verification code.'
+        })
+    
+    # Generate 6-digit code
+    code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    
+    # Set expiry to 10 minutes from now
+    expires_at = timezone.now() + timedelta(minutes=10)
+    
+    # Create verification record (reusing EmailVerification model)
+    EmailVerification.objects.create(
+        email=email,
+        code=code,
+        expires_at=expires_at
+    )
+    
+    # Send email
+    from django.core.mail import send_mail
+    from django.conf import settings
+    
+    try:
+        send_mail(
+            'Password Reset Code - Institute Management System',
+            f'Your password reset code is: {code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.',
+            settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@institute.com',
+            [email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        print(f"Email sending failed: {e}")
+        print(f"Password reset code for {email}: {code}")
+    
+    return Response({
+        'message': 'Verification code sent to your email',
+        'expires_in': 600  # 10 minutes in seconds
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def verify_password_reset_code(request):
+    """Verify the password reset code"""
+    import secrets
+    from .models import EmailVerification
+    
+    email = request.data.get('email')
+    code = request.data.get('code')
+    
+    if not email or not code:
+        return Response(
+            {'error': 'Email and code are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Find the most recent unused verification code for this email
+    verification = EmailVerification.objects.filter(
+        email=email,
+        code=code,
+        is_used=False
+    ).order_by('-created_at').first()
+    
+    if not verification:
+        return Response(
+            {'error': 'Invalid verification code'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    if verification.is_expired:
+        return Response(
+            {'error': 'Verification code has expired. Please request a new one.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Mark as used
+    verification.is_used = True
+    verification.save()
+    
+    # Generate a temporary token for resetting password
+    reset_token = secrets.token_urlsafe(32)
+    
+    return Response({
+        'valid': True,
+        'reset_token': reset_token,
+        'message': 'Code verified successfully'
+    })
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password_with_code(request):
+    """Reset password after code verification"""
+    email = request.data.get('email')
+    new_password = request.data.get('password')
+    reset_token = request.data.get('reset_token')
+    
+    if not all([email, new_password, reset_token]):
+        return Response(
+            {'error': 'Email, password, and reset_token are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        user = User.objects.get(email=email)
+        
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=user,
+            action='password_reset',
+            description=f'User {user.username} reset their password',
+            target_user=user,
+            ip_address=get_client_ip(request)
+        )
+        
+        return Response({
+            'message': 'Password has been reset successfully. You can now login with your new password.'
+        })
+        
+    except User.DoesNotExist:
+        return Response(
+            {'error': 'User not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {'error': f'Failed to reset password: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def request_password_reset(request):

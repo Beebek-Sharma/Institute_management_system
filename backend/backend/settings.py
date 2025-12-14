@@ -180,19 +180,29 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Console backend for development
-# For production, use: 'django.core.mail.backends.smtp.EmailBackend'
+import os
+from dotenv import load_dotenv
 
-EMAIL_HOST = 'smtp.gmail.com'  # Change to your email provider
+# Load environment variables from .env file
+load_dotenv()
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'  # Set this in environment variables
-EMAIL_HOST_PASSWORD = 'your-app-password'  # Set this in environment variables
-DEFAULT_FROM_EMAIL = 'noreply@institute.edu.np'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Institute Management System <noreply@institute.edu.np>')
+
+# Fallback to console backend if credentials not set (for development)
+if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("⚠️  Email credentials not set. Using console backend. Check your .env file.")
 
 # Password Reset Token Expiry (in hours)
 PASSWORD_RESET_TOKEN_EXPIRY_HOURS = 24
 
 # Frontend URL for password reset link
 FRONTEND_URL = 'http://localhost:3001'
+
 

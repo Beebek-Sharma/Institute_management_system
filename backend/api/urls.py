@@ -36,6 +36,11 @@ urlpatterns = [
     path('auth/verify-code/', views.verify_code, name='verify_code'),
     path('auth/complete-signup/', views.complete_signup, name='complete_signup'),
     
+    # Password reset with verification code
+    path('auth/forgot-password/', views.send_password_reset_code, name='send_password_reset_code'),
+    path('auth/verify-reset-code/', views.verify_password_reset_code, name='verify_password_reset_code'),
+    path('auth/reset-password/', views.reset_password_with_code, name='reset_password_with_code'),
+    
     # Admin user management endpoints
     path('admin/create-staff/', views.create_staff, name='create_staff'),
     path('admin/create-instructor/', views.create_instructor, name='create_instructor'),
