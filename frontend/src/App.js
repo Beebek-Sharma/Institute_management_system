@@ -29,6 +29,7 @@ import Settings from "./pages/student/Settings";
 import Accomplishments from "./pages/student/Accomplishments";
 import StudentAttendance from "./pages/student/StudentAttendance";
 import StudentSchedule from "./pages/student/StudentSchedule";
+import StudentCertificates from "./pages/student/StudentCertificates";
 
 // Instructor Pages
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
@@ -183,6 +184,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['student']}>
                   <StudentSchedule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/certificates"
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentCertificates />
                 </ProtectedRoute>
               }
             />

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Users, Calendar, TrendingUp, Clock } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
+import CourseCard from '../../components/CourseCard';
 import axios from '../../api/axios';
 
 const InstructorCourses = () => {
@@ -83,64 +84,41 @@ const InstructorCourses = () => {
                     </div>
                 </div>
 
-
-
                 {/* Courses Grid */}
                 {loading ? (
                     <div className="text-center py-12 text-gray-700">Loading your courses...</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {courses.map((course) => (
-                            <div
+                            <CourseCard
                                 key={course.id}
-                                className="bg-white backdrop-blur-md border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
-                            >
-                                <div className="mb-4">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold">
-                                            {course.code || 'N/A'}
-                                        </span>
-                                        {course.category && (
-                                            <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-semibold">
-                                                {course.category}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
-                                    <p className="text-sm text-gray-700 line-clamp-2">{course.description || 'No description'}</p>
-                                </div>
-
-                                <div className="space-y-2 mb-4">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-700">Enrolled Students:</span>
-                                        <span className="text-gray-900 font-semibold">{course.enrolled_students || 0}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-700">Max Students:</span>
-                                        <span className="text-gray-900 font-semibold">{course.max_students || 'N/A'}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="text-gray-700">Duration:</span>
-                                        <span className="text-gray-900 font-semibold">{course.duration || 'N/A'}</span>
-                                    </div>
-                                    {course.fee && (
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-700">Fee:</span>
-                                            <span className="text-gray-900 font-semibold">NPR {course.fee}</span>
+                                course={course}
+                                actionSlot={
+                                    <div className="w-full space-y-3">
+                                        <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 border-t border-gray-100 pt-2">
+                                            <div className="flex justify-between">
+                                                <span>Enrolled:</span>
+                                                <span className="font-semibold">{course.enrolled_students || 0}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Max:</span>
+                                                <span className="font-semibold">{course.max_students || 'N/A'}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Fee:</span>
+                                                <span className="font-semibold">{course.fee ? `NPR ${course.fee}` : 'N/A'}</span>
+                                            </div>
                                         </div>
-                                    )}
-                                </div>
-
-                                <div className="pt-4 border-t border-gray-200">
-                                    <button
-                                        onClick={() => navigate(`/instructor/students?course=${course.id}`)}
-                                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 rounded-lg transition"
-                                    >
-                                        <Users className="w-4 h-4" />
-                                        View Students
-                                    </button>
-                                </div>
-                            </div>
+                                        <button
+                                            onClick={() => navigate(`/instructor/students?course=${course.id}`)}
+                                            className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition text-sm"
+                                        >
+                                            <Users className="w-4 h-4" />
+                                            View Students
+                                        </button>
+                                    </div>
+                                }
+                            />
                         ))}
                     </div>
                 )}

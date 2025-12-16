@@ -83,4 +83,20 @@ export const authAPI = {
     const response = await api.post('/api/auth/complete-signup/', signupData);
     return response.data;
   },
+
+  // Password reset with verification code
+  sendPasswordResetCode: async (email) => {
+    const response = await api.post('/api/auth/forgot-password/', { email });
+    return response.data;
+  },
+
+  verifyResetCode: async (email, code) => {
+    const response = await api.post('/api/auth/verify-reset-code/', { email, code });
+    return response.data;
+  },
+
+  resetPassword: async (email, password, reset_token) => {
+    const response = await api.post('/api/auth/reset-password/', { email, password, reset_token });
+    return response.data;
+  },
 };

@@ -224,6 +224,23 @@ const StudentCourseLearning = () => {
             >
               Browse More Courses
             </Button>
+            <Button
+              onClick={async () => {
+                if (window.confirm('Are you sure you want to complete this course?')) {
+                  try {
+                    await enrollmentsAPI.markComplete(enrollment.id);
+                    navigate('/student/certificates');
+                  } catch (error) {
+                    console.error('Error completing course:', error);
+                    alert('Failed to complete course. Please try again.');
+                  }
+                }
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            >
+              <Award className="w-4 h-4" />
+              Complete Course & Get Certificate
+            </Button>
           </div>
         </div>
       </div>

@@ -25,34 +25,34 @@ export const enrollmentsAPI = {
         try {
             console.log(`[Enrollment] Fetching batches for course ${courseId}`);
             const batches = await enrollmentsAPI.getBatchesForCourse(courseId);
-            
+
             console.log(`[Enrollment] Batches response:`, batches);
-            
+
             // Find first available batch with space
-            const batchList = Array.isArray(batches) 
+            const batchList = Array.isArray(batches)
                 ? batches
                 : (batches?.results || []);
-            
+
             console.log(`[Enrollment] Batch list:`, batchList);
-            
+
             const availableBatch = batchList.find(b => {
                 console.log(`[Enrollment] Checking batch ${b.id}: available_seats=${b.available_seats}`);
                 return b.available_seats > 0;
             });
-            
+
             if (!availableBatch) {
                 throw new Error('No available batches for this course');
             }
 
             console.log(`[Enrollment] Creating enrollment for batch ${availableBatch.id}, student ${studentId}`);
-            
+
             // Enroll in the available batch
             const response = await api.post('/api/enrollments/', {
                 batch: availableBatch.id,
                 student: studentId,
                 status: 'active'
             });
-            
+
             console.log(`[Enrollment] Success:`, response.data);
             return response.data;
         } catch (error) {
@@ -70,6 +70,12 @@ export const enrollmentsAPI = {
     // Delete enrollment
     deleteEnrollment: async (id) => {
         const response = await api.delete(`/api/enrollments/${id}/`);
+        return response.data;
+    },
+
+    // Mark enrollment as complete
+    markComplete: async (id) => {
+        const response = await api.post(`/api/enrollments/${id}/mark_complete/`);
         return response.data;
     },
 };

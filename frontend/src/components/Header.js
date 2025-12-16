@@ -89,8 +89,8 @@ export default function Header({ onMenuClick }) {
             <Link to="/my-learning" className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2">
               My Learning
             </Link>
-            <Link to="/degrees" className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2">
-              Degrees
+            <Link to="/student/certificates" className="text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878] px-2 sm:px-3 py-2">
+              Certificates
             </Link>
           </nav>
 

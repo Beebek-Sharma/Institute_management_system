@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Edit, Trash2, Eye, EyeOff, Lock } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, EyeOff } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import axios from '../../api/axios';
 
@@ -129,18 +129,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleResetPassword = async (userId) => {
-    const newPassword = prompt('Enter new password:');
-    if (newPassword) {
-      try {
-        await axios.post(`/api/admin/users/${userId}/reset-password/`, { password: newPassword });
-        setSuccess('Password reset successfully!');
-        setTimeout(() => setSuccess(''), 3000);
-      } catch (err) {
-        setError(err.response?.data?.error || 'Failed to reset password');
-      }
-    }
-  };
+
 
   const getRoleColor = (role) => {
     const colors = {
@@ -189,21 +178,19 @@ const AdminDashboard = () => {
             <div className="flex gap-4 mb-6 border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('users')}
-                className={`px-6 py-3 font-semibold transition-all ${
-                  activeTab === 'users'
-                    ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-gray-700 hover:text-gray-900'
-                }`}
+                className={`px-6 py-3 font-semibold transition-all ${activeTab === 'users'
+                  ? 'text-blue-400 border-b-2 border-blue-400'
+                  : 'text-gray-700 hover:text-gray-900'
+                  }`}
               >
                 User Management
               </button>
               <button
                 onClick={() => setActiveTab('stats')}
-                className={`px-6 py-3 font-semibold transition-all ${
-                  activeTab === 'stats'
-                    ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-gray-700 hover:text-gray-900'
-                }`}
+                className={`px-6 py-3 font-semibold transition-all ${activeTab === 'stats'
+                  ? 'text-blue-400 border-b-2 border-blue-400'
+                  : 'text-gray-700 hover:text-gray-900'
+                  }`}
               >
                 Statistics
               </button>
@@ -222,13 +209,13 @@ const AdminDashboard = () => {
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-white placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       />
                     </div>
                     <select
                       value={roleFilter}
                       onChange={(e) => setRoleFilter(e.target.value)}
-                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     >
                       <option value="">All Roles</option>
                       <option value="admin">Admin</option>
@@ -263,7 +250,7 @@ const AdminDashboard = () => {
                         <tbody>
                           {filteredUsers.map((u) => (
                             <tr key={u.id} className="border-b border-gray-200 hover:bg-white transition">
-                              <td className="px-4 py-3 text-white">{u.username}</td>
+                              <td className="px-4 py-3 text-gray-900 font-medium">{u.username}</td>
                               <td className="px-4 py-3 text-gray-700">{u.email}</td>
                               <td className="px-4 py-3 text-gray-700">{u.first_name} {u.last_name}</td>
                               <td className="px-4 py-3">
@@ -272,13 +259,7 @@ const AdminDashboard = () => {
                                 </span>
                               </td>
                               <td className="px-4 py-3 flex gap-2">
-                                <button
-                                  onClick={() => handleResetPassword(u.id)}
-                                  className="p-2 bg-yellow-500/20 hover:bg-yellow-500/40 text-yellow-300 rounded-lg transition"
-                                  title="Reset Password"
-                                >
-                                  <Lock className="w-4 h-4" />
-                                </button>
+
                                 <button
                                   onClick={() => handleDeleteUser(u.id)}
                                   className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition"

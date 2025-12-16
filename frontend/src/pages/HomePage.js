@@ -33,6 +33,28 @@ const HomePage = () => {
     }
   };
 
+  const handleExploreClick = () => {
+    if (user) {
+      switch (user.role) {
+        case 'admin':
+          navigate('/admin/courses');
+          break;
+        case 'instructor':
+          navigate('/instructor/courses');
+          break;
+        case 'staff':
+          navigate('/staff/courses');
+          break;
+        case 'student':
+        default:
+          navigate('/student/courses');
+          break;
+      }
+    } else {
+      navigate('/auth');
+    }
+  };
+
   const banners = [
     {
       id: 1,
@@ -96,13 +118,7 @@ const HomePage = () => {
                       <p className="text-base md:text-lg mb-6 text-teal-700">{banner.subtitle}</p>
                     )}
                     <Button
-                      onClick={() => {
-                        if (user && user.id) {
-                          navigate('/student/courses');
-                        } else {
-                          navigate('/login');
-                        }
-                      }}
+                      onClick={handleExploreClick}
                       className="bg-white text-teal-900 hover:bg-teal-50 font-bold px-8 py-2 rounded-lg transition-colors"
                     >
                       {banner.cta} →
@@ -170,13 +186,7 @@ const HomePage = () => {
           {courses.length > 0 && (
             <div className="mt-8 text-center">
               <Button
-                onClick={() => {
-                  if (user && user.id) {
-                    navigate('/student/courses');
-                  } else {
-                    navigate('/login');
-                  }
-                }}
+                onClick={handleExploreClick}
                 variant="outline"
                 className="text-[#00a878] border-[#00a878] font-bold hover:bg-teal-900/20"
               >

@@ -1327,6 +1327,30 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
             return Enrollment.objects.filter(student=user).select_related('student', 'batch')
         
         return Enrollment.objects.none()
+
+    @action(detail=True, methods=['post'])
+    def mark_complete(self, request, pk=None):
+        """Mark an enrollment as completed"""
+        enrollment = self.get_object()
+        
+        # Verify permissions: students can mark their own enrollment as complete
+        if request.user.role == 'student' and enrollment.student != request.user:
+             return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
+             
+        enrollment.status = 'completed'
+        enrollment.save()
+        
+        # Create notification
+        Notification.objects.create(
+            user=enrollment.student,
+            notification_type='grade', # Using grade type as proxy for completion
+            channel='in_app',
+            title='Course Completed',
+            message=f'Congratulations! You have completed {enrollment.course.name if enrollment.course else enrollment.batch.course.name}.',
+            related_enrollment=enrollment
+        )
+        
+        return Response({'message': 'Course marked as completed', 'status': 'completed'})
     
     def get_serializer_class(self):
         if self.action == 'retrieve':

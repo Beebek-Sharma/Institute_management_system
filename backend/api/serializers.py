@@ -170,14 +170,29 @@ class EnrollmentListSerializer(serializers.ModelSerializer):
     course_name = serializers.CharField(source='batch.course.name', read_only=True)
     course_code = serializers.CharField(source='batch.course.code', read_only=True)
     course = serializers.IntegerField(source='batch.course.id', read_only=True)
+    instructor_name = serializers.SerializerMethodField()
     
     class Meta:
         model = Enrollment
         fields = [
             'id', 'student', 'student_name', 'batch', 'batch_info',
-            'course', 'course_name', 'course_code', 'status', 'enrollment_date', 'grade'
+            'course', 'course_name', 'course_code', 'status', 'enrollment_date', 'grade',
+            'instructor_name'
         ]
         read_only_fields = ['id', 'enrollment_date']
+
+    def get_instructor_name(self, obj):
+        """Get instructor name from batch or course"""
+        # First check batch instructor
+        if obj.batch and obj.batch.instructor:
+            return obj.batch.instructor.get_full_name()
+        # Then check course instructor via batch
+        if obj.batch and obj.batch.course and obj.batch.course.instructor:
+            return obj.batch.course.instructor.get_full_name()
+        # Finally check direct course link
+        if obj.course and obj.course.instructor:
+            return obj.course.instructor.get_full_name()
+        return "Institute Instructor"
 
 
 class EnrollmentDetailSerializer(serializers.ModelSerializer):

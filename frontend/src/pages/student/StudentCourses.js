@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { coursesAPI } from '../../api/courses';
 import { enrollmentsAPI } from '../../api/enrollments';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -6,15 +7,16 @@ import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/ui/button';
 import CourseCard from '../../components/CourseCard';
 import { Badge } from '../../components/ui/badge';
-import { Search, BookOpen, User, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Search, BookOpen, User, Calendar, Clock, AlertCircle, Award } from 'lucide-react';
 import { Input } from '../../components/ui/input';
 import { Alert, AlertDescription } from '../../components/ui/alert';
 
 
 const StudentCourses = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [courses, setCourses] = useState([]);
-  const [enrolledCourseIds, setEnrolledCourseIds] = useState(new Set());
+  const [enrollmentsMap, setEnrollmentsMap] = useState(new Map());
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
@@ -38,7 +40,9 @@ const StudentCourses = () => {
       const safeEnrollments = Array.isArray(enrollmentsData) ? enrollmentsData : (enrollmentsData?.results || []);
 
       setCourses(safeCourses);
-      setEnrolledCourseIds(new Set(safeEnrollments.map(e => e.course)));
+      const map = new Map();
+      safeEnrollments.forEach(e => map.set(e.course, e));
+      setEnrollmentsMap(map);
     } catch (err) {
       console.error('Error fetching data:', err);
       setError('Failed to load courses. Please try again later.');
@@ -62,7 +66,14 @@ const StudentCourses = () => {
       console.log(`[StudentCourses] Enrollment successful:`, result);
 
       // Update local state
-      setEnrolledCourseIds(prev => new Set(prev).add(courseId));
+      // Update local state - verify what result contains, assuming it matches enrollment structure or we re-fetch
+      // For simplicity, re-fetching might be safer, but let's try to add optimistic update if result is the enrollment
+      if (result && result.enrollment) {
+        setEnrollmentsMap(prev => new Map(prev).set(courseId, result.enrollment));
+      } else {
+        // Fallback refresh
+        fetchData();
+      }
 
       // Show success message or toast (optional)
       alert('Successfully enrolled in course!');
@@ -124,29 +135,48 @@ const StudentCourses = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map(course => {
-              const isEnrolled = enrolledCourseIds.has(course.id);
+              const enrollment = enrollmentsMap.get(course.id);
+              const isEnrolled = !!enrollment;
+              const isCompleted = enrollment?.status === 'completed';
 
               return (
                 <CourseCard
                   key={course.id}
                   course={course}
                   actionSlot={
-                    <Button
-                      className={`w-full font-bold ${isEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
-                      disabled={isEnrolled || enrollmentLoading === course.id}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent card click navigation
-                        handleEnroll(course.id);
-                      }}
-                    >
-                      {enrollmentLoading === course.id ? (
-                        'Enrolling...'
-                      ) : isEnrolled ? (
-                        'Enrolled'
-                      ) : (
-                        'Enroll Now'
-                      )}
-                    </Button>
+                    isCompleted ? (
+                      <Button
+                        className="w-full bg-green-600 hover:bg-green-700 text-white gap-2 font-bold"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/student/certificates');
+                        }}
+                      >
+                        <Award className="w-4 h-4" />
+                        View Certificate
+                      </Button>
+                    ) : (
+                      <Button
+                        className={`w-full font-bold ${isEnrolled ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                        disabled={isEnrolled || enrollmentLoading === course.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isEnrolled) {
+                            navigate(`/student/courses/${course.id}/learn`);
+                          } else {
+                            handleEnroll(course.id);
+                          }
+                        }}
+                      >
+                        {enrollmentLoading === course.id ? (
+                          'Enrolling...'
+                        ) : isEnrolled ? (
+                          'Continue Learning'
+                        ) : (
+                          'Enroll Now'
+                        )}
+                      </Button>
+                    )
                   }
                 />
               );

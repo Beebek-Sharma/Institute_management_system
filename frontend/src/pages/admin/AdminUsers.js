@@ -206,42 +206,42 @@ const AdminUsers = () => {
 
     const getRoleIcon = (role) => {
         switch (role) {
-            case 'admin': return <Shield className="w-4 h-4 text-red-500" />;
-            case 'staff': return <Briefcase className="w-4 h-4 text-blue-500" />;
-            case 'instructor': return <GraduationCap className="w-4 h-4 text-purple-500" />;
-            case 'student': return <User className="w-4 h-4 text-green-500" />;
-            default: return <User className="w-4 h-4 text-gray-800" />;
+            case 'admin': return <Shield className="w-4 h-4 text-red-600" />;
+            case 'staff': return <Briefcase className="w-4 h-4 text-blue-600" />;
+            case 'instructor': return <GraduationCap className="w-4 h-4 text-purple-600" />;
+            case 'student': return <User className="w-4 h-4 text-green-600" />;
+            default: return <User className="w-4 h-4 text-gray-600" />;
         }
     };
 
     const getRoleBadgeColor = (role) => {
         switch (role) {
-            case 'admin': return 'bg-red-500/10 text-red-500 border-red-500/20';
-            case 'staff': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-            case 'instructor': return 'bg-purple-500/10 text-purple-500 border-purple-500/20';
-            case 'student': return 'bg-green-500/10 text-green-500 border-green-500/20';
-            default: return 'bg-gray-500/10 text-gray-800 border-gray-500/20';
+            case 'admin': return 'bg-red-100 text-red-800 border-red-200';
+            case 'staff': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'instructor': return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'student': return 'bg-green-100 text-green-800 border-green-200';
+            default: return 'bg-gray-100 text-gray-800 border-gray-200';
         }
     };
 
     return (
         <DashboardLayout>
-            <div className="space-y-4 sm:space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+            <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-white">User Management</h1>
-                        <p className="text-xs sm:text-sm text-gray-700">Manage all users in the system</p>
+                        <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+                        <p className="text-sm text-gray-500 mt-1">Manage all users in the system</p>
                     </div>
                     <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-teal-600 hover:bg-teal-700">
+                            <Button className="bg-teal-600 hover:bg-teal-700 text-white">
                                 <Plus className="w-4 h-4 mr-2" />
                                 Add User
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="bg-slate-900 border-slate-800 text-white">
+                        <DialogContent className="bg-white border-gray-200 text-gray-900">
                             <DialogHeader>
-                                <DialogTitle>Add New User</DialogTitle>
+                                <DialogTitle className="text-gray-900">Add New User</DialogTitle>
                             </DialogHeader>
                             <form onSubmit={handleAddUser} className="space-y-4">
                                 <div className="grid grid-cols-2 gap-4">
@@ -251,7 +251,7 @@ const AdminUsers = () => {
                                             name="first_name"
                                             value={formData.first_name}
                                             onChange={handleInputChange}
-                                            className="bg-slate-800 border-slate-700 text-white"
+                                            className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                             required
                                         />
                                     </div>
@@ -261,7 +261,7 @@ const AdminUsers = () => {
                                             name="last_name"
                                             value={formData.last_name}
                                             onChange={handleInputChange}
-                                            className="bg-slate-800 border-slate-700 text-white"
+                                            className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                             required
                                         />
                                     </div>
@@ -273,7 +273,7 @@ const AdminUsers = () => {
                                         name="username"
                                         value={formData.username}
                                         onChange={handleInputChange}
-                                        className="bg-slate-800 border-slate-700 text-white"
+                                        className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                         required
                                     />
                                 </div>
@@ -285,7 +285,7 @@ const AdminUsers = () => {
                                         type="email"
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className="bg-slate-800 border-slate-700 text-white"
+                                        className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                         required
                                     />
                                 </div>
@@ -297,7 +297,7 @@ const AdminUsers = () => {
                                         type="password"
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className="bg-slate-800 border-slate-700 text-white"
+                                        className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                         required
                                     />
                                 </div>
@@ -305,10 +305,10 @@ const AdminUsers = () => {
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-gray-700">Role</label>
                                     <Select value={formData.role} onValueChange={handleRoleChange}>
-                                        <SelectTrigger className="bg-slate-800 border-slate-700 text-white">
+                                        <SelectTrigger className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500">
                                             <SelectValue placeholder="Select role" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                                        <SelectContent className="bg-white border-gray-200">
                                             <SelectItem value="student">Student</SelectItem>
                                             <SelectItem value="instructor">Instructor</SelectItem>
                                             <SelectItem value="staff">Staff</SelectItem>
@@ -324,16 +324,16 @@ const AdminUsers = () => {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            className="bg-slate-800 border-slate-700 text-white"
+                                            className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                         />
                                     </div>
                                 )}
 
                                 <DialogFooter>
-                                    <Button type="button" variant="ghost" onClick={() => setIsAddUserOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
+                                    <Button type="button" variant="ghost" onClick={() => setIsAddUserOpen(false)} className="text-gray-700 hover:bg-gray-100">
                                         Cancel
                                     </Button>
-                                    <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
+                                    <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white">
                                         Create User
                                     </Button>
                                 </DialogFooter>
@@ -343,21 +343,21 @@ const AdminUsers = () => {
                 </div>
 
                 {/* Filters */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 bg-slate-900/50 p-3 sm:p-4 rounded-lg border border-slate-800">
+                <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700 w-4 h-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                         <Input
                             placeholder="Search users..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 bg-slate-800 border-slate-700 text-gray-900 text-sm"
+                            className="pl-10 bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="w-full sm:w-[180px] bg-slate-800 border-slate-700 text-gray-900 text-sm">
+                        <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500">
                             <SelectValue placeholder="Filter by Role" />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700 text-white">
+                        <SelectContent className="bg-white border-gray-200">
                             <SelectItem value="all">All Roles</SelectItem>
                             <SelectItem value="student">Student</SelectItem>
                             <SelectItem value="instructor">Instructor</SelectItem>
@@ -368,43 +368,43 @@ const AdminUsers = () => {
                 </div>
 
                 {/* Users Table */}
-                <div className="bg-slate-900/50 rounded-lg border border-slate-800 overflow-hidden">
+                <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                     {/* Desktop View */}
                     <div className="hidden md:block">
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-slate-800 hover:bg-slate-800/50">
-                                    <TableHead className="text-gray-700">User</TableHead>
-                                    <TableHead className="text-gray-700">Role</TableHead>
-                                    <TableHead className="text-gray-700">Email</TableHead>
-                                    <TableHead className="text-gray-700">Joined Date</TableHead>
-                                    <TableHead className="text-gray-700 text-right">Actions</TableHead>
+                                <TableRow className="border-gray-200 bg-gray-50 hover:bg-gray-100">
+                                    <TableHead className="text-gray-700 font-semibold">User</TableHead>
+                                    <TableHead className="text-gray-700 font-semibold">Role</TableHead>
+                                    <TableHead className="text-gray-700 font-semibold">Email</TableHead>
+                                    <TableHead className="text-gray-700 font-semibold">Joined Date</TableHead>
+                                    <TableHead className="text-gray-700 font-semibold text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loading ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-gray-700">
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                                             Loading users...
                                         </TableCell>
                                     </TableRow>
                                 ) : users.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-gray-700">
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                                             No users found
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     users.map((user) => (
-                                        <TableRow key={user.id} className="border-slate-800 hover:bg-slate-800/50">
+                                        <TableRow key={user.id} className="border-gray-200 hover:bg-gray-50 transition-colors">
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
                                                         {user.first_name?.[0] || user.username[0].toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-white">{user.first_name} {user.last_name}</p>
-                                                        <p className="text-xs text-gray-700">@{user.username}</p>
+                                                        <p className="font-medium text-gray-900">{user.first_name} {user.last_name}</p>
+                                                        <p className="text-xs text-gray-500">@{user.username}</p>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -421,16 +421,16 @@ const AdminUsers = () => {
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-700 hover:text-white hover:bg-slate-800">
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100">
                                                             <MoreVertical className="w-4 h-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700 text-white">
-                                                        <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-slate-700 cursor-pointer">
+                                                    <DropdownMenuContent align="end" className="bg-white border-gray-200 shadow-md">
+                                                        <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-gray-100 cursor-pointer text-gray-700">
                                                             <Edit className="w-4 h-4 mr-2" />
                                                             Edit Details
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-600 cursor-pointer">
+                                                        <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-600 hover:bg-red-50 cursor-pointer">
                                                             <Trash2 className="w-4 h-4 mr-2" />
                                                             Delete User
                                                         </DropdownMenuItem>
@@ -447,36 +447,36 @@ const AdminUsers = () => {
                     {/* Mobile View - Cards */}
                     <div className="md:hidden">
                         {loading ? (
-                            <div className="text-center py-8 text-gray-700">Loading users...</div>
+                            <div className="text-center py-8 text-gray-500">Loading users...</div>
                         ) : users.length === 0 ? (
-                            <div className="text-center py-8 text-gray-700">No users found</div>
+                            <div className="text-center py-8 text-gray-500">No users found</div>
                         ) : (
                             <div className="space-y-4 p-4">
                                 {users.map((user) => (
-                                    <div key={user.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 space-y-3">
+                                    <div key={user.id} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3 shadow-sm">
                                         {/* Header with avatar and name */}
                                         <div className="flex items-start justify-between">
                                             <div className="flex items-center gap-3 flex-1">
-                                                <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium flex-shrink-0">
+                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold flex-shrink-0">
                                                     {user.first_name?.[0] || user.username[0].toUpperCase()}
                                                 </div>
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="font-medium text-white truncate">{user.first_name} {user.last_name}</p>
-                                                    <p className="text-xs text-gray-700 truncate">@{user.username}</p>
+                                                    <p className="font-medium text-gray-900 truncate">{user.first_name} {user.last_name}</p>
+                                                    <p className="text-xs text-gray-500 truncate">@{user.username}</p>
                                                 </div>
                                             </div>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-700 hover:text-white hover:bg-slate-800 flex-shrink-0">
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900 hover:bg-gray-100 flex-shrink-0">
                                                         <MoreVertical className="w-4 h-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700 text-white">
-                                                    <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-slate-700 cursor-pointer">
+                                                <DropdownMenuContent align="end" className="bg-white border-gray-200 text-gray-900 shadow-md">
+                                                    <DropdownMenuItem onClick={() => handleEditClick(user)} className="hover:bg-gray-100 cursor-pointer">
                                                         <Edit className="w-4 h-4 mr-2" />
                                                         Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:bg-red-500/10 hover:text-red-600 cursor-pointer">
+                                                    <DropdownMenuItem onClick={() => handleDeleteUser(user.id)} className="text-red-600 hover:bg-red-50 cursor-pointer">
                                                         <Trash2 className="w-4 h-4 mr-2" />
                                                         Delete
                                                     </DropdownMenuItem>
@@ -493,14 +493,14 @@ const AdminUsers = () => {
                                         </div>
 
                                         {/* Details */}
-                                        <div className="space-y-2 text-sm border-t border-slate-700 pt-3">
+                                        <div className="space-y-2 text-sm border-t border-gray-100 pt-3">
                                             <div className="flex justify-between">
-                                                <span className="text-gray-700">Email:</span>
-                                                <span className="text-gray-700 break-all text-right">{user.email}</span>
+                                                <span className="text-gray-500">Email:</span>
+                                                <span className="text-gray-900 break-all text-right">{user.email}</span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-gray-700">Joined:</span>
-                                                <span className="text-gray-700">{new Date(user.date_joined || user.created_at).toLocaleDateString()}</span>
+                                                <span className="text-gray-500">Joined:</span>
+                                                <span className="text-gray-900">{new Date(user.date_joined || user.created_at).toLocaleDateString()}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -513,9 +513,9 @@ const AdminUsers = () => {
 
             {/* Edit User Dialog */}
             <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
-                <DialogContent className="bg-slate-900 border-slate-800 text-white">
+                <DialogContent className="bg-white border-gray-200 text-gray-900">
                     <DialogHeader>
-                        <DialogTitle>Edit User</DialogTitle>
+                        <DialogTitle className="text-gray-900">Edit User</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleUpdateUser} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
@@ -525,7 +525,7 @@ const AdminUsers = () => {
                                     name="first_name"
                                     value={formData.first_name}
                                     onChange={handleInputChange}
-                                    className="bg-slate-800 border-slate-700 text-white"
+                                    className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                     required
                                 />
                             </div>
@@ -535,7 +535,7 @@ const AdminUsers = () => {
                                     name="last_name"
                                     value={formData.last_name}
                                     onChange={handleInputChange}
-                                    className="bg-slate-800 border-slate-700 text-white"
+                                    className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                     required
                                 />
                             </div>
@@ -548,7 +548,7 @@ const AdminUsers = () => {
                                 type="email"
                                 value={formData.email}
                                 onChange={handleInputChange}
-                                className="bg-slate-800 border-slate-700 text-white"
+                                className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                                 required
                             />
                         </div>
@@ -559,15 +559,15 @@ const AdminUsers = () => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleInputChange}
-                                className="bg-slate-800 border-slate-700 text-white"
+                                className="bg-white border-gray-300 text-gray-900 focus:border-teal-500 focus:ring-teal-500"
                             />
                         </div>
 
                         <DialogFooter>
-                            <Button type="button" variant="ghost" onClick={() => setIsEditUserOpen(false)} className="text-gray-700 hover:text-white hover:bg-slate-800">
+                            <Button type="button" variant="ghost" onClick={() => setIsEditUserOpen(false)} className="text-gray-700 hover:bg-gray-100">
                                 Cancel
                             </Button>
-                            <Button type="submit" className="bg-teal-600 hover:bg-teal-700">
+                            <Button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white">
                                 Update User
                             </Button>
                         </DialogFooter>
