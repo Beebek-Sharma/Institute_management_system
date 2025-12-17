@@ -15,7 +15,8 @@ import {
   X,
   Calendar,
   Bell,
-  ClipboardCheck
+  ClipboardCheck,
+  Settings
 } from 'lucide-react';
 
 const DashboardLayout = ({ children, disablePadding = false }) => {
@@ -69,7 +70,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: CreditCard, label: 'Payments', path: '/student/payments' },
           { icon: ClipboardCheck, label: 'Attendance', path: '/student/attendance' },
           { icon: Calendar, label: 'Schedule', path: '/student/schedule' },
-          { icon: User, label: 'Profile', path: '/profile' },
+          { icon: Settings, label: 'Settings', path: '/student/settings' },
         ];
       case 'instructor':
         return [
@@ -79,7 +80,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: ClipboardCheck, label: 'Attendance', path: '/instructor/attendance' },
           { icon: Calendar, label: 'Schedule', path: '/instructor/schedule' },
           { icon: Award, label: 'Enrollments', path: '/instructor/enrollments' },
-          { icon: User, label: 'Profile', path: '/profile' },
+          { icon: Settings, label: 'Settings', path: '/student/settings' },
         ];
       case 'staff':
         return [
@@ -90,7 +91,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: ClipboardCheck, label: 'Attendance', path: '/staff/attendance' },
           { icon: Users, label: 'Students', path: '/staff/students' },
           { icon: Users, label: 'Instructors', path: '/staff/instructors' },
-          { icon: User, label: 'Profile', path: '/profile' },
+          { icon: Settings, label: 'Settings', path: '/staff/settings' },
         ];
       case 'admin':
         return [
@@ -103,7 +104,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: Calendar, label: 'Schedules', path: '/admin/schedules' },
           { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
           { icon: Users, label: 'Users', path: '/admin/users' },
-          { icon: User, label: 'Profile', path: '/profile' },
+          { icon: Settings, label: 'Settings', path: '/admin/settings' },
         ];
       default:
         return [];
@@ -159,6 +160,44 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
             <NavLinks />
           </div>
 
+          {/* Profile Section */}
+          <Link
+            to="/profile"
+            className="border-t border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+          >
+            <div className={`flex items-center ${sidebarExpanded ? 'gap-3' : 'justify-center'}`}>
+              {/* Avatar */}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
+                {user?.profile_picture ? (
+                  <img
+                    src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  (() => {
+                    const firstName = user?.first_name || '';
+                    const lastName = user?.last_name || '';
+                    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+                    return initials || 'U';
+                  })()
+                )}
+              </div>
+              {/* User Info */}
+              {sidebarExpanded && (
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {user?.first_name && user?.last_name
+                      ? `${user.first_name} ${user.last_name}`
+                      : user?.username || 'User'}
+                  </p>
+                  <p className="text-xs text-gray-500 capitalize truncate">
+                    {user?.role || 'Role'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </Link>
         </aside>
 
         {/* Sidebar - Mobile */}
@@ -171,7 +210,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
             aria-label="Close sidebar"
           >
             <aside
-              className="w-64 bg-white h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300 border-r border-gray-200"
+              className="w-64 bg-white h-full shadow-2xl fixed left-0 top-0 z-40 animate-in slide-in-from-left duration-300 border-r border-gray-200 flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -184,9 +223,47 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
                   <X className="w-5 h-5 text-gray-500" />
                 </button>
               </div>
-              <div className="p-4">
+              <div className="flex-1 p-4 overflow-y-auto">
                 <NavLinks />
               </div>
+
+              {/* Profile Section - Mobile */}
+              <Link
+                to="/profile"
+                onClick={() => setSidebarOpen(false)}
+                className="border-t border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
+                    {user?.profile_picture ? (
+                      <img
+                        src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      (() => {
+                        const firstName = user?.first_name || '';
+                        const lastName = user?.last_name || '';
+                        const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+                        return initials || 'U';
+                      })()
+                    )}
+                  </div>
+                  {/* User Info */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user?.first_name && user?.last_name
+                        ? `${user.first_name} ${user.last_name}`
+                        : user?.username || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize truncate">
+                      {user?.role || 'Role'}
+                    </p>
+                  </div>
+                </div>
+              </Link>
             </aside>
           </div>
         )}
