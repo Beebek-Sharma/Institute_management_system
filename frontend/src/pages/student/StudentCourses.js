@@ -65,23 +65,28 @@ const StudentCourses = () => {
       const result = await enrollmentsAPI.enrollInCourse(courseId, user.id);
       console.log(`[StudentCourses] Enrollment successful:`, result);
 
-      // Update local state
-      // Update local state - verify what result contains, assuming it matches enrollment structure or we re-fetch
-      // For simplicity, re-fetching might be safer, but let's try to add optimistic update if result is the enrollment
-      if (result && result.enrollment) {
-        setEnrollmentsMap(prev => new Map(prev).set(courseId, result.enrollment));
-      } else {
-        // Fallback refresh
-        fetchData();
-      }
+      // Refresh data to get updated enrollment status
+      await fetchData();
 
-      // Show success message or toast (optional)
+      // Show success message
       alert('Successfully enrolled in course!');
     } catch (err) {
       console.error('[StudentCourses] Enrollment error:', err);
-      const errorMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Unknown error';
+
+      // Extract error message - prioritize backend error messages
+      let errorMsg = 'Failed to enroll in course';
+
+      if (err.message) {
+        // If the error message is from our API wrapper or backend
+        errorMsg = err.message;
+      } else if (err.response?.data?.error) {
+        errorMsg = err.response.data.error;
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+
       console.error('[StudentCourses] Error details:', errorMsg);
-      alert(`Failed to enroll: ${errorMsg}`);
+      alert(errorMsg);
     } finally {
       setEnrollmentLoading(null);
     }

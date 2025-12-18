@@ -8,6 +8,7 @@ import { Progress } from '../../components/ui/progress';
 import { Button } from '../../components/ui/button';
 import { BookOpen, Calendar, Award, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '../../components/ui/alert';
+import { Link } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -56,7 +57,7 @@ const StudentEnrollments = () => {
 
   return (
     <DashboardLayout>
-        <div className="space-y-6">
+      <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Enrollments</h1>
           <p className="text-gray-600">Track your progress and manage your courses</p>
@@ -130,10 +131,12 @@ const StudentEnrollments = () => {
                       </TableCell>
                       <TableCell>
                         {enrollment.status === 'completed' && (
-                          <Button variant="outline" size="sm" className="flex items-center gap-1">
-                            <Award className="h-3 w-3" />
-                            Certificate
-                          </Button>
+                          <Link to="/student/certificates">
+                            <Button variant="outline" size="sm" className="flex items-center gap-1">
+                              <Award className="h-3 w-3" />
+                              Certificate
+                            </Button>
+                          </Link>
                         )}
                       </TableCell>
                     </TableRow>
@@ -143,8 +146,8 @@ const StudentEnrollments = () => {
             )}
           </CardContent>
         </Card>
-        </div>
-      </DashboardLayout>
+      </div>
+    </DashboardLayout>
   );
 };
 

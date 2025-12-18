@@ -1396,6 +1396,13 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         batch = get_object_or_404(Batch, id=batch_id)
         student = get_object_or_404(User, id=student_id, role='student')
         
+        # Check if batch is active
+        if not batch.is_active:
+            return Response(
+                {'error': 'This batch is not currently active'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         # Check if batch is full
         if batch.enrolled_count >= batch.capacity:
             return Response(
@@ -1403,13 +1410,29 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check if student already enrolled
+        # Check if student already enrolled in this batch
         if Enrollment.objects.filter(student=student, batch=batch).exists():
             return Response(
                 {'error': 'Student is already enrolled in this batch'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # Check if student already enrolled in ANY batch of this course
+        existing_enrollment = Enrollment.objects.filter(
+            student=student,
+            batch__course=batch.course,
+            status__in=['active', 'pending']
+        ).first()
+        
+        if existing_enrollment:
+            return Response(
+                {
+                    'error': f'Student is already enrolled in {batch.course.name} (Batch {existing_enrollment.batch.batch_number}). Only one enrollment per course is allowed.'
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Create enrollment
         enrollment = Enrollment.objects.create(
             student=student,
             batch=batch,
@@ -1417,13 +1440,8 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
             status='active'
         )
         
-        # Update batch enrollment count
-        batch.enrolled_count += 1
-        batch.save()
-        
-        # Update course enrollment count
-        batch.course.enrolled_count = Enrollment.objects.filter(course=batch.course).count()
-        batch.course.save()
+        # Note: Enrollment counts are now automatically updated by signals
+        # No need to manually increment batch.enrolled_count or course.enrolled_count
         
         # Create notification
         Notification.objects.create(

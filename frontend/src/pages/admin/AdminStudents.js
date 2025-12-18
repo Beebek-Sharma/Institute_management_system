@@ -236,7 +236,9 @@ const AdminStudents = () => {
                                                 </td>
                                                 <td className="px-6 py-4 text-white font-medium">{student.username}</td>
                                                 <td className="px-6 py-4 text-gray-700">
-                                                    {student.first_name} {student.last_name}
+                                                    {student.first_name || student.last_name
+                                                        ? `${student.first_name || ''} ${student.last_name || ''}`.trim()
+                                                        : student.username}
                                                 </td>
                                                 <td className="px-6 py-4 text-gray-700">{student.email}</td>
                                                 <td className="px-6 py-4 text-gray-700">
@@ -285,7 +287,11 @@ const AdminStudents = () => {
                                                     />
                                                     <p className="text-gray-900 font-semibold">{student.username}</p>
                                                 </div>
-                                                <p className="text-sm text-gray-700">{student.first_name} {student.last_name}</p>
+                                                <p className="text-sm text-gray-700">
+                                                    {student.first_name || student.last_name
+                                                        ? `${student.first_name || ''} ${student.last_name || ''}`.trim()
+                                                        : student.username}
+                                                </p>
                                             </div>
                                             <button
                                                 onClick={() => viewStudentDetails(student)}

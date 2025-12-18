@@ -35,12 +35,25 @@ export const enrollmentsAPI = {
 
             console.log(`[Enrollment] Batch list:`, batchList);
 
-            const availableBatch = batchList.find(b => {
-                console.log(`[Enrollment] Checking batch ${b.id}: available_seats=${b.available_seats}`);
+            // Filter for active batches only
+            const activeBatches = batchList.filter(b => b.is_active);
+
+            if (activeBatches.length === 0) {
+                throw new Error('No active batches available for this course');
+            }
+
+            // Find first batch with available seats
+            const availableBatch = activeBatches.find(b => {
+                console.log(`[Enrollment] Checking batch ${b.id}: available_seats=${b.available_seats}, is_active=${b.is_active}`);
                 return b.available_seats > 0;
             });
 
             if (!availableBatch) {
+                // Check if all batches are full
+                const allFull = activeBatches.every(b => b.available_seats <= 0);
+                if (allFull) {
+                    throw new Error('All batches for this course are currently full. Please check back later.');
+                }
                 throw new Error('No available batches for this course');
             }
 
@@ -57,6 +70,15 @@ export const enrollmentsAPI = {
             return response.data;
         } catch (error) {
             console.error('Enrollment error:', error);
+
+            // Extract meaningful error message from backend
+            if (error.response?.data?.error) {
+                // Backend returned a specific error message
+                const backendError = new Error(error.response.data.error);
+                backendError.response = error.response;
+                throw backendError;
+            }
+
             throw error;
         }
     },

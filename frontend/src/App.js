@@ -49,6 +49,7 @@ import AdminFees from "./pages/admin/AdminFees";
 import AdminSchedules from "./pages/admin/AdminSchedules";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminCertificates from "./pages/admin/AdminCertificates";
 
 // Staff Pages
 import StaffDashboard from "./pages/staff/StaffDashboard";
@@ -60,6 +61,7 @@ import StaffCreateInstructor from "./pages/staff/StaffCreateInstructor";
 import StaffCreateStudent from "./pages/staff/StaffCreateStudent";
 import StaffStudents from "./pages/staff/StaffStudents";
 import StaffInstructors from "./pages/staff/StaffInstructors";
+import StaffCertificates from "./pages/staff/StaffCertificates";
 
 // Public Pages
 import HelpCenter from "./pages/HelpCenter";
@@ -319,6 +321,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/admin/certificates"
+              element={
+                <ProtectedRoute allowedRoles={['admin']}>
+                  <AdminCertificates />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Staff Routes */}
             <Route
@@ -390,6 +400,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['staff']}>
                   <StaffInstructors />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/certificates"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <StaffCertificates />
                 </ProtectedRoute>
               }
             />

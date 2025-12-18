@@ -91,6 +91,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: ClipboardCheck, label: 'Attendance', path: '/staff/attendance' },
           { icon: Users, label: 'Students', path: '/staff/students' },
           { icon: Users, label: 'Instructors', path: '/staff/instructors' },
+          { icon: Award, label: 'Certificates', path: '/staff/certificates' },
           { icon: Settings, label: 'Settings', path: '/staff/settings' },
         ];
       case 'admin':
@@ -104,7 +105,8 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: Calendar, label: 'Schedules', path: '/admin/schedules' },
           { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
           { icon: Users, label: 'Users', path: '/admin/users' },
-          { icon: Settings, label: 'Settings', path: '/admin/settings' },
+          { icon: Award, label: 'Certificates', path: '/admin/certificates' },
+          { icon: Settings, label: 'Settings', path: '/student/settings' },
         ];
       default:
         return [];
