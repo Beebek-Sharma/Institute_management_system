@@ -59,7 +59,7 @@ export default function Header({ onMenuClick }) {
         <div className="flex items-center gap-2 sm:gap-6 flex-1 min-w-0">
           {/* Hamburger Menu + Logo */}
           <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            {onMenuClick && (
+            {onMenuClick && user && (
               <button
                 onClick={onMenuClick}
                 className="p-2 hover:bg-slate-800/50 rounded-lg transition-colors"
@@ -120,30 +120,7 @@ export default function Header({ onMenuClick }) {
           </button>
           {user ? (
             <>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  switch (user.role) {
-                    case "student":
-                      navigate("/student/dashboard");
-                      break;
-                    case "instructor":
-                      navigate("/instructor/dashboard");
-                      break;
-                    case "admin":
-                      navigate("/admin/dashboard");
-                      break;
-                    case "staff":
-                      navigate("/staff/dashboard");
-                      break;
-                    default:
-                      break;
-                  }
-                }}
-                className="hidden sm:block text-sm sm:text-base font-medium text-gray-700 hover:text-[#00a878]"
-              >
-                Dashboard
-              </Button>
+
               {/* Profile Menu */}
               <div
                 className="relative"

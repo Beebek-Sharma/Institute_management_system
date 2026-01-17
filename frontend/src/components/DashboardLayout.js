@@ -105,7 +105,6 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
           { icon: Calendar, label: 'Schedules', path: '/admin/schedules' },
           { icon: Bell, label: 'Announcements', path: '/admin/announcements' },
           { icon: Users, label: 'Users', path: '/admin/users' },
-          { icon: Award, label: 'Certificates', path: '/admin/certificates' },
           { icon: Settings, label: 'Settings', path: '/student/settings' },
         ];
       default:
@@ -154,56 +153,58 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
       }} />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Desktop (YouTube Style) */}
-        <aside className={`hidden lg:flex flex-col bg-white border-r border-gray-200 h-full transition-all duration-300 overflow-y-auto ${sidebarExpanded ? 'w-64' : 'w-20'
-          }`}>
-          {/* Navigation Links */}
-          <div className="flex-1 p-4">
-            <NavLinks />
-          </div>
+        {/* Sidebar - Desktop (YouTube Style) - Only show when user is logged in */}
+        {user && (
+          <aside className={`hidden lg:flex flex-col bg-white border-r border-gray-200 h-full transition-all duration-300 overflow-y-auto ${sidebarExpanded ? 'w-64' : 'w-20'
+            }`}>
+            {/* Navigation Links */}
+            <div className="flex-1 p-4">
+              <NavLinks />
+            </div>
 
-          {/* Profile Section */}
-          <Link
-            to="/profile"
-            className="border-t border-gray-200 p-4 hover:bg-gray-50 transition-colors"
-          >
-            <div className={`flex items-center ${sidebarExpanded ? 'gap-3' : 'justify-center'}`}>
-              {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
-                {user?.profile_picture ? (
-                  <img
-                    src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  (() => {
-                    const firstName = user?.first_name || '';
-                    const lastName = user?.last_name || '';
-                    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-                    return initials || 'U';
-                  })()
+            {/* Profile Section */}
+            <Link
+              to="/profile"
+              className="border-t border-gray-200 p-4 hover:bg-gray-50 transition-colors"
+            >
+              <div className={`flex items-center ${sidebarExpanded ? 'gap-3' : 'justify-center'}`}>
+                {/* Avatar */}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
+                  {user?.profile_picture ? (
+                    <img
+                      src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    (() => {
+                      const firstName = user?.first_name || '';
+                      const lastName = user?.last_name || '';
+                      const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+                      return initials || 'U';
+                    })()
+                  )}
+                </div>
+                {/* User Info */}
+                {sidebarExpanded && (
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {user?.first_name && user?.last_name
+                        ? `${user.first_name} ${user.last_name}`
+                        : user?.username || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500 capitalize truncate">
+                      {user?.role || 'Role'}
+                    </p>
+                  </div>
                 )}
               </div>
-              {/* User Info */}
-              {sidebarExpanded && (
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {user?.first_name && user?.last_name
-                      ? `${user.first_name} ${user.last_name}`
-                      : user?.username || 'User'}
-                  </p>
-                  <p className="text-xs text-gray-500 capitalize truncate">
-                    {user?.role || 'Role'}
-                  </p>
-                </div>
-              )}
-            </div>
-          </Link>
-        </aside>
+            </Link>
+          </aside>
+        )}
 
-        {/* Sidebar - Mobile */}
-        {sidebarOpen && (
+        {/* Sidebar - Mobile - Only show when user is logged in */}
+        {user && sidebarOpen && (
           <div
             className="lg:hidden fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setSidebarOpen(false)}

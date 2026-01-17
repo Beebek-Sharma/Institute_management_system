@@ -256,7 +256,7 @@ const CourseDetails = () => {
                         </div>
 
                         {/* Navigation Tabs */}
-                        <div className="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm">
+                        <div className="bg-white border-b border-gray-200 shadow-sm">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <div className="flex gap-8 overflow-x-auto no-scrollbar">
                                     {['About', 'Outcomes', 'Courses', 'Instructors', 'Reviews'].map((tab) => (
@@ -276,7 +276,7 @@ const CourseDetails = () => {
                             <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                                 {/* Left Sidebar */}
                                 <div className="md:col-span-3">
-                                    <div className="sticky top-32 space-y-6">
+                                    <div className="space-y-6">
                                         {/* Quick Stats */}
                                         <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
                                             <h3 className="font-bold text-gray-900 mb-4 text-sm">Quick Stats</h3>
