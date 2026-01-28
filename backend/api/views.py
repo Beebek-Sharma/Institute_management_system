@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import (
     Course, Enrollment, Payment, CourseCategory, Batch, Schedule,
-    Attendance, Notification, ActivityLog, User as CustomUser, Announcement, PasswordReset
+    Attendance, Notification, ActivityLog, User as CustomUser, Announcement, PasswordReset, Waitlist
 )
 from .serializers import (
     UserSerializer, UserDetailSerializer, UserRegistrationSerializer, UserCreateByStaffSerializer,
@@ -27,7 +27,8 @@ from .serializers import (
     NotificationSerializer,
     ActivityLogSerializer,
     AnnouncementSerializer,
-    PasswordResetRequestSerializer, PasswordResetConfirmSerializer
+    PasswordResetRequestSerializer, PasswordResetConfirmSerializer,
+    WaitlistSerializer
 )
 from .permissions import (
     IsAdmin, IsStaff, IsInstructor, IsStudent, IsAdminOrStaff,
@@ -1142,6 +1143,66 @@ class UserViewSet(viewsets.ModelViewSet):
         
         instance.delete()
         return Response({'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    
+    @action(detail=False, methods=['post'])
+    def bulk_import(self, request):
+        """Bulk import students from CSV file"""
+        from .bulk_operations import BulkStudentImporter
+        
+        if request.user.role not in ['admin', 'staff']:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        csv_file = request.FILES.get('file')
+        if not csv_file:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not csv_file.name.endswith('.csv'):
+            return Response({'error': 'File must be a CSV file'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        importer = BulkStudentImporter(csv_file, request.user)
+        results = importer.process()
+        
+        return Response(results)
+    
+    @action(detail=False, methods=['get'])
+    def export_csv(self, request):
+        """Export students to CSV file"""
+        import csv
+        from django.http import HttpResponse
+        
+        if request.user.role not in ['admin', 'staff']:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        students = User.objects.filter(role='student').order_by('username')
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="students_export.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['username', 'email', 'first_name', 'last_name', 'phone', 'date_of_birth', 'address', 'citizenship_number'])
+        
+        for student in students:
+            writer.writerow([
+                student.username, student.email, student.first_name, student.last_name,
+                student.phone or '', student.date_of_birth or '', student.address or '', student.citizenship_number or ''
+            ])
+        
+        return response
+    
+    @action(detail=False, methods=['get'])
+    def csv_template(self, request):
+        """Download CSV template for bulk import"""
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="student_import_template.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['username', 'email', 'first_name', 'last_name', 'phone', 'date_of_birth', 'address', 'citizenship_number'])
+        writer.writerow(['john_doe', 'john@example.com', 'John', 'Doe', '+1234567890', '2000-01-15', '123 Main St', 'ABC123456'])
+        
+        return response
 
 
 # ===================== COURSE MANAGEMENT VIEWS =====================
@@ -1237,6 +1298,46 @@ class CourseViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(courses, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def prerequisite_tree(self, request, pk=None):
+        """Get prerequisite tree for a course (recursive)"""
+        course = self.get_object()
+        
+        def build_tree(c, visited=None):
+            """Recursively build prerequisite tree"""
+            if visited is None:
+                visited = set()
+            if c.id in visited:
+                return None  # Prevent circular dependencies
+            visited.add(c.id)
+            
+            prereqs = []
+            for prereq in c.prerequisites.all():
+                subtree = build_tree(prereq, visited.copy())
+                prereq_data = {
+                    'id': prereq.id,
+                    'name': prereq.name,
+                    'code': prereq.code,
+                    'description': prereq.description[:100] if prereq.description else ''
+                }
+                if subtree:
+                    prereq_data['prerequisites'] = subtree
+                prereqs.append(prereq_data)
+            return prereqs if prereqs else None
+        
+        tree = build_tree(course)
+        
+        return Response({
+            'course': {
+                'id': course.id,
+                'name': course.name,
+                'code': course.code,
+                'description': course.description[:100] if course.description else ''
+            },
+            'prerequisite_tree': tree if tree else [],
+            'has_prerequisites': course.has_prerequisites()
+        })
 
 
 
@@ -1432,6 +1533,67 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
+        # CHECK PREREQUISITES
+        course = batch.course
+        if course.prerequisite_enforcement == 'strict':
+            met, missing = course.check_prerequisites_met(student)
+            if not met:
+                missing_details = [
+                    {'id': p.id, 'name': p.name, 'code': p.code}
+                    for p in missing
+                ]
+                missing_names = [f"{p.code} - {p.name}" for p in missing]
+                return Response(
+                    {
+                        'error': 'Prerequisites not met',
+                        'message': f'You must complete the following courses before enrolling: {", ".join(missing_names)}',
+                        'missing_prerequisites': missing_details
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        elif course.prerequisite_enforcement == 'soft':
+            met, missing = course.check_prerequisites_met(student)
+            if not met:
+                # Log warning but allow enrollment
+                missing_names = [f"{p.code} - {p.name}" for p in missing]
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action='enrollment_create',
+                    description=f'Student {student.username} enrolled in {course.code} without completing prerequisites: {", ".join(missing_names)}',
+                    target_user=student,
+                    ip_address=get_client_ip(request)
+                )
+        
+        # CHECK SCHEDULE CONFLICTS
+        from .models import Schedule
+        
+        if course.schedule_conflict_checking == 'strict':
+            has_conflicts, conflicts = Schedule.check_schedule_conflicts(student, batch)
+            if has_conflicts:
+                return Response(
+                    {
+                        'error': 'Schedule conflict detected',
+                        'message': f'The selected batch has {len(conflicts)} schedule conflict(s) with your current enrollments',
+                        'conflicts': conflicts
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        elif course.schedule_conflict_checking == 'warning':
+            has_conflicts, conflicts = Schedule.check_schedule_conflicts(student, batch)
+            if has_conflicts:
+                # Log warning but allow enrollment
+                conflict_summary = ', '.join([
+                    f"{c['existing_course_code']} vs {c['new_course_code']}"
+                    for c in conflicts
+                ])
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action='enrollment_create',
+                    description=f'Student {student.username} enrolled in {course.code} with schedule conflicts: {conflict_summary}',
+                    target_user=student,
+                    ip_address=get_client_ip(request)
+                )
+        
         # Create enrollment
         enrollment = Enrollment.objects.create(
             student=student,
@@ -1483,6 +1645,203 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(enrollments, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def check_prerequisites(self, request):
+        """Check if student meets prerequisites for a course"""
+        from .serializers import PrerequisiteCheckSerializer
+        
+        serializer = PrerequisiteCheckSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        course_id = serializer.validated_data['course_id']
+        student_id = serializer.validated_data.get('student_id', request.user.id)
+        
+        course = get_object_or_404(Course, id=course_id)
+        student = get_object_or_404(User, id=student_id, role='student')
+        
+        # Check if student can access this endpoint
+        if request.user.role == 'student' and request.user.id != student.id:
+            return Response(
+                {'error': 'You can only check prerequisites for yourself'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not course.has_prerequisites():
+            return Response({
+                'has_prerequisites': False,
+                'prerequisites_met': True,
+                'enforcement': course.prerequisite_enforcement,
+                'message': 'This course has no prerequisites'
+            })
+        
+        met, missing = course.check_prerequisites_met(student)
+        
+        # Get detailed prerequisite status
+        prerequisite_status = []
+        for prereq in course.prerequisites.all():
+            enrollment = Enrollment.objects.filter(
+                student=student,
+                course=prereq,
+                status='completed'
+            ).first()
+            
+            prerequisite_status.append({
+                'id': prereq.id,
+                'name': prereq.name,
+                'code': prereq.code,
+                'completed': enrollment is not None,
+                'enrollment_status': enrollment.status if enrollment else None,
+                'grade': enrollment.grade if enrollment else None
+            })
+        
+        return Response({
+            'has_prerequisites': True,
+            'prerequisites_met': met,
+            'enforcement': course.prerequisite_enforcement,
+            'can_enroll': met or course.prerequisite_enforcement != 'strict',
+            'prerequisites': prerequisite_status,
+            'missing_prerequisites': [
+                {'id': p.id, 'name': p.name, 'code': p.code}
+                for p in missing
+            ] if not met else [],
+            'message': 'All prerequisites met' if met else f'Missing {len(missing)} prerequisite(s)'
+        })
+    
+    @action(detail=False, methods=['post'])
+    def check_schedule_conflicts(self, request):
+        """Check if enrolling in a batch would create schedule conflicts"""
+        from .models import Schedule
+        
+        batch_id = request.data.get('batch_id')
+        student_id = request.data.get('student_id', request.user.id)
+        
+        if not batch_id:
+            return Response(
+                {'error': 'batch_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        batch = get_object_or_404(Batch, id=batch_id)
+        student = get_object_or_404(User, id=student_id, role='student')
+        
+        # Check permissions
+        if request.user.role == 'student' and request.user.id != student.id:
+            return Response(
+                {'error': 'You can only check conflicts for yourself'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        has_conflicts, conflicts = Schedule.check_schedule_conflicts(student, batch)
+        
+        return Response({
+            'has_conflicts': has_conflicts,
+            'conflict_count': len(conflicts),
+            'conflicts': conflicts,
+            'can_enroll': not has_conflicts or batch.course.schedule_conflict_checking != 'strict',
+            'checking_mode': batch.course.schedule_conflict_checking,
+            'message': f'Found {len(conflicts)} schedule conflict(s)' if has_conflicts else 'No conflicts detected'
+        })
+    
+    @action(detail=False, methods=['get'])
+    def my_schedule(self, request):
+        """Get student's current weekly schedule from all active enrollments"""
+        if request.user.role != 'student':
+            return Response(
+                {'error': 'Only students can access this endpoint'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get active enrollments
+        enrollments = Enrollment.objects.filter(
+            student=request.user,
+            status__in=['active', 'pending']
+        ).select_related('batch', 'batch__course', 'batch__instructor').prefetch_related('batch__schedules')
+        
+        # Build schedule organized by day
+        schedule_by_day = {}
+        all_classes = []
+        
+        for enrollment in enrollments:
+            for schedule in enrollment.batch.schedules.all():
+                day = schedule.get_day_of_week_display()
+                
+                class_info = {
+                    'course_name': enrollment.batch.course.name,
+                    'course_code': enrollment.batch.course.code,
+                    'batch_number': enrollment.batch.batch_number,
+                    'day': day,
+                    'day_code': schedule.day_of_week,
+                    'start_time': schedule.start_time.strftime('%H:%M'),
+                    'end_time': schedule.end_time.strftime('%H:%M'),
+                    'room_number': schedule.room_number,
+                    'building': schedule.building,
+                    'instructor': enrollment.batch.instructor.get_full_name() if enrollment.batch.instructor else 'TBA',
+                    'enrollment_id': enrollment.id
+                }
+                
+                if day not in schedule_by_day:
+                    schedule_by_day[day] = []
+                schedule_by_day[day].append(class_info)
+                all_classes.append(class_info)
+        
+        # Sort schedules by time within each day
+        for day in schedule_by_day:
+            schedule_by_day[day].sort(key=lambda x: x['start_time'])
+        
+        return Response({
+            'schedule_by_day': schedule_by_day,
+            'all_classes': all_classes,
+            'total_classes': len(all_classes),
+            'days_with_classes': list(schedule_by_day.keys())
+        })
+    
+    @action(detail=False, methods=['post'])
+    def bulk_enroll(self, request):
+        """Bulk enroll multiple students in a batch"""
+        from .bulk_operations import BulkEnrollmentProcessor
+        
+        # Check permissions
+        if request.user.role not in ['admin', 'staff']:
+            return Response(
+                {'error': 'Only admin and staff can perform bulk enrollment'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        batch_id = request.data.get('batch_id')
+        student_ids = request.data.get('student_ids', [])
+        
+        if not batch_id:
+            return Response(
+                {'error': 'batch_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not student_ids or not isinstance(student_ids, list):
+            return Response(
+                {'error': 'student_ids must be a non-empty list'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        batch = get_object_or_404(Batch, id=batch_id)
+        
+        # Process bulk enrollment
+        processor = BulkEnrollmentProcessor(batch, student_ids, request.user)
+        results = processor.process()
+        
+        return Response({
+            'batch': {
+                'id': batch.id,
+                'course_name': batch.course.name,
+                'batch_number': batch.batch_number
+            },
+            'total_attempted': len(student_ids),
+            'success_count': len(results['success']),
+            'error_count': len(results['errors']),
+            'warning_count': len(results['warnings']),
+            'results': results
+        })
 
 
 # ===================== PAYMENT VIEWS =====================
@@ -1691,6 +2050,211 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Set the created_by field to the current user"""
         serializer.save(created_by=self.request.user)
+
+
+# ===================== WAITLIST VIEWS =====================
+
+class WaitlistViewSet(viewsets.ModelViewSet):
+    """ViewSet for waitlist management"""
+    serializer_class = WaitlistSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['student__username', 'batch__course__name']
+    ordering_fields = ['position', 'joined_date']
+    ordering = ['position', 'joined_date']
+    
+    def get_queryset(self):
+        """Filter waitlists based on user role"""
+        user = self.request.user
+        
+        if user.role in ['admin', 'staff']:
+            return Waitlist.objects.select_related('student', 'batch', 'batch__course')
+        elif user.role == 'instructor':
+            # Instructors see waitlists for their batches
+            return Waitlist.objects.filter(
+                batch__instructor=user
+            ).select_related('student', 'batch', 'batch__course')
+        elif user.role == 'student':
+            # Students see only their own waitlist entries
+            return Waitlist.objects.filter(
+                student=user
+            ).select_related('student', 'batch', 'batch__course')
+        
+        return Waitlist.objects.none()
+    
+    def get_permissions(self):
+        if self.action in ['create', 'cancel']:
+            return [IsAuthenticated()]
+        elif self.action in ['destroy', 'update', 'partial_update']:
+            return [IsAuthenticated(), IsAdminOrStaff()]
+        return [IsAuthenticated()]
+    
+    def create(self, request, *args, **kwargs):
+        """Join waitlist for a full batch"""
+        from .models import Batch, Enrollment
+        
+        batch_id = request.data.get('batch')
+        student_id = request.data.get('student')
+        
+        # If no student specified, use authenticated user (students can only join themselves)
+        if not student_id:
+            if request.user.role != 'student':
+                return Response(
+                    {'error': 'Must specify student ID'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            student_id = request.user.id
+        
+        # Students can only join waitlist for themselves
+        if request.user.role == 'student' and int(student_id) != request.user.id:
+            return Response(
+                {'error': 'Students can only join waitlist for themselves'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        batch = get_object_or_404(Batch, id=batch_id)
+        student = get_object_or_404(User, id=student_id, role='student')
+        
+        # Check if batch is active
+        if not batch.is_active:
+            return Response(
+                {'error': 'This batch is not currently active'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if batch is actually full
+        if batch.enrolled_count < batch.capacity:
+            return Response(
+                {'error': 'Batch has available seats. Please enroll directly instead of joining waitlist.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if student is already enrolled
+        if Enrollment.objects.filter(student=student, batch=batch, status__in=['active', 'pending']).exists():
+            return Response(
+                {'error': 'Student is already enrolled in this batch'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if student is already on waitlist
+        if Waitlist.objects.filter(student=student, batch=batch, status='waiting').exists():
+            return Response(
+                {'error': 'Student is already on the waitlist for this batch'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Create waitlist entry
+        waitlist = Waitlist.objects.create(
+            student=student,
+            batch=batch,
+            status='waiting'
+        )
+        
+        # Send notification
+        Notification.objects.create(
+            user=student,
+            notification_type='enrollment',
+            channel='in_app',
+            title='Joined Waitlist',
+            message=f'You have been added to the waitlist for {batch.course.name} - Batch {batch.batch_number}. Your position is #{waitlist.position}.'
+        )
+        
+        # Log activity
+        ActivityLog.objects.create(
+            user=request.user,
+            action='enrollment_create',
+            description=f'{request.user.username} joined waitlist for {batch}',
+            target_user=student,
+            ip_address=get_client_ip(request)
+        )
+        
+        return Response(
+            {
+                'message': 'Successfully joined waitlist',
+                'waitlist': WaitlistSerializer(waitlist).data
+            },
+            status=status.HTTP_201_CREATED
+        )
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        """Cancel waitlist entry"""
+        waitlist = self.get_object()
+        
+        # Students can only cancel their own waitlist entries
+        if request.user.role == 'student' and waitlist.student != request.user:
+            return Response(
+                {'error': 'You can only cancel your own waitlist entries'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if waitlist.status != 'waiting':
+            return Response(
+                {'error': f'Cannot cancel waitlist entry with status: {waitlist.status}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Update status
+        waitlist.status = 'cancelled'
+        waitlist.save()
+        
+        # Reorder remaining waitlist positions
+        remaining_waitlist = Waitlist.objects.filter(
+            batch=waitlist.batch,
+            status='waiting'
+        ).order_by('position', 'joined_date')
+        
+        for index, entry in enumerate(remaining_waitlist, start=1):
+            if entry.position != index:
+                entry.position = index
+                entry.save(update_fields=['position'])
+        
+        # Send notification
+        Notification.objects.create(
+            user=waitlist.student,
+            notification_type='enrollment',
+            channel='in_app',
+            title='Waitlist Cancelled',
+            message=f'You have been removed from the waitlist for {waitlist.batch.course.name} - Batch {waitlist.batch.batch_number}.'
+        )
+        
+        return Response({'message': 'Waitlist entry cancelled successfully'})
+    
+    @action(detail=False, methods=['get'])
+    def my_position(self, request):
+        """Get student's position in waitlist for a specific batch"""
+        batch_id = request.query_params.get('batch')
+        
+        if not batch_id:
+            return Response(
+                {'error': 'Batch ID is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        waitlist = Waitlist.objects.filter(
+            student=request.user,
+            batch_id=batch_id,
+            status='waiting'
+        ).first()
+        
+        if not waitlist:
+            return Response(
+                {'on_waitlist': False, 'message': 'Not on waitlist for this batch'}
+            )
+        
+        # Count total waiting
+        total_waiting = Waitlist.objects.filter(
+            batch_id=batch_id,
+            status='waiting'
+        ).count()
+        
+        return Response({
+            'on_waitlist': True,
+            'position': waitlist.position,
+            'total_waiting': total_waiting,
+            'joined_date': waitlist.joined_date,
+            'waitlist_id': waitlist.id
+        })
 
 
 # ===================== HELPER FUNCTIONS =====================

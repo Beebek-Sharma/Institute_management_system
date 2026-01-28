@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import (
     User, Course, CourseCategory, Batch, Schedule,
-    Enrollment, Payment, Attendance, Notification, ActivityLog
+    Enrollment, Payment, Attendance, Notification, ActivityLog, Waitlist
 )
 
 
@@ -60,11 +60,17 @@ class CourseAdmin(admin.ModelAdmin):
         ('Instructor & Schedule', {
             'fields': ('instructor', 'schedule_description', 'start_date', 'end_date')
         }),
+        ('Prerequisites', {
+            'fields': ('prerequisites', 'prerequisite_enforcement', 'schedule_conflict_checking'),
+            'description': 'Manage course prerequisites and conflict checking policies'
+        }),
         ('Metadata', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
+    
+    filter_horizontal = ['prerequisites']  # Better UI for many-to-many
 
 
 @admin.register(Batch)
@@ -154,6 +160,32 @@ class PaymentAdmin(admin.ModelAdmin):
     def get_batch(self, obj):
         return obj.enrollment.batch
     get_batch.short_description = 'Batch'
+
+
+@admin.register(Waitlist)
+class WaitlistAdmin(admin.ModelAdmin):
+    """Admin interface for Waitlist"""
+    list_display = ['student', 'batch', 'position', 'status', 'joined_date', 'notified']
+    list_filter = ['status', 'batch__course', 'notified', 'joined_date']
+    search_fields = ['student__username', 'batch__course__name', 'batch__batch_number']
+    readonly_fields = ['joined_date', 'position']
+    ordering = ['batch', 'position', 'joined_date']
+    
+    fieldsets = (
+        ('Student & Batch', {
+            'fields': ('student', 'batch')
+        }),
+        ('Waitlist Info', {
+            'fields': ('position', 'priority', 'status', 'notified')
+        }),
+        ('Notes', {
+            'fields': ('notes',)
+        }),
+        ('Metadata', {
+            'fields': ('joined_date',),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(Attendance)

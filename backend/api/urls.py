@@ -16,6 +16,21 @@ router.register(r'attendance', views.AttendanceViewSet, basename='attendance')
 router.register(r'notifications', views.NotificationViewSet, basename='notification')
 router.register(r'activity-logs', views.ActivityLogViewSet, basename='activity_log')
 router.register(r'announcements', views.AnnouncementViewSet, basename='announcement')
+router.register(r'waitlists', views.WaitlistViewSet, basename='waitlist')
+
+# Import payment views
+from .payment_views import PaymentPlanViewSet, ScholarshipViewSet, ScholarshipApplicationViewSet
+
+router.register(r'payment-plans', PaymentPlanViewSet, basename='payment_plan')
+router.register(r'scholarships', ScholarshipViewSet, basename='scholarship')
+router.register(r'scholarship-applications', ScholarshipApplicationViewSet, basename='scholarship_application')
+
+# Import progress tracking views
+from .progress_views import AssignmentViewSet, ExamViewSet, StudentProgressViewSet
+
+router.register(r'assignments', AssignmentViewSet, basename='assignment')
+router.register(r'exams', ExamViewSet, basename='exam')
+router.register(r'progress', StudentProgressViewSet, basename='progress')
 
 urlpatterns = [
     # Authentication endpoints

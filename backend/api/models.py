@@ -100,6 +100,39 @@ class Course(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # Prerequisites
+    prerequisites = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        blank=True,
+        related_name='required_for',
+        help_text="Courses that must be completed before enrolling in this course"
+    )
+    
+    PREREQUISITE_ENFORCEMENT = [
+        ('strict', 'Strict - Must complete all prerequisites'),
+        ('soft', 'Soft - Show warning only'),
+        ('none', 'None - No enforcement'),
+    ]
+    prerequisite_enforcement = models.CharField(
+        max_length=10,
+        choices=PREREQUISITE_ENFORCEMENT,
+        default='strict',
+        help_text="How strictly to enforce prerequisites"
+    )
+    
+    CONFLICT_CHECKING = [
+        ('strict', 'Strict - Block conflicting enrollments'),
+        ('warning', 'Warning - Show conflict but allow enrollment'),
+        ('none', 'None - No conflict checking'),
+    ]
+    schedule_conflict_checking = models.CharField(
+        max_length=10,
+        choices=CONFLICT_CHECKING,
+        default='strict',
+        help_text="How to handle schedule conflicts"
+    )
+    
     class Meta:
         db_table = 'courses'
         ordering = ['-created_at']
@@ -118,6 +151,38 @@ class Course(models.Model):
     @property
     def is_full(self):
         return self.enrolled_count >= self.max_capacity
+    
+    def get_prerequisites(self):
+        """Get all prerequisite courses"""
+        return self.prerequisites.all()
+    
+    def has_prerequisites(self):
+        """Check if course has prerequisites"""
+        return self.prerequisites.exists()
+    
+    def check_prerequisites_met(self, student):
+        """
+        Check if student has met all prerequisites
+        Returns: (bool: all_met, list: missing_prerequisites)
+        """
+        from .models import Enrollment  # Avoid circular import
+        
+        if not self.has_prerequisites():
+            return True, []
+        
+        missing_prerequisites = []
+        for prereq in self.prerequisites.all():
+            # Check if student has completed prerequisite
+            enrollment = Enrollment.objects.filter(
+                student=student,
+                course=prereq,
+                status='completed'
+            ).first()
+            
+            if not enrollment:
+                missing_prerequisites.append(prereq)
+        
+        return len(missing_prerequisites) == 0, missing_prerequisites
 
 
 class Batch(models.Model):
@@ -180,6 +245,81 @@ class Schedule(models.Model):
     
     def __str__(self):
         return f"{self.batch} - {self.get_day_of_week_display()} {self.start_time}-{self.end_time}"
+    
+    def conflicts_with(self, other_schedule):
+        """
+        Check if this schedule conflicts with another schedule
+        Returns: (bool: has_conflict, str: conflict_description)
+        """
+        # Check if same day
+        if self.day_of_week != other_schedule.day_of_week:
+            return False, None
+        
+        # Check time overlap
+        # Schedule A: start_time to end_time
+        # Schedule B: other.start_time to other.end_time
+        # Conflict if: (A.start < B.end) AND (B.start < A.end)
+        
+        if (self.start_time < other_schedule.end_time and 
+            other_schedule.start_time < self.end_time):
+            conflict_msg = (
+                f"{self.get_day_of_week_display()} "
+                f"{self.start_time.strftime('%H:%M')}-{self.end_time.strftime('%H:%M')} "
+                f"conflicts with "
+                f"{other_schedule.start_time.strftime('%H:%M')}-{other_schedule.end_time.strftime('%H:%M')}"
+            )
+            return True, conflict_msg
+        
+        return False, None
+    
+    @staticmethod
+    def check_schedule_conflicts(student, new_batch):
+        """
+        Check if enrolling in new_batch would create schedule conflicts for student
+        Returns: (bool: has_conflicts, list: conflict_details)
+        """
+        # Get student's current active enrollments
+        active_enrollments = Enrollment.objects.filter(
+            student=student,
+            status__in=['active', 'pending']
+        ).select_related('batch', 'batch__course')
+        
+        # Get schedules for new batch
+        new_schedules = new_batch.schedules.all()
+        
+        conflicts = []
+        for enrollment in active_enrollments:
+            existing_schedules = enrollment.batch.schedules.all()
+            
+            for new_sched in new_schedules:
+                for existing_sched in existing_schedules:
+                    has_conflict, conflict_msg = new_sched.conflicts_with(existing_sched)
+                    if has_conflict:
+                        conflicts.append({
+                            'existing_course': enrollment.batch.course.name,
+                            'existing_course_code': enrollment.batch.course.code,
+                            'existing_batch': enrollment.batch.batch_number,
+                            'new_course': new_batch.course.name,
+                            'new_course_code': new_batch.course.code,
+                            'new_batch': new_batch.batch_number,
+                            'conflict_description': conflict_msg,
+                            'existing_schedule': {
+                                'day': existing_sched.get_day_of_week_display(),
+                                'start_time': existing_sched.start_time.strftime('%H:%M'),
+                                'end_time': existing_sched.end_time.strftime('%H:%M'),
+                                'room': existing_sched.room_number,
+                                'building': existing_sched.building
+                            },
+                            'new_schedule': {
+                                'day': new_sched.get_day_of_week_display(),
+                                'start_time': new_sched.start_time.strftime('%H:%M'),
+                                'end_time': new_sched.end_time.strftime('%H:%M'),
+                                'room': new_sched.room_number,
+                                'building': new_sched.building
+                            }
+                        })
+        
+        return len(conflicts) > 0, conflicts
 
 
 class Enrollment(models.Model):
@@ -223,6 +363,93 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f"{self.student.username} - {self.batch}"
+
+
+class Waitlist(models.Model):
+    """Waitlist for full batches - First Come First Served"""
+    STATUS_CHOICES = [
+        ('waiting', 'Waiting'),
+        ('enrolled', 'Enrolled'),
+        ('expired', 'Expired'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    student = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='waitlists',
+        limit_choices_to={'role': 'student', 'is_active': True}
+    )
+    batch = models.ForeignKey(
+        Batch,
+        on_delete=models.CASCADE,
+        related_name='waitlist_entries'
+    )
+    
+    position = models.IntegerField(default=0)
+    priority = models.IntegerField(default=0, help_text="For future priority-based systems")
+    joined_date = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='waiting')
+    notes = models.TextField(blank=True)
+    
+    class Meta:
+        db_table = 'waitlists'
+        unique_together = ['student', 'batch']
+        ordering = ['position', 'joined_date']
+        indexes = [
+            models.Index(fields=['batch', 'status']),
+            models.Index(fields=['student', 'status']),
+            models.Index(fields=['position']),
+        ]
+    
+    def __str__(self):
+        return f"{self.student.username} - {self.batch} (Position: {self.position})"
+    
+    def save(self, *args, **kwargs):
+        """Auto-assign position if not set"""
+        if not self.position:
+            # Get the highest position for this batch
+            max_position = Waitlist.objects.filter(
+                batch=self.batch,
+                status='waiting'
+            ).aggregate(models.Max('position'))['position__max']
+            self.position = (max_position or 0) + 1
+        super().save(*args, **kwargs)
+
+
+class ImportHistory(models.Model):
+    """Track bulk import operations"""
+    IMPORT_TYPES = [
+        ('student', 'Student Import'),
+        ('enrollment', 'Enrollment Import'),
+    ]
+    
+    import_type = models.CharField(max_length=20, choices=IMPORT_TYPES)
+    imported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='imports')
+    file_name = models.CharField(max_length=255)
+    total_rows = models.IntegerField(default=0)
+    success_count = models.IntegerField(default=0)
+    error_count = models.IntegerField(default=0)
+    warning_count = models.IntegerField(default=0)
+    import_results = models.JSONField(default=dict, blank=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[('processing', 'Processing'), ('completed', 'Completed'), ('failed', 'Failed')],
+        default='processing'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'import_history'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['import_type', 'created_at']),
+            models.Index(fields=['imported_by', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.get_import_type_display()} by {self.imported_by.username if self.imported_by else 'Unknown'} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
 
 
 class Payment(models.Model):
@@ -274,6 +501,159 @@ class Payment(models.Model):
     
     def __str__(self):
         return f"{self.enrollment.student.username} - NPR {self.amount} ({self.get_status_display()})"
+
+
+class PaymentPlan(models.Model):
+    """Installment payment plans for enrollments"""
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name='payment_plan')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    down_payment = models.DecimalField(max_digits=10, decimal_places=2)
+    remaining_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    number_of_installments = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12)])
+    installment_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+        ('defaulted', 'Defaulted'),
+        ('cancelled', 'Cancelled'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active')
+    start_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'payment_plans'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Payment Plan for {self.enrollment.student.username} - {self.number_of_installments} installments"
+    
+    def calculate_installments(self):
+        """Generate installment schedule"""
+        from datetime import timedelta
+        
+        for i in range(1, self.number_of_installments + 1):
+            due_date = self.start_date + timedelta(days=30 * i)
+            Installment.objects.create(
+                payment_plan=self,
+                installment_number=i,
+                amount=self.installment_amount,
+                due_date=due_date
+            )
+    
+    def check_completion(self):
+        """Check if all installments are paid"""
+        unpaid = self.installments.exclude(status='paid').count()
+        if unpaid == 0:
+            self.status = 'completed'
+            self.save()
+
+
+class Installment(models.Model):
+    """Individual installment in a payment plan"""
+    payment_plan = models.ForeignKey(PaymentPlan, on_delete=models.CASCADE, related_name='installments')
+    installment_number = models.IntegerField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField()
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('overdue', 'Overdue'),
+        ('waived', 'Waived'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    paid_date = models.DateTimeField(null=True, blank=True)
+    payment = models.ForeignKey(Payment, on_delete=models.SET_NULL, null=True, blank=True)
+    late_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
+    class Meta:
+        db_table = 'installments'
+        ordering = ['installment_number']
+        unique_together = ['payment_plan', 'installment_number']
+        indexes = [
+            models.Index(fields=['payment_plan', 'status']),
+            models.Index(fields=['due_date', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"Installment #{self.installment_number} - {self.payment_plan.enrollment.student.username}"
+    
+    def calculate_late_fee(self, penalty_rate=0.05):
+        """Calculate late fee for overdue installment"""
+        from django.utils import timezone
+        
+        if self.status != 'overdue':
+            return 0
+        
+        days_overdue = (timezone.now().date() - self.due_date).days
+        if days_overdue <= 0:
+            return 0
+        
+        # 5% per month, prorated daily
+        from decimal import Decimal
+        daily_rate = penalty_rate / 30
+        return float(self.amount) * daily_rate * days_overdue
+
+
+class Scholarship(models.Model):
+    """Scholarship and financial aid programs"""
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    
+    TYPE_CHOICES = [
+        ('full', 'Full Scholarship'),
+        ('partial', 'Partial Scholarship'),
+        ('percentage', 'Percentage Discount'),
+    ]
+    scholarship_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    
+    eligibility_criteria = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'scholarships'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.name} ({self.get_scholarship_type_display()})"
+
+
+class ScholarshipApplication(models.Model):
+    """Student scholarship applications"""
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='scholarship_applications')
+    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='applications')
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, null=True, blank=True)
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    application_reason = models.TextField()
+    application_date = models.DateTimeField(auto_now_add=True)
+    
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_scholarships')
+    review_date = models.DateTimeField(null=True, blank=True)
+    review_notes = models.TextField(blank=True)
+    
+    class Meta:
+        db_table = 'scholarship_applications'
+        ordering = ['-application_date']
+        indexes = [
+            models.Index(fields=['student', 'status']),
+            models.Index(fields=['scholarship', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.student.username} - {self.scholarship.name} ({self.get_status_display()})"
 
 
 class Attendance(models.Model):
@@ -485,3 +865,272 @@ class EmailVerification(models.Model):
     @property
     def is_valid(self):
         return not self.is_used and not self.is_expired
+
+
+# ===================== PROGRESS TRACKING MODELS =====================
+
+class Assignment(models.Model):
+    """Course assignments"""
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='assignments')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    
+    TYPE_CHOICES = [
+        ('homework', 'Homework'),
+        ('project', 'Project'),
+        ('quiz', 'Quiz'),
+        ('lab', 'Lab Work'),
+    ]
+    assignment_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    
+    max_marks = models.DecimalField(max_digits=5, decimal_places=2)
+    weightage = models.DecimalField(max_digits=5, decimal_places=2, help_text="Percentage weightage in final grade")
+    
+    due_date = models.DateTimeField()
+    allow_late_submission = models.BooleanField(default=False)
+    late_penalty_percent = models.DecimalField(max_digits=5, decimal_places=2, default=10)
+    
+    attachment = models.FileField(upload_to='assignments/', null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_assignments')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'assignments'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['batch', 'due_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.batch}"
+
+
+class AssignmentSubmission(models.Model):
+    """Student assignment submissions"""
+    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE, related_name='submissions')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignment_submissions')
+    
+    submission_file = models.FileField(upload_to='submissions/', null=True, blank=True)
+    submission_text = models.TextField(blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    
+    STATUS_CHOICES = [
+        ('submitted', 'Submitted'),
+        ('graded', 'Graded'),
+        ('returned', 'Returned'),
+        ('late', 'Late Submission'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='submitted')
+    
+    marks_obtained = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    feedback = models.TextField(blank=True)
+    graded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='graded_submissions')
+    graded_at = models.DateTimeField(null=True, blank=True)
+    
+    is_late = models.BooleanField(default=False)
+    late_penalty_applied = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    
+    class Meta:
+        db_table = 'assignment_submissions'
+        ordering = ['-submitted_at']
+        unique_together = ['assignment', 'student']
+        indexes = [
+            models.Index(fields=['assignment', 'status']),
+            models.Index(fields=['student', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.student.username} - {self.assignment.title}"
+
+
+class Exam(models.Model):
+    """Course exams"""
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='exams')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    
+    TYPE_CHOICES = [
+        ('midterm', 'Midterm'),
+        ('final', 'Final Exam'),
+        ('practical', 'Practical Exam'),
+        ('viva', 'Viva/Oral'),
+    ]
+    exam_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    
+    max_marks = models.DecimalField(max_digits=5, decimal_places=2)
+    weightage = models.DecimalField(max_digits=5, decimal_places=2, help_text="Percentage weightage in final grade")
+    passing_marks = models.DecimalField(max_digits=5, decimal_places=2)
+    
+    exam_date = models.DateTimeField()
+    duration_minutes = models.IntegerField()
+    room = models.CharField(max_length=100, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'exams'
+        ordering = ['exam_date']
+        indexes = [
+            models.Index(fields=['batch', 'exam_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.batch}"
+
+
+class ExamResult(models.Model):
+    """Student exam results"""
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='results')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exam_results')
+    
+    marks_obtained = models.DecimalField(max_digits=5, decimal_places=2)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
+    grade = models.CharField(max_length=5)
+    
+    STATUS_CHOICES = [
+        ('pass', 'Pass'),
+        ('fail', 'Fail'),
+        ('absent', 'Absent'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    
+    remarks = models.TextField(blank=True)
+    entered_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='entered_results')
+    entered_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'exam_results'
+        ordering = ['-entered_at']
+        unique_together = ['exam', 'student']
+        indexes = [
+            models.Index(fields=['exam', 'status']),
+            models.Index(fields=['student', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.student.username} - {self.exam.title}: {self.grade}"
+
+
+class StudentProgress(models.Model):
+    """Overall student progress tracking"""
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name='progress')
+    
+    # Calculated fields
+    assignment_average = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    exam_average = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    attendance_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    overall_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    
+    current_grade = models.CharField(max_length=5, blank=True)
+    gpa = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    
+    # Tracking
+    assignments_submitted = models.IntegerField(default=0)
+    assignments_total = models.IntegerField(default=0)
+    exams_completed = models.IntegerField(default=0)
+    exams_total = models.IntegerField(default=0)
+    
+    # Status
+    is_at_risk = models.BooleanField(default=False)
+    risk_factors = models.JSONField(default=list, blank=True)
+    
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'student_progress'
+        ordering = ['-last_updated']
+    
+    def __str__(self):
+        return f"{self.enrollment.student.username} - {self.enrollment.batch.course.name}: {self.current_grade}"
+    
+    @staticmethod
+    def get_letter_grade(percentage):
+        """Convert percentage to letter grade"""
+        from decimal import Decimal
+        percentage = Decimal(str(percentage))
+        
+        if percentage >= 90:
+            return 'A+'
+        elif percentage >= 85:
+            return 'A'
+        elif percentage >= 80:
+            return 'B+'
+        elif percentage >= 75:
+            return 'B'
+        elif percentage >= 70:
+            return 'C+'
+        elif percentage >= 65:
+            return 'C'
+        elif percentage >= 60:
+            return 'D'
+        else:
+            return 'F'
+    
+    @staticmethod
+    def get_gpa(percentage):
+        """Convert percentage to GPA (4.0 scale)"""
+        from decimal import Decimal
+        percentage = Decimal(str(percentage))
+        
+        if percentage >= 90:
+            return Decimal('4.00')
+        elif percentage >= 85:
+            return Decimal('3.70')
+        elif percentage >= 80:
+            return Decimal('3.30')
+        elif percentage >= 75:
+            return Decimal('3.00')
+        elif percentage >= 70:
+            return Decimal('2.70')
+        elif percentage >= 65:
+            return Decimal('2.30')
+        elif percentage >= 60:
+            return Decimal('2.00')
+        else:
+            return Decimal('0.00')
+    
+    def calculate_overall_grade(self):
+        """Calculate overall grade based on weightage"""
+        from decimal import Decimal
+        
+        # Assignment: 30%, Exam: 50%, Attendance: 20%
+        overall = (
+            (self.assignment_average * Decimal('0.30')) +
+            (self.exam_average * Decimal('0.50')) +
+            (self.attendance_percentage * Decimal('0.20'))
+        )
+        self.overall_percentage = overall
+        self.current_grade = self.get_letter_grade(overall)
+        self.gpa = self.get_gpa(overall)
+        self.save()
+    
+    def check_at_risk(self):
+        """Check if student is at risk"""
+        risk_factors = []
+        
+        if self.attendance_percentage < 75:
+            risk_factors.append('Low attendance (<75%)')
+        
+        if self.overall_percentage < 50:
+            risk_factors.append('Overall progress below 50%')
+        
+        if self.assignment_average < 60:
+            risk_factors.append('Assignment average below 60%')
+        
+        if self.exam_average < 60:
+            risk_factors.append('Exam average below 60%')
+        
+        # Check consecutive missed assignments
+        recent_submissions = AssignmentSubmission.objects.filter(
+            student=self.enrollment.student,
+            assignment__batch=self.enrollment.batch
+        ).order_by('-assignment__due_date')[:3]
+        
+        if recent_submissions.count() < 2 and self.assignments_total >= 2:
+            risk_factors.append('Missing recent assignments')
+        
+        self.is_at_risk = len(risk_factors) > 0
+        self.risk_factors = risk_factors
+        self.save()
+        
+        return self.is_at_risk
