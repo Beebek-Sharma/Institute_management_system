@@ -1,10 +1,4 @@
-# 🎓 Physical Institute Management System
-
-**Status**: ✅ **Phase 1 Complete** - Backend API with Complete RBAC
-**Version**: 1.0.0
-**Last Updated**: November 27, 2025
-
-## Overview
+# Institute Management System
 
 A comprehensive **Django REST API** for managing a **physical, on-site educational institute** with:
 
@@ -282,46 +276,6 @@ See **QUICK_START_GUIDE.md** for 20+ API examples with curl commands.
 
 ---
 
-## 📋 Features by Phase
-
-### ✅ Phase 1: Foundation (COMPLETE)
-- [x] Database models
-- [x] Role-based access control
-- [x] API endpoints (50+)
-- [x] JWT authentication
-- [x] Activity logging
-- [x] Django admin interface
-- [x] Documentation
-
-### 🔄 Phase 2: Payment Integration (Next)
-- [ ] Esewa API integration
-- [ ] Khalti API integration
-- [ ] PhonePay API integration
-- [ ] Payment webhook handlers
-- [ ] Receipt PDF generation
-
-### 📱 Phase 3: Notifications
-- [ ] Email notifications (Celery)
-- [ ] SMS notifications (Twilio/Nexmo)
-- [ ] Push notifications
-- [ ] Notification templates
-
-### 🎨 Phase 4: Frontend
-- [ ] Student Dashboard
-- [ ] Instructor Dashboard
-- [ ] Staff Dashboard
-- [ ] Admin Dashboard
-- [ ] Authentication UI
-
-### 📊 Phase 5: Advanced Features
-- [ ] Analytics & Reports
-- [ ] Bulk import/export
-- [ ] Online class module
-- [ ] Assignment system
-- [ ] Advanced payments
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -357,20 +311,6 @@ npm install
 # Start dev server
 npm run dev
 ```
-
----
-
-## 📚 Documentation
-
-| Document | Purpose |
-|----------|---------|
-| **PHASE_1_COMPLETION_SUMMARY.md** | Overview of what's been built |
-| **SYSTEM_IMPLEMENTATION_GUIDE.md** | Complete architecture and design |
-| **QUICK_START_GUIDE.md** | Testing API with examples |
-| **DATABASE_SCHEMA.md** | Model relationships and design |
-| **This README** | Project overview |
-
----
 
 ## 🧪 Testing
 
@@ -485,7 +425,3 @@ Private project for Institute Management
 **Database**: db.sqlite3 (development)
 
 ---
-
-**Status**: ✅ Phase 1 Complete - Ready for Phase 2 Payment Integration
-**Last Updated**: November 27, 2025
-**Version**: 1.0.0
