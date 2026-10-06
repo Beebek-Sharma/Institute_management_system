@@ -1,144 +1,209 @@
 """
-Script to populate the database with sample data for testing
-Run with: python manage.py shell < populate_data.py
+Script to populate the database with sample data for testing and development.
+Run with: python populate_data.py
 """
-from api.models import User, Course, Enrollment, Payment
-from django.contrib.auth import get_user_model
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+django.setup()
+
 from decimal import Decimal
+from django.contrib.auth import get_user_model
+from api.models import Course, Batch, Enrollment, Payment
 
 User = get_user_model()
 
-# Create sample users (removed)
+print("Creating sample users...")
 
-# Create sample courses
+admin_user, _ = User.objects.get_or_create(
+    username='admin',
+    defaults={
+        'email': 'admin@example.com',
+        'first_name': 'System',
+        'last_name': 'Administrator',
+        'role': 'admin',
+        'is_staff': True,
+        'is_superuser': True,
+    }
+)
+admin_user.set_password('admin123')
+admin_user.role = 'admin'
+admin_user.is_staff = True
+admin_user.is_superuser = True
+admin_user.save()
+print("[OK] Admin user created/updated: admin")
+
+instructor1, _ = User.objects.get_or_create(
+    username='john_doe',
+    defaults={
+        'email': 'john@example.com',
+        'first_name': 'John',
+        'last_name': 'Doe',
+        'role': 'instructor',
+    }
+)
+instructor1.set_password('instructor123')
+instructor1.role = 'instructor'
+instructor1.save()
+print("[OK] Instructor created/updated: john_doe")
+
+instructor2, _ = User.objects.get_or_create(
+    username='jane_smith',
+    defaults={
+        'email': 'jane@example.com',
+        'first_name': 'Jane',
+        'last_name': 'Smith',
+        'role': 'instructor',
+    }
+)
+instructor2.set_password('instructor123')
+instructor2.role = 'instructor'
+instructor2.save()
+print("[OK] Instructor created/updated: jane_smith")
+
+student1, _ = User.objects.get_or_create(
+    username='alice_wonder',
+    defaults={
+        'email': 'alice@example.com',
+        'first_name': 'Alice',
+        'last_name': 'Wonder',
+        'role': 'student',
+    }
+)
+student1.set_password('student123')
+student1.role = 'student'
+student1.save()
+print("[OK] Student created/updated: alice_wonder")
+
+student2, _ = User.objects.get_or_create(
+    username='bob_builder',
+    defaults={
+        'email': 'bob@example.com',
+        'first_name': 'Bob',
+        'last_name': 'Builder',
+        'role': 'student',
+    }
+)
+student2.set_password('student123')
+student2.role = 'student'
+student2.save()
+print("[OK] Student created/updated: bob_builder")
+
 print("\nCreating courses...")
 
-course1 = Course.objects.create(
-    name='Introduction to Python Programming',
-    code='CS101',
-    description='Learn the fundamentals of Python programming including data types, control structures, and functions.',
-    instructor=instructor1,
-    schedule='Mon/Wed 10:00-12:00',
-    duration_weeks=12,
-    credits=3,
-    capacity=30,
-    enrolled_count=0
-)
-print(f"✓ Course created: {course1.code}")
+courses_data = [
+    {
+        'code': 'CS101',
+        'name': 'Introduction to Python Programming',
+        'description': 'Learn the fundamentals of Python programming including data types, control structures, and functions.',
+        'instructor': instructor1,
+        'schedule_description': 'Mon/Wed 10:00-12:00',
+        'duration_weeks': 12,
+        'credits': 3,
+        'max_capacity': 30,
+        'fee': Decimal('15000.00'),
+    },
+    {
+        'code': 'CS201',
+        'name': 'Web Development with Django',
+        'description': 'Build modern web applications using Django framework and REST APIs.',
+        'instructor': instructor1,
+        'schedule_description': 'Tue/Thu 14:00-16:00',
+        'duration_weeks': 16,
+        'credits': 4,
+        'max_capacity': 25,
+        'fee': Decimal('20000.00'),
+    },
+    {
+        'code': 'CS102',
+        'name': 'Data Structures and Algorithms',
+        'description': 'Master essential data structures and algorithms for efficient programming.',
+        'instructor': instructor2,
+        'schedule_description': 'Mon/Wed 14:00-16:00',
+        'duration_weeks': 14,
+        'credits': 4,
+        'max_capacity': 35,
+        'fee': Decimal('18000.00'),
+    },
+    {
+        'code': 'CS202',
+        'name': 'Database Management Systems',
+        'description': 'Learn database design, SQL, and database administration.',
+        'instructor': instructor2,
+        'schedule_description': 'Tue/Thu 10:00-12:00',
+        'duration_weeks': 12,
+        'credits': 3,
+        'max_capacity': 30,
+        'fee': Decimal('16000.00'),
+    },
+]
 
-course2 = Course.objects.create(
-    name='Web Development with Django',
-    code='CS201',
-    description='Build modern web applications using Django framework and REST APIs.',
-    instructor=instructor1,
-    schedule='Tue/Thu 14:00-16:00',
-    duration_weeks=16,
-    credits=4,
-    capacity=25,
-    enrolled_count=0
-)
-print(f"✓ Course created: {course2.code}")
+courses = {}
+batches = {}
+for cdata in courses_data:
+    code = cdata.pop('code')
+    course, _ = Course.objects.update_or_create(code=code, defaults=cdata)
+    courses[code] = course
+    batch, _ = Batch.objects.get_or_create(
+        course=course,
+        batch_number='Batch-1',
+        defaults={
+            'capacity': course.max_capacity,
+            'instructor': course.instructor,
+            'is_active': True,
+        }
+    )
+    batches[code] = batch
+    print(f"[OK] Course & Batch created/updated: {course.code} - {course.name}")
 
-course3 = Course.objects.create(
-    name='Data Structures and Algorithms',
-    code='CS102',
-    description='Master essential data structures and algorithms for efficient programming.',
-    instructor=instructor2,
-    schedule='Mon/Wed 14:00-16:00',
-    duration_weeks=14,
-    credits=4,
-    capacity=35,
-    enrolled_count=0
-)
-print(f"✓ Course created: {course3.code}")
-
-course4 = Course.objects.create(
-    name='Database Management Systems',
-    code='CS202',
-    description='Learn database design, SQL, and database administration.',
-    instructor=instructor2,
-    schedule='Tue/Thu 10:00-12:00',
-    duration_weeks=12,
-    credits=3,
-    capacity=30,
-    enrolled_count=0
-)
-print(f"✓ Course created: {course4.code}")
-
-# Create sample enrollments
 print("\nCreating enrollments...")
+enrollments_data = [
+    (student1, courses['CS101'], batches['CS101'], 'active'),
+    (student1, courses['CS201'], batches['CS201'], 'active'),
+    (student2, courses['CS101'], batches['CS101'], 'active'),
+    (student2, courses['CS102'], batches['CS102'], 'pending'),
+]
 
-enrollment1 = Enrollment.objects.create(
-    student=student1,
-    course=course1,
-    status='active'
-)
-course1.enrolled_count += 1
-course1.save()
-print(f"✓ Enrollment created: {student1.username} -> {course1.code}")
+enrollments = []
+for student, course, batch, status in enrollments_data:
+    enrollment, _ = Enrollment.objects.get_or_create(
+        student=student,
+        course=course,
+        batch=batch,
+        defaults={'status': status}
+    )
+    enrollments.append(enrollment)
+    print(f"[OK] Enrollment created/updated: {student.username} -> {course.code}")
 
-enrollment2 = Enrollment.objects.create(
-    student=student1,
-    course=course2,
-    status='active'
-)
-course2.enrolled_count += 1
-course2.save()
-print(f"✓ Enrollment created: {student1.username} -> {course2.code}")
+for course in courses.values():
+    course.enrolled_count = Enrollment.objects.filter(course=course, status='active').count()
+    course.save()
 
-enrollment3 = Enrollment.objects.create(
-    student=student2,
-    course=course1,
-    status='active'
-)
-course1.enrolled_count += 1
-course1.save()
-print(f"✓ Enrollment created: {student2.username} -> {course1.code}")
-
-enrollment4 = Enrollment.objects.create(
-    student=student2,
-    course=course3,
-    status='pending'
-)
-course3.enrolled_count += 1
-course3.save()
-print(f"✓ Enrollment created: {student2.username} -> {course3.code}")
-
-# Create sample payments
 print("\nCreating payments...")
+payments_data = [
+    (enrollments[0], Decimal('15000.00'), 'completed', 'esewa', 'TXN001'),
+    (enrollments[1], Decimal('20000.00'), 'completed', 'khalti', 'TXN002'),
+    (enrollments[2], Decimal('15000.00'), 'pending', 'bank_transfer', 'TXN003'),
+]
 
-payment1 = Payment.objects.create(
-    enrollment=enrollment1,
-    amount=Decimal('299.99'),
-    status='completed',
-    payment_method='Credit Card',
-    transaction_id='TXN001'
-)
-print(f"✓ Payment created: ${payment1.amount} for {enrollment1.student.username}")
+for enrollment, amount, status, method, txn in payments_data:
+    Payment.objects.update_or_create(
+        enrollment=enrollment,
+        defaults={
+            'amount': amount,
+            'status': status,
+            'payment_method': method,
+            'transaction_id': txn,
+        }
+    )
+    print(f"[OK] Payment recorded: NPR {amount} for {enrollment.student.username} ({status})")
 
-payment2 = Payment.objects.create(
-    enrollment=enrollment2,
-    amount=Decimal('399.99'),
-    status='completed',
-    payment_method='PayPal',
-    transaction_id='TXN002'
-)
-print(f"✓ Payment created: ${payment2.amount} for {enrollment2.student.username}")
-
-payment3 = Payment.objects.create(
-    enrollment=enrollment3,
-    amount=Decimal('299.99'),
-    status='pending',
-    payment_method='Bank Transfer'
-)
-print(f"✓ Payment created: ${payment3.amount} for {enrollment3.student.username}")
-
-print("\n✅ Sample data created successfully!")
-print("\nTest Accounts:")
+print("\nSample data populated successfully!")
 print("=" * 50)
-print("Admin:      username: admin         password: admin123")
-print("Instructor: username: john_doe      password: instructor123")
-print("Instructor: username: jane_smith    password: instructor123")
-print("Student:    username: alice_wonder  password: student123")
-print("Student:    username: bob_builder   password: student123")
+print("Admin:      admin / admin123")
+print("Instructor: john_doe / instructor123")
+print("Instructor: jane_smith / instructor123")
+print("Student:    alice_wonder / student123")
+print("Student:    bob_builder / student123")
 print("=" * 50)
