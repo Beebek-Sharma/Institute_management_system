@@ -202,7 +202,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
                   {user?.profile_picture ? (
                     <img
-                      src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                      src={user.profile_picture.startsWith('http') ? user.profile_picture : `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}${user.profile_picture}`}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -271,7 +271,7 @@ const DashboardLayout = ({ children, disablePadding = false }) => {
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 overflow-hidden">
                     {user?.profile_picture ? (
                       <img
-                        src={user.profile_picture.startsWith('http') ? user.profile_picture : `http://localhost:8000${user.profile_picture}`}
+                        src={user.profile_picture.startsWith('http') ? user.profile_picture : `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}${user.profile_picture}`}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
