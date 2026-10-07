@@ -23,6 +23,7 @@ const CourseraAuth = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [devCode, setDevCode] = useState('');
 
     // Step 1: Email Entry
     const handleEmailSubmit = async (e) => {
@@ -38,7 +39,11 @@ const CourseraAuth = () => {
                 setStep('password');
             } else {
                 // New user - send verification code
-                await authAPI.sendVerificationCode(email);
+                const sendRes = await authAPI.sendVerificationCode(email);
+                if (sendRes?.dev_code) {
+                    setDevCode(sendRes.dev_code);
+                    setVerificationCode(sendRes.dev_code);
+                }
                 setStep('verification');
             }
         } catch (err) {
@@ -108,9 +113,13 @@ const CourseraAuth = () => {
         setLoading(true);
 
         try {
-            await authAPI.sendVerificationCode(email);
+            const sendRes = await authAPI.sendVerificationCode(email);
+            if (sendRes?.dev_code) {
+                setDevCode(sendRes.dev_code);
+                setVerificationCode(sendRes.dev_code);
+            }
             setError(''); // Clear any previous errors
-            alert('Verification code sent!');
+            alert(sendRes?.dev_code ? `Verification code sent! (Dev code: ${sendRes.dev_code})` : 'Verification code sent!');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to resend code');
         } finally {
@@ -164,7 +173,11 @@ const CourseraAuth = () => {
         setLoading(true);
 
         try {
-            await authAPI.sendPasswordResetCode(email);
+            const sendRes = await authAPI.sendPasswordResetCode(email);
+            if (sendRes?.dev_code) {
+                setDevCode(sendRes.dev_code);
+                setResetCode(sendRes.dev_code);
+            }
             setStep('reset-verification');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to send reset code');
@@ -196,8 +209,12 @@ const CourseraAuth = () => {
         setLoading(true);
 
         try {
-            await authAPI.sendPasswordResetCode(email);
-            alert('Verification code sent!');
+            const sendRes = await authAPI.sendPasswordResetCode(email);
+            if (sendRes?.dev_code) {
+                setDevCode(sendRes.dev_code);
+                setResetCode(sendRes.dev_code);
+            }
+            alert(sendRes?.dev_code ? `Reset code sent! (Dev code: ${sendRes.dev_code})` : 'Verification code sent!');
         } catch (err) {
             setError(err.response?.data?.error || 'Failed to resend code');
         } finally {
@@ -345,6 +362,42 @@ const CourseraAuth = () => {
                         <div className="auth-content">
                             <h1>Verify your email</h1>
                             <p className="subtitle">We sent a verification code to <strong>{email}</strong></p>
+
+                            {devCode ? (
+                                <div style={{
+                                    background: '#EFF6FF',
+                                    border: '1px solid #BFDBFE',
+                                    borderRadius: '8px',
+                                    padding: '12px 14px',
+                                    marginBottom: '16px',
+                                    fontSize: '13px',
+                                    color: '#1E40AF',
+                                    lineHeight: '1.5'
+                                }}>
+                                    <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                                        <span>⚡ Local Development Mode</span>
+                                    </div>
+                                    <div>
+                                        SMTP is not configured in <code>backend/.env</code>, so emails are printed in the server terminal.
+                                    </div>
+                                    <div style={{ marginTop: '6px' }}>
+                                        Your code: <strong style={{ fontFamily: 'monospace', fontSize: '15px', background: '#DBEAFE', padding: '2px 8px', borderRadius: '4px', color: '#1E3A8A' }}>{devCode}</strong> (Auto-filled below)
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{
+                                    background: '#F9FAFB',
+                                    border: '1px solid #E5E7EB',
+                                    borderRadius: '8px',
+                                    padding: '10px 14px',
+                                    marginBottom: '16px',
+                                    fontSize: '12px',
+                                    color: '#4B5563',
+                                    lineHeight: '1.4'
+                                }}>
+                                    ℹ️ In development mode, verification codes are logged to the backend console.
+                                </div>
+                            )}
 
                             <form onSubmit={handleVerificationSubmit}>
                                 <div className="form-group">
@@ -517,6 +570,29 @@ const CourseraAuth = () => {
                         <div className="auth-content">
                             <h1>Enter verification code</h1>
                             <p className="subtitle">We sent a code to <strong>{email}</strong></p>
+
+                            {devCode && (
+                                <div style={{
+                                    background: '#EFF6FF',
+                                    border: '1px solid #BFDBFE',
+                                    borderRadius: '8px',
+                                    padding: '12px 14px',
+                                    marginBottom: '16px',
+                                    fontSize: '13px',
+                                    color: '#1E40AF',
+                                    lineHeight: '1.5'
+                                }}>
+                                    <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                                        <span>⚡ Local Development Mode</span>
+                                    </div>
+                                    <div>
+                                        SMTP is not configured in <code>backend/.env</code>, so reset codes are logged in the terminal.
+                                    </div>
+                                    <div style={{ marginTop: '6px' }}>
+                                        Your code: <strong style={{ fontFamily: 'monospace', fontSize: '15px', background: '#DBEAFE', padding: '2px 8px', borderRadius: '4px', color: '#1E3A8A' }}>{devCode}</strong> (Auto-filled below)
+                                    </div>
+                                </div>
+                            )}
 
                             <form onSubmit={handleResetVerificationSubmit}>
                                 <div className="form-group">

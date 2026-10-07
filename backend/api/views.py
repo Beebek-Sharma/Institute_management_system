@@ -335,10 +335,14 @@ def send_verification_code(request):
         print(f"Email sending failed: {e}")
         print(f"Verification code for {email}: {code}")
     
-    return Response({
+    response_data = {
         'message': 'Verification code sent to your email',
-        'expires_in': 600  # 10 minutes in seconds
-    })
+        'expires_in': 600,  # 10 minutes in seconds
+    }
+    if getattr(settings, 'DEBUG', False):
+        response_data['dev_code'] = code
+
+    return Response(response_data)
 
 
 @api_view(['POST'])
@@ -514,10 +518,14 @@ def send_password_reset_code(request):
         print(f"Email sending failed: {e}")
         print(f"Password reset code for {email}: {code}")
     
-    return Response({
+    response_data = {
         'message': 'Verification code sent to your email',
-        'expires_in': 600  # 10 minutes in seconds
-    })
+        'expires_in': 600,  # 10 minutes in seconds
+    }
+    if getattr(settings, 'DEBUG', False):
+        response_data['dev_code'] = code
+
+    return Response(response_data)
 
 
 @api_view(['POST'])
