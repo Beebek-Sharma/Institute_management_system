@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 
-// Pages
+// Public Pages
 import HomePage from "./pages/HomePage";
 import CourseDetails from "./pages/CourseDetails";
 import CourseraAuth from "./pages/CourseraAuth";
@@ -16,6 +16,8 @@ import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import Search from "./pages/Search";
+import HelpCenter from "./pages/HelpCenter";
+import Profile from "./pages/Profile";
 
 // Student Pages
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -30,6 +32,11 @@ import Accomplishments from "./pages/student/Accomplishments";
 import StudentAttendance from "./pages/student/StudentAttendance";
 import StudentSchedule from "./pages/student/StudentSchedule";
 import StudentCertificates from "./pages/student/StudentCertificates";
+import StudentWaitlists from "./pages/student/StudentWaitlists";
+import StudentScholarships from "./pages/student/StudentScholarships";
+import StudentPaymentPlans from "./pages/student/StudentPaymentPlans";
+import StudentAssignments from "./pages/student/StudentAssignments";
+import StudentProgress from "./pages/student/StudentProgress";
 
 // Instructor Pages
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
@@ -38,8 +45,10 @@ import InstructorCourses from "./pages/instructor/InstructorCourses";
 import InstructorStudents from "./pages/instructor/InstructorStudents";
 import InstructorAttendance from "./pages/instructor/InstructorAttendance";
 import InstructorSchedule from "./pages/instructor/InstructorSchedule";
+import InstructorAssignments from "./pages/instructor/InstructorAssignments";
+import InstructorExams from "./pages/instructor/InstructorExams";
 
-// Admin Pages
+// Admin & Staff Management Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminCourses from "./pages/admin/AdminCourses";
 import AdminStudents from "./pages/admin/AdminStudents";
@@ -50,6 +59,12 @@ import AdminSchedules from "./pages/admin/AdminSchedules";
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminCertificates from "./pages/admin/AdminCertificates";
+import AdminWaitlists from "./pages/admin/AdminWaitlists";
+import BulkEnroll from "./pages/admin/BulkEnroll";
+import BulkImport from "./pages/admin/BulkImport";
+import AdminScholarships from "./pages/admin/AdminScholarships";
+import AdminPaymentPlans from "./pages/admin/AdminPaymentPlans";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 
 // Staff Pages
 import StaffDashboard from "./pages/staff/StaffDashboard";
@@ -62,10 +77,6 @@ import StaffCreateStudent from "./pages/staff/StaffCreateStudent";
 import StaffStudents from "./pages/staff/StaffStudents";
 import StaffInstructors from "./pages/staff/StaffInstructors";
 import StaffCertificates from "./pages/staff/StaffCertificates";
-
-// Public Pages
-import HelpCenter from "./pages/HelpCenter";
-import Profile from "./pages/Profile";
 
 // Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -92,7 +103,17 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/help-center" element={<HelpCenter />} />
 
-            {/* Student Routes */}
+            {/* Shared Profile & Settings */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={['student', 'instructor', 'staff', 'admin']}>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ==================== STUDENT ROUTES ==================== */}
             <Route
               path="/student/dashboard"
               element={
@@ -126,6 +147,30 @@ function App() {
               }
             />
             <Route
+              path="/student/assignments"
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentAssignments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/progress"
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentProgress />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/waitlists"
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentWaitlists />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/student/payments"
               element={
                 <ProtectedRoute allowedRoles={['student']}>
@@ -134,15 +179,23 @@ function App() {
               }
             />
             <Route
-              path="/student/profile"
+              path="/student/payment-plans"
               element={
-                <ProtectedRoute allowedRoles={['student', 'instructor', 'staff', 'admin']}>
-                  <Profile />
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentPaymentPlans />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/profile"
+              path="/student/scholarships"
+              element={
+                <ProtectedRoute allowedRoles={['student']}>
+                  <StudentScholarships />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/student/profile"
               element={
                 <ProtectedRoute allowedRoles={['student', 'instructor', 'staff', 'admin']}>
                   <Profile />
@@ -198,7 +251,7 @@ function App() {
               }
             />
 
-            {/* Instructor Routes */}
+            {/* ==================== INSTRUCTOR ROUTES ==================== */}
             <Route
               path="/instructor/dashboard"
               element={
@@ -232,6 +285,30 @@ function App() {
               }
             />
             <Route
+              path="/instructor/assignments"
+              element={
+                <ProtectedRoute allowedRoles={['instructor', 'admin', 'staff']}>
+                  <InstructorAssignments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/instructor/exams"
+              element={
+                <ProtectedRoute allowedRoles={['instructor', 'admin', 'staff']}>
+                  <InstructorExams />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/instructor/analytics"
+              element={
+                <ProtectedRoute allowedRoles={['instructor', 'admin', 'staff']}>
+                  <AdminAnalytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/instructor/attendance"
               element={
                 <ProtectedRoute allowedRoles={['instructor']}>
@@ -248,7 +325,7 @@ function App() {
               }
             />
 
-            {/* Admin Routes */}
+            {/* ==================== ADMIN ROUTES ==================== */}
             <Route
               path="/admin/dashboard"
               element={
@@ -290,10 +367,74 @@ function App() {
               }
             />
             <Route
+              path="/admin/bulk-enroll"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <BulkEnroll />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/bulk-import"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <BulkImport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/waitlists"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <AdminWaitlists />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/admin/fees"
               element={
                 <ProtectedRoute allowedRoles={['admin']}>
                   <AdminFees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/payment-plans"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <AdminPaymentPlans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/scholarships"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <AdminScholarships />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/assignments"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <InstructorAssignments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/exams"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <InstructorExams />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                  <AdminAnalytics />
                 </ProtectedRoute>
               }
             />
@@ -330,7 +471,7 @@ function App() {
               }
             />
 
-            {/* Staff Routes */}
+            {/* ==================== STAFF ROUTES ==================== */}
             <Route
               path="/staff/dashboard"
               element={
@@ -356,10 +497,50 @@ function App() {
               }
             />
             <Route
+              path="/staff/bulk-enroll"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <BulkEnroll />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/bulk-import"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <BulkImport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/waitlists"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <AdminWaitlists />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/staff/payments"
               element={
                 <ProtectedRoute allowedRoles={['staff']}>
                   <StaffPayments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/payment-plans"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <AdminPaymentPlans />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/scholarships"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <AdminScholarships />
                 </ProtectedRoute>
               }
             />
@@ -408,6 +589,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRoles={['staff']}>
                   <StaffCertificates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/staff/settings"
+              element={
+                <ProtectedRoute allowedRoles={['staff']}>
+                  <Settings />
                 </ProtectedRoute>
               }
             />

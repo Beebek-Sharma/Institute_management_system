@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Upload, Download, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import { Upload, Download, FileText, CheckCircle, XCircle, AlertCircle, FileSpreadsheet } from 'lucide-react';
+import axios from '../../api/axios';
+import DashboardLayout from '../../components/DashboardLayout';
 
 const BulkImport = () => {
     const [file, setFile] = useState(null);
@@ -28,7 +29,7 @@ const BulkImport = () => {
             if (droppedFile.name.endsWith('.csv')) {
                 setFile(droppedFile);
             } else {
-                alert('Please upload a CSV file');
+                alert('Please upload a valid CSV file');
             }
         }
     };
@@ -103,177 +104,172 @@ const BulkImport = () => {
     };
 
     return (
-        <div className="p-6 max-w-4xl mx-auto">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">Bulk Student Import</h1>
-                <p className="text-gray-600">Import multiple students from a CSV file</p>
-            </div>
+        <DashboardLayout>
+            <div className="p-6 max-w-5xl mx-auto space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                            <FileSpreadsheet className="w-6 h-6 text-teal-400" />
+                            Bulk Student CSV Import
+                        </h1>
+                        <p className="text-sm text-gray-400">
+                            Create student records in bulk via standard CSV templates or export existing student directory.
+                        </p>
+                    </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 mb-6">
-                <button
-                    onClick={downloadTemplate}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200"
-                >
-                    <Download className="w-4 h-4" />
-                    Download Template
-                </button>
-                <button
-                    onClick={exportStudents}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                >
-                    <Download className="w-4 h-4" />
-                    Export Current Students
-                </button>
-            </div>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={downloadTemplate}
+                            className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-teal-400 border border-teal-500/30 rounded-lg text-xs font-semibold hover:bg-slate-700 transition-colors shadow"
+                        >
+                            <Download className="w-4 h-4" />
+                            CSV Template
+                        </button>
+                        <button
+                            type="button"
+                            onClick={exportStudents}
+                            className="flex items-center gap-2 px-3 py-2 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold hover:bg-emerald-600/30 transition-colors shadow"
+                        >
+                            <Download className="w-4 h-4" />
+                            Export Active Students
+                        </button>
+                    </div>
+                </div>
 
-            {/* File Upload Area */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 className="text-lg font-semibold mb-4">Upload CSV File</h2>
+                {/* Upload Section */}
+                <div className="bg-slate-800/80 border border-slate-700/80 rounded-xl p-6 shadow-xl space-y-5">
+                    <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
+                        Upload CSV Data File
+                    </h2>
 
-                <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                    <div
+                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-all ${
+                            dragActive
+                                ? 'border-teal-400 bg-teal-500/10'
+                                : 'border-slate-600 hover:border-slate-500 bg-slate-900/50'
                         }`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                >
-                    <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                        onDragEnter={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDragOver={handleDrag}
+                        onDrop={handleDrop}
+                    >
+                        <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
 
-                    {file ? (
-                        <div className="mb-4">
-                            <div className="flex items-center justify-center gap-2 text-green-700">
-                                <FileText className="w-5 h-5" />
-                                <span className="font-medium">{file.name}</span>
-                            </div>
-                            <button
-                                onClick={() => setFile(null)}
-                                className="text-sm text-red-600 hover:underline mt-2"
-                            >
-                                Remove file
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                            <p className="text-gray-700 mb-2">
-                                Drag and drop your CSV file here, or
-                            </p>
-                            <label className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700">
-                                Browse Files
-                                <input
-                                    type="file"
-                                    accept=".csv"
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                />
-                            </label>
-                        </>
-                    )}
-                </div>
-
-                <div className="mt-4 text-sm text-gray-600">
-                    <p className="font-semibold mb-2">CSV Format Requirements:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                        <li>Required columns: username, email, first_name, last_name</li>
-                        <li>Optional columns: phone, date_of_birth, address, citizenship_number</li>
-                        <li>First row must be column headers</li>
-                        <li>UTF-8 encoding recommended</li>
-                    </ul>
-                </div>
-
-                <button
-                    onClick={handleImport}
-                    disabled={!file || importing}
-                    className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                    <Upload className="w-5 h-5" />
-                    {importing ? 'Importing...' : 'Import Students'}
-                </button>
-            </div>
-
-            {/* Results */}
-            {results && (
-                <div className="bg-white rounded-lg shadow p-6">
-                    <h2 className="text-lg font-semibold mb-4">Import Results</h2>
-
-                    {/* Summary */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className={`p-4 rounded-lg ${results.success ? 'bg-green-50' : 'bg-red-50'}`}>
-                            <div className={`flex items-center gap-2 mb-1 ${results.success ? 'text-green-700' : 'text-red-700'}`}>
-                                {results.success ? (
-                                    <CheckCircle className="w-5 h-5" />
-                                ) : (
-                                    <XCircle className="w-5 h-5" />
-                                )}
-                                <span className="font-semibold">
-                                    {results.success ? 'Import Successful' : 'Import Failed'}
-                                </span>
-                            </div>
-                            <p className={`text-2xl font-bold ${results.success ? 'text-green-900' : 'text-red-900'}`}>
-                                {results.success_count} students created
-                            </p>
-                        </div>
-
-                        {results.error_count > 0 && (
-                            <div className="bg-red-50 p-4 rounded-lg">
-                                <div className="flex items-center gap-2 text-red-700 mb-1">
-                                    <XCircle className="w-5 h-5" />
-                                    <span className="font-semibold">Errors</span>
+                        {file ? (
+                            <div className="space-y-2">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-sm">
+                                    <FileText className="w-4 h-4" />
+                                    <span className="font-medium">{file.name}</span>
+                                    <span className="text-xs text-gray-400">({(file.size / 1024).toFixed(1)} KB)</span>
                                 </div>
-                                <p className="text-2xl font-bold text-red-900">{results.error_count}</p>
+                                <div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFile(null)}
+                                        className="text-xs text-rose-400 hover:underline"
+                                    >
+                                        Remove selected file
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                <p className="text-sm text-gray-300">
+                                    Drag and drop your spreadsheet <span className="text-teal-400 font-mono">.csv</span> here, or
+                                </p>
+                                <label className="inline-block px-4 py-2 bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-lg cursor-pointer text-xs font-semibold hover:from-teal-600 hover:to-emerald-700 shadow transition-all">
+                                    Browse Local File
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                </label>
                             </div>
                         )}
                     </div>
 
-                    {/* Created Students */}
-                    {results.created_students && results.created_students.length > 0 && (
-                        <div className="mb-4">
-                            <h3 className="font-semibold text-green-900 mb-2">✓ Successfully Created Students</h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {results.created_students.map((student, index) => (
-                                    <div key={index} className="bg-green-50 p-3 rounded border border-green-200">
-                                        <p className="font-medium">{student.name}</p>
-                                        <p className="text-sm text-gray-600">{student.username} • {student.email}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <div className="p-4 bg-slate-900/60 rounded-lg border border-slate-700 text-xs text-gray-400 space-y-1.5">
+                        <p className="font-semibold text-gray-300">CSV Column Structure:</p>
+                        <p>• <span className="text-white font-mono">Required:</span> username, email, first_name, last_name</p>
+                        <p>• <span className="text-gray-300 font-mono">Optional:</span> phone, date_of_birth (YYYY-MM-DD), address, citizenship_number</p>
+                        <p>• Note: Default initial password will be assigned automatically and users will be notified.</p>
+                    </div>
 
-                    {/* Errors */}
-                    {results.errors && results.errors.length > 0 && (
-                        <div>
-                            <h3 className="font-semibold text-red-900 mb-2">✗ Errors</h3>
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {results.errors.map((error, index) => (
-                                    <div key={index} className="bg-red-50 p-3 rounded border border-red-200">
-                                        <p className="text-sm text-red-700">{error}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Warnings */}
-                    {results.warnings && results.warnings.length > 0 && (
-                        <div className="mt-4">
-                            <h3 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4" />
-                                Warnings
-                            </h3>
-                            <div className="space-y-2">
-                                {results.warnings.map((warning, index) => (
-                                    <div key={index} className="bg-yellow-50 p-3 rounded border border-yellow-200">
-                                        <p className="text-sm text-yellow-700">{warning}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <button
+                        onClick={handleImport}
+                        disabled={!file || importing}
+                        className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-3 rounded-lg font-semibold text-sm hover:from-teal-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md transition-all"
+                    >
+                        <Upload className="w-4 h-4" />
+                        {importing ? 'Processing and Validating CSV...' : 'Process Student Import'}
+                    </button>
                 </div>
-            )}
-        </div>
+
+                {/* Results Section */}
+                {results && (
+                    <div className="bg-slate-800/90 border border-slate-700 rounded-xl p-6 shadow-xl space-y-5">
+                        <h2 className="text-base font-bold text-white flex items-center gap-2">
+                            {results.success ? (
+                                <CheckCircle className="w-5 h-5 text-emerald-400" />
+                            ) : (
+                                <XCircle className="w-5 h-5 text-rose-400" />
+                            )}
+                            Import Summary
+                        </h2>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className={`p-4 rounded-xl border ${results.success ? 'bg-emerald-950/40 border-emerald-800/60' : 'bg-rose-950/40 border-rose-800/60'}`}>
+                                <p className="text-xs text-gray-400 uppercase font-semibold">Processed Successfully</p>
+                                <p className="text-2xl font-bold text-white mt-1">
+                                    {results.success_count || 0} students
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-xl border bg-rose-950/40 border-rose-800/60">
+                                <p className="text-xs text-rose-400 uppercase font-semibold">Errors Encountered</p>
+                                <p className="text-2xl font-bold text-rose-300 mt-1">
+                                    {results.error_count || 0}
+                                </p>
+                            </div>
+                        </div>
+
+                        {results.created_students && results.created_students.length > 0 && (
+                            <div className="space-y-2">
+                                <h3 className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+                                    Created Student Accounts ({results.created_students.length})
+                                </h3>
+                                <div className="max-h-48 overflow-y-auto space-y-1.5">
+                                    {results.created_students.map((student, idx) => (
+                                        <div key={idx} className="p-2.5 bg-slate-900 border border-slate-700 rounded-lg text-xs flex justify-between items-center">
+                                            <div>
+                                                <p className="font-semibold text-white">{student.name || student.username}</p>
+                                                <p className="text-[11px] text-gray-400">@{student.username} • {student.email}</p>
+                                            </div>
+                                            <span className="text-emerald-400 font-medium">Created ✓</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {results.errors && results.errors.length > 0 && (
+                            <div className="space-y-2">
+                                <h3 className="text-xs font-semibold text-rose-400 uppercase tracking-wider">
+                                    Errors ({results.errors.length})
+                                </h3>
+                                <div className="max-h-48 overflow-y-auto space-y-1 bg-rose-950/20 border border-rose-900/40 p-3 rounded-lg text-xs text-rose-300">
+                                    {results.errors.map((err, idx) => (
+                                        <p key={idx}>• {err}</p>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </DashboardLayout>
     );
 };
 

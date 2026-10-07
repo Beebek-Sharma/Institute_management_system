@@ -87,21 +87,19 @@ def register(request):
 @permission_classes([AllowAny])
 def login(request):
     """Login with email and password (Coursera-style)"""
-    email = request.data.get('email')
+    identifier = request.data.get('email') or request.data.get('username')
     password = request.data.get('password')
     
-    if not email or not password:
+    if not identifier or not password:
         return Response(
-            {'error': 'Email and password are required'},
+            {'error': 'Email or username and password are required'},
             status=status.HTTP_400_BAD_REQUEST
         )
     
-    # Find user by email only
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
+    user = User.objects.filter(Q(email=identifier) | Q(username=identifier)).first()
+    if not user:
         return Response(
-            {'error': 'Invalid email or password'},
+            {'error': 'Invalid email/username or password'},
             status=status.HTTP_401_UNAUTHORIZED
         )
     
